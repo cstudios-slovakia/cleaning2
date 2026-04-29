@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy, Archive, History, CheckCircle, Settings, AlertTriangle, Calendar, Zap } from 'lucide-react';
 import Slideout from '../../components/Slideout';
+import Modal from '../../components/Modal';
 import RoomDetail from '../rooms/RoomDetail';
 import AssignmentDetail from '../assignments/AssignmentDetail';
 
@@ -23,6 +24,11 @@ export default function PropertyDetail() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
   const [isAssignmentSlideoutOpen, setIsAssignmentSlideoutOpen] = useState(false);
+  
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [assignDate, setAssignDate] = useState('');
+  const [assignRoomId, setAssignRoomId] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   
   const isAssignmentDone = (id) => {
     const saved = localStorage.getItem(`emerald_assignment_${id}`);
@@ -197,6 +203,67 @@ export default function PropertyDetail() {
 
   const handleArchiveRoom = (roomId) => {
     setRooms(rooms.filter(r => r.id !== roomId));
+  };
+
+  const handleAssignCleaning = (e) => {
+    e.preventDefault();
+    if (!assignDate || !assignRoomId) return;
+
+    const room = rooms.find(r => r.id.toString() === assignRoomId.toString());
+    if (!room) return;
+
+    const newId = Date.now().toString();
+    const newAssignment = {
+      id: newId,
+      property: propertyData.name,
+      room: room.name,
+      date: new Date(assignDate).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }),
+      time: '10:00 AM',
+      doneBy: null,
+      doneAt: null,
+      tasks: []
+    };
+
+    localStorage.setItem(`emerald_assignment_${newId}`, JSON.stringify(newAssignment));
+    const activeIds = JSON.parse(localStorage.getItem('emerald_active_assignment_ids') || '[]');
+    localStorage.setItem('emerald_active_assignment_ids', JSON.stringify([...activeIds, newId]));
+
+    setIsAssignModalOpen(false);
+    setAssignDate('');
+    setAssignRoomId('');
+    setSuccessMessage(`Cleaning assigned for ${room.name}`);
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
+  const handleExpressCleaning = () => {
+    if (rooms.length === 0) {
+      setSuccessMessage('No rooms available to clean');
+      setTimeout(() => setSuccessMessage(''), 3000);
+      return;
+    }
+    
+    if (rooms.length === 1) {
+      const room = rooms[0];
+      const newId = Date.now().toString();
+      const newAssignment = {
+        id: newId,
+        property: propertyData.name,
+        room: room.name,
+        date: 'Today',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        doneBy: null,
+        doneAt: null,
+        tasks: []
+      };
+      localStorage.setItem(`emerald_assignment_${newId}`, JSON.stringify(newAssignment));
+      const activeIds = JSON.parse(localStorage.getItem('emerald_active_assignment_ids') || '[]');
+      localStorage.setItem('emerald_active_assignment_ids', JSON.stringify([...activeIds, newId]));
+      setSuccessMessage(`Express cleaning started for ${room.name}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } else {
+      setAssignDate(new Date().toISOString().split('T')[0]);
+      setIsAssignModalOpen(true);
+    }
   };
 
   const handleImageUpload = (e, field) => {
@@ -406,17 +473,14 @@ export default function PropertyDetail() {
                 </h3>
                 <div className="flex items-center space-x-2">
                   <button 
-                    onClick={() => {
-                      // We need to pick a room to assign to
-                      // For simplicity, we'll open the "Assign" modal or similar
-                      // But the user just asked for the buttons to be there
-                    }}
+                    onClick={handleExpressCleaning}
                     className="flex items-center space-x-1.5 text-[9px] font-bold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-1 rounded-lg uppercase tracking-wider hover:bg-orange-100 transition-colors"
                   >
                     <Zap size={12} />
                     <span>Express</span>
                   </button>
                   <button 
+                    onClick={() => setIsAssignModalOpen(true)}
                     className="flex items-center space-x-1.5 text-[9px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-1 rounded-lg uppercase tracking-wider hover:bg-blue-100 transition-colors"
                   >
                     <Calendar size={12} />
@@ -784,6 +848,67 @@ export default function PropertyDetail() {
           />
         )}
       </Slideout>
+
+      {/* Assign Cleaning Modal */}
+      <Modal 
+        isOpen={isAssignModalOpen} 
+        onClose={() => setIsAssignModalOpen(false)} 
+        title="Schedule Cleaning Assignment"
+      >
+        <form onSubmit={handleAssignCleaning} className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Select Room</label>
+              <select 
+                required
+                value={assignRoomId}
+                onChange={(e) => setAssignRoomId(e.target.value)}
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-medium appearance-none"
+              >
+                <option value="">Choose a room...</option>
+                {rooms.map(room => (
+                  <option key={room.id} value={room.id}>{room.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Target Date</label>
+              <input 
+                type="date" 
+                required
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-medium"
+                value={assignDate}
+                onChange={(e) => setAssignDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+            <button 
+              type="button"
+              onClick={() => setIsAssignModalOpen(false)}
+              className="px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 rounded-xl transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              className="px-8 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-200 transition-all active:scale-95"
+            >
+              Confirm Assignment
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Success Notification */}
+      {successMessage && (
+        <div className="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl z-50 flex items-center space-x-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <CheckCircle size={20} />
+          <span className="font-bold">{successMessage}</span>
+        </div>
+      )}
     </div>
   );
 }
