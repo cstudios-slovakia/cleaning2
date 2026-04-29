@@ -25,15 +25,14 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-20 lg:w-64 bg-white border-r border-slate-200 shadow-sm transition-all z-10">
-        <div className="p-6 flex items-center justify-center lg:justify-start">
-          <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center shrink-0">
-            <span className="text-white font-bold text-sm">C</span>
-          </div>
-          <span className="hidden lg:block ml-3 font-bold text-xl tracking-tight text-slate-900">Cleaning</span>
+      <aside className="hidden md:flex flex-col w-24 bg-white border-r border-slate-100 shadow-[2px_0_10px_rgba(0,0,0,0.02)] transition-all z-10">
+        <div className="py-8 flex flex-col items-center">
+          <Link to="/dashboard" className="w-12 h-12 bg-white border-2 border-slate-900 rounded-2xl flex items-center justify-center shrink-0 hover:scale-105 transition-transform active:scale-95 shadow-sm">
+            <span className="text-slate-900 font-black text-lg tracking-tighter">CS</span>
+          </Link>
         </div>
         
-        <nav className="flex-1 px-3 py-4 space-y-2">
+        <nav className="flex-1 flex flex-col items-center py-4 space-y-4">
           {NAV_ITEMS.map((item) => {
             const isActive = location.pathname.startsWith(item.path);
             const Icon = item.icon;
@@ -42,27 +41,35 @@ export default function Layout() {
                 key={item.name}
                 to={item.path}
                 className={cn(
-                  "flex items-center space-x-3 px-3 py-3 rounded-xl transition-all duration-200 group",
+                  "relative w-14 h-14 flex items-center justify-center rounded-2xl transition-all duration-300 group",
                   isActive 
-                    ? "bg-slate-100 text-slate-900 font-semibold" 
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-orange-500 text-white shadow-lg shadow-orange-200" 
+                    : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
                 )}
                 title={item.name}
               >
-                <Icon size={22} className={isActive ? "text-primary-600" : "text-slate-400 group-hover:text-slate-600"} strokeWidth={isActive ? 2.5 : 2} />
-                <span className="hidden lg:block">{item.name}</span>
+                <Icon size={24} strokeWidth={2} />
+                {isActive && (
+                   <div className="absolute left-0 w-1 h-6 bg-orange-500 rounded-r-full -ml-[1px]" />
+                )}
               </Link>
             );
           })}
         </nav>
         
-        <div className="p-4 border-t border-slate-100">
+        <div className="py-6 flex flex-col items-center space-y-4 border-t border-slate-50">
+          <button 
+            className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
+            title="Settings"
+          >
+            <Settings size={22} />
+          </button>
           <button 
             onClick={handleLogout}
-            className="flex items-center space-x-3 px-3 py-3 w-full rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
+            title="Logout"
           >
-            <LogOut size={22} className="text-slate-400" />
-            <span className="hidden lg:block font-medium">Logout</span>
+            <LogOut size={22} />
           </button>
         </div>
       </aside>
