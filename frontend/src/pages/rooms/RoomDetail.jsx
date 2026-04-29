@@ -12,23 +12,36 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
   const [draggedIndex, setDraggedIndex] = useState(null);
   
   // Local state for room data
-  const [roomData, setRoomData] = useState(() => {
-    const saved = localStorage.getItem(`emerald_room_${id}`);
-    const data = saved ? JSON.parse(saved) : null;
-    
-    return {
-      name: roomName || (data ? data.name : 'Room 101'),
-      property: propertyName || (data ? data.property : 'Emerald Grand'),
-      intervalDays: data ? data.intervalDays : 0,
-      tasks: data ? data.tasks : []
-    };
+  const [roomData, setRoomData] = useState({
+    name: roomName || 'Room 101',
+    property: propertyName || 'Emerald Grand',
+    intervalDays: 0,
+    tasks: []
   });
 
   const [completedAssignments, setCompletedAssignments] = useState([]);
   const [selectedLogId, setSelectedLogId] = useState(null);
   const [isAssignmentSlideoutOpen, setIsAssignmentSlideoutOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // Load data on mount or ID change
   useEffect(() => {
+    const saved = localStorage.getItem(`emerald_room_${id}`);
+    if (saved) {
+      setRoomData(JSON.parse(saved));
+    } else if (roomName || propertyName) {
+      setRoomData(prev => ({
+        ...prev,
+        name: roomName || prev.name,
+        property: propertyName || prev.property
+      }));
+    }
+    setIsLoaded(true);
+  }, [id, roomName, propertyName]);
+
+  // Fetch log data
+  useEffect(() => {
+    if (!isLoaded) return;
     const assignments = [];
     for(let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -43,18 +56,26 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
     }
     assignments.sort((a, b) => new Date(b.doneAt) - new Date(a.doneAt));
     setCompletedAssignments(assignments);
-  }, [roomData.name, roomData.property]);
+  }, [roomData.name, roomData.property, isLoaded]);
 
   // Edit form state
   const [editForm, setEditForm] = useState({ ...roomData });
 
-  // Persist changes
+  // Sync editForm when roomData is loaded
   useEffect(() => {
-    localStorage.setItem(`emerald_room_${id}`, JSON.stringify(roomData));
-  }, [roomData, id]);
+    if (isLoaded) {
+      setEditForm({ ...roomData });
+    }
+  }, [roomData, isLoaded]);
+
+  // Persist changes
+  const persistRoomData = (newData) => {
+    localStorage.setItem(`emerald_room_${id}`, JSON.stringify(newData));
+    setRoomData(newData);
+  };
 
   const handleUpdateRoom = () => {
-    setRoomData({ ...editForm });
+    persistRoomData({ ...editForm });
     setIsEditing(false);
   };
 

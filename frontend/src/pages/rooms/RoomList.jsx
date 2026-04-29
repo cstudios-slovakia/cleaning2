@@ -168,6 +168,24 @@ export default function RoomList() {
 
     localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, clonedRoom]));
     
+    // Copy the room detail data (template settings/tasks) if it exists
+    const detail = localStorage.getItem(`emerald_room_${roomToClone.id}`);
+    if (detail) {
+      const newDetail = JSON.parse(detail);
+      newDetail.id = clonedRoom.id;
+      newDetail.name = clonedRoom.name;
+      localStorage.setItem(`emerald_room_${clonedRoom.id}`, JSON.stringify(newDetail));
+    } else {
+      // Initialize with defaults if no source detail exists
+      localStorage.setItem(`emerald_room_${clonedRoom.id}`, JSON.stringify({
+        id: clonedRoom.id,
+        name: clonedRoom.name,
+        property: roomToClone.property,
+        intervalDays: 0,
+        tasks: []
+      }));
+    }
+    
     // Update property summary count
     const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
     const updatedProperties = properties.map(p => 
