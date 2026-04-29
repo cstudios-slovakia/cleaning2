@@ -20,9 +20,13 @@ export default function RoomList() {
     const groups = {};
 
     properties.forEach(prop => {
+      const fullData = JSON.parse(localStorage.getItem(`emerald_property_${prop.id}`) || '{}');
+      const theme = fullData.theme || '#0ea5e9';
       const rooms = JSON.parse(localStorage.getItem(`emerald_rooms_${prop.id}`) || '[]');
+      
       groups[prop.name] = {
         id: prop.id,
+        theme: theme,
         rooms: rooms.map(r => ({
           ...r,
           property: prop.name,
@@ -35,6 +39,24 @@ export default function RoomList() {
 
     setGroupedRooms(groups);
     setLoading(false);
+  };
+
+  const getContrastColor = (hex) => {
+    if (!hex || hex === 'transparent') return 'text-slate-800';
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 160) ? 'text-slate-900' : 'text-white';
+  };
+
+  const getSecondaryTextColor = (hex) => {
+    if (!hex || hex === 'transparent') return 'text-slate-500';
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 160) ? 'text-slate-600' : 'text-white/70';
   };
 
   const createAssignment = (room, date, time) => {
@@ -125,25 +147,34 @@ export default function RoomList() {
         <div className="space-y-6">
           {Object.entries(groupedRooms).map(([propertyName, group]) => (
             <div key={propertyName} className="card overflow-hidden">
-              <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+              <div 
+                className={cn("p-4 border-b flex items-center justify-between", getContrastColor(group.theme))}
+                style={{ backgroundColor: group.theme, borderColor: `${group.theme}20` }}
+              >
                 <div className="flex items-center space-x-2">
-                  <Building2 size={18} className="text-slate-400"/>
-                  <h3 className="font-bold text-slate-800">{propertyName}</h3>
-                  <span className="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs font-bold ml-2">
+                  <Building2 size={18} className={getSecondaryTextColor(group.theme)}/>
+                  <h3 className="font-bold">{propertyName}</h3>
+                  <span className={cn("px-2 py-0.5 rounded-full text-xs font-bold ml-2", 
+                    parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
+                    ? "bg-black/10 text-slate-800" : "bg-white/20 text-white")}>
                     {group.rooms.length}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Link 
                     to={`/properties/${group.id}`} 
-                    className="flex items-center space-x-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                    className={cn("flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm border",
+                      parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
+                      ? "bg-white text-slate-800 border-slate-200 hover:bg-slate-50" : "bg-white/10 text-white border-white/20 hover:bg-white/20")}
                   >
                     <Building2 size={14} />
                     <span>Manage Property</span>
                   </Link>
                   <Link 
                     to={`/properties/${group.id}`} 
-                    className="flex items-center space-x-1.5 text-xs font-bold text-primary-600 hover:text-primary-700 bg-primary-50 px-3 py-1.5 rounded-lg transition-colors border border-primary-100"
+                    className={cn("flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border",
+                      parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
+                      ? "bg-primary-600 text-white border-primary-700 hover:bg-primary-700" : "bg-white text-slate-900 border-white hover:bg-slate-50")}
                   >
                     <Plus size={14} />
                     <span>Add Room</span>
