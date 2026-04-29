@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2, Copy, Save, X, Archive, RotateCcw } from 'lucide-react';
+import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2, Copy, Save, X, Archive, RotateCcw, History } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 import Slideout from '../../components/Slideout';
@@ -415,6 +415,14 @@ export default function RoomList() {
                               >
                                 <Copy size={12} />
                                 <span className="hidden sm:inline">Clone</span>
+                              </button>
+                              <button 
+                                onClick={() => handleOpenRoomSlideout(room)}
+                                className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
+                                title="Cleaning Log"
+                              >
+                                <History size={12} />
+                                <span className="hidden sm:inline">Log</span>
                               </button>
                               <button 
                                 onClick={() => handleArchiveRoom(group.id, room)}
