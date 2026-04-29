@@ -77,16 +77,25 @@ export default function Layout() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-          <h1 className="text-lg font-bold text-slate-800 uppercase tracking-wider text-sm">
-            {NAV_ITEMS.find(item => location.pathname.startsWith(item.path))?.name || 'Overview'}
-          </h1>
-          <div className="flex items-center space-x-4">
+        <header className="bg-white border-b border-slate-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">
+              {NAV_ITEMS.find(item => location.pathname.startsWith(item.path))?.name || 'Overview'}
+            </h1>
+            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">v0.7.12</p>
+          </div>
+          <div className="flex items-center space-x-6">
             <button className="text-slate-400 hover:text-slate-600 transition-colors">
               <Settings size={20} />
             </button>
-            <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 font-bold flex items-center justify-center text-sm border border-primary-200">
-              {user?.name?.charAt(0)}
+            <div className="flex items-center space-x-3">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-bold text-slate-900 leading-none">{user?.name || 'Manager'}</p>
+                <p className="text-[10px] font-medium text-slate-400 mt-0.5">{user?.role || 'Administrator'}</p>
+              </div>
+              <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white font-bold flex items-center justify-center text-sm shadow-lg shadow-slate-200">
+                {user?.name?.charAt(0) || 'E'}
+              </div>
             </div>
           </div>
         </header>
