@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MoreVertical } from 'lucide-react';
+import { Plus, MoreVertical, Building2 } from 'lucide-react';
+import Modal from '../../components/Modal';
 
 export default function PropertyList() {
-  const properties = [
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPropName, setNewPropName] = useState('');
+  const [properties, setProperties] = useState([
     { id: 1, name: 'Emerald Grand', rooms: 15, managers: 2 },
     { id: 2, name: 'City Center Suite', rooms: 4, managers: 1 },
-  ];
+  ]);
+
+  const handleAddProperty = (e) => {
+    e.preventDefault();
+    if (!newPropName.trim()) return;
+
+    const newProp = {
+      id: Date.now(),
+      name: newPropName,
+      rooms: 0,
+      managers: 0
+    };
+
+    setProperties([...properties, newProp]);
+    setNewPropName('');
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -15,7 +34,10 @@ export default function PropertyList() {
           <h2 className="text-2xl font-bold text-slate-800">Properties</h2>
           <p className="text-sm text-slate-500 mt-1">Manage hotels and locations.</p>
         </div>
-        <button className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
+        >
           <Plus size={18} />
           <span>New Property</span>
         </button>
@@ -52,6 +74,45 @@ export default function PropertyList() {
           </div>
         ))}
       </div>
+
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title="Add New Property"
+      >
+        <form onSubmit={handleAddProperty} className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Property Name</label>
+            <div className="relative">
+              <Building2 size={18} className="absolute left-3 top-2.5 text-slate-400" />
+              <input 
+                type="text" 
+                value={newPropName}
+                onChange={(e) => setNewPropName(e.target.value)}
+                placeholder="e.g. Grand Hotel"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                autoFocus
+              />
+            </div>
+          </div>
+          <div className="flex space-x-3 pt-2">
+            <button 
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition-colors shadow-sm"
+            >
+              Create
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+

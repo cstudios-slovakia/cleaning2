@@ -1,9 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Edit2, Users, BedDouble } from 'lucide-react';
+import { ArrowLeft, Edit2, Users, BedDouble, Plus } from 'lucide-react';
+import Modal from '../../components/Modal';
 
 export default function PropertyDetail() {
   const { id } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newRoomName, setNewRoomName] = useState('');
+  const [rooms, setRooms] = useState([
+    { id: 101, name: 'Room 101' },
+    { id: 102, name: 'Lobby' },
+  ]);
+
+  const handleAddRoom = (e) => {
+    e.preventDefault();
+    if (!newRoomName.trim()) return;
+    
+    const newRoom = {
+      id: Date.now(),
+      name: newRoomName
+    };
+    
+    setRooms([...rooms, newRoom]);
+    setNewRoomName('');
+    setIsModalOpen(false);
+  };
   
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -49,17 +70,21 @@ export default function PropertyDetail() {
           <div className="card p-0">
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
               <h3 className="font-bold text-slate-800 flex items-center space-x-2"><BedDouble size={18} className="text-slate-400"/> <span>Rooms</span></h3>
-              <button className="text-sm text-primary-600 font-medium hover:text-primary-700">Add Room</button>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center space-x-1 text-sm text-primary-600 font-bold hover:text-primary-700 bg-primary-50 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <Plus size={14} />
+                <span>Add Room</span>
+              </button>
             </div>
             <div className="divide-y divide-slate-100">
-              <div className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                <span className="font-medium text-slate-700">Room 101</span>
-                <Link to="/rooms/101" className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Manage</Link>
-              </div>
-              <div className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                <span className="font-medium text-slate-700">Lobby</span>
-                <Link to="/rooms/102" className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Manage</Link>
-              </div>
+              {rooms.map(room => (
+                <div key={room.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                  <span className="font-medium text-slate-700">{room.name}</span>
+                  <Link to={`/rooms/${room.id}`} className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Manage</Link>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -94,6 +119,42 @@ export default function PropertyDetail() {
           </div>
         </div>
       </div>
+
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title="Add New Room"
+      >
+        <form onSubmit={handleAddRoom} className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Room Name / Number</label>
+            <input 
+              type="text" 
+              value={newRoomName}
+              onChange={(e) => setNewRoomName(e.target.value)}
+              placeholder="e.g. Room 204 or Lobby"
+              className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              autoFocus
+            />
+          </div>
+          <div className="flex space-x-3 pt-2">
+            <button 
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition-colors shadow-sm"
+            >
+              Add Room
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+
