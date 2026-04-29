@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2, Copy, Save, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
+import Slideout from '../../components/Slideout';
+import RoomDetail from './RoomDetail';
 
 export default function RoomList() {
   const [groupedRooms, setGroupedRooms] = useState({});
@@ -13,6 +15,9 @@ export default function RoomList() {
   const [successMessage, setSuccessMessage] = useState('');
   const [addingToPropertyId, setAddingToPropertyId] = useState(null);
   const [newRoomName, setNewRoomName] = useState('');
+  
+  const [isRoomSlideoutOpen, setIsRoomSlideoutOpen] = useState(false);
+  const [roomForSlideout, setRoomForSlideout] = useState(null);
 
   useEffect(() => {
     loadRooms();
@@ -165,6 +170,11 @@ export default function RoomList() {
   const handleCancelAdd = () => {
     setAddingToPropertyId(null);
     setNewRoomName('');
+  };
+
+  const handleOpenRoomSlideout = (room) => {
+    setRoomForSlideout(room);
+    setIsRoomSlideoutOpen(true);
   };
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading rooms...</div>;
@@ -336,9 +346,12 @@ export default function RoomList() {
                                 <Copy size={12} />
                                 <span className="hidden sm:inline">Clone</span>
                               </button>
-                              <Link to={`/properties/${room.propertyId}`} className="text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors border border-slate-200">
+                              <button 
+                                onClick={() => handleOpenRoomSlideout(room)}
+                                className="text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100"
+                              >
                                 Manage
-                              </Link>
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -396,6 +409,21 @@ export default function RoomList() {
           </div>
         </form>
       </Modal>
+
+      {/* Room Detail Slideout */}
+      <Slideout 
+        isOpen={isRoomSlideoutOpen} 
+        onClose={() => setIsRoomSlideoutOpen(false)}
+        title="Room Management"
+      >
+        {roomForSlideout && (
+          <RoomDetail 
+            roomId={roomForSlideout.id} 
+            isSlideout={true} 
+            propertyName={roomForSlideout.property}
+          />
+        )}
+      </Slideout>
     </div>
   );
 }
