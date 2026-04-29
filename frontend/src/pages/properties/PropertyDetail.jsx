@@ -12,6 +12,20 @@ export default function PropertyDetail() {
   const [propertyData, setPropertyData] = useState(() => {
     const saved = localStorage.getItem(`emerald_property_${id}`);
     if (saved) return JSON.parse(saved);
+    
+    const savedList = localStorage.getItem('emerald_properties');
+    if (savedList) {
+      const properties = JSON.parse(savedList);
+      const prop = properties.find(p => p.id.toString() === id.toString());
+      if (prop) {
+        return {
+          name: prop.name,
+          scheduleTime: '10:00 AM',
+          theme: 'blue'
+        };
+      }
+    }
+    
     return {
       name: 'Emerald Grand',
       scheduleTime: '10:00 AM',
