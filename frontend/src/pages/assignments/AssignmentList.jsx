@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight, AlertTriangle, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import Slideout from '../../components/Slideout';
+import AssignmentDetail from './AssignmentDetail';
 
 export default function AssignmentList() {
   const [expandedGroups, setExpandedGroups] = useState({
@@ -13,6 +15,21 @@ export default function AssignmentList() {
 
   const toggleGroup = (group) => {
     setExpandedGroups(prev => ({ ...prev, [group]: !prev[group] }));
+  };
+
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
+
+  // Helper to get property data for the slideout
+  const getPropertyData = (propertyName) => {
+    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
+    const prop = properties.find(p => p.name === propertyName);
+    if (prop) return prop;
+    
+    // Fallback defaults
+    if (propertyName === 'Emerald Grand') return { theme: '#0ea5e9', coverImage: null };
+    if (propertyName === 'City Center Suite') return { theme: '#10b981', coverImage: null };
+    return { theme: '#0ea5e9', coverImage: null };
   };
 
   const assignments = {
@@ -62,7 +79,11 @@ export default function AssignmentList() {
         {expandedGroups.overdue && (
           <div className="bg-orange-50/50 divide-y divide-slate-100">
             {assignments.overdue.map(a => (
-              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-orange-50 transition-colors">
+              <button 
+                key={a.id} 
+                onClick={() => { setSelectedAssignment(a); setIsSlideoutOpen(true); }}
+                className="w-full text-left block p-4 pl-12 hover:bg-orange-50 transition-colors"
+              >
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-bold text-slate-900">{a.room}</p>
@@ -72,7 +93,7 @@ export default function AssignmentList() {
                     <p className="text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">{a.time}</p>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         )}
@@ -82,7 +103,11 @@ export default function AssignmentList() {
         {expandedGroups.today && (
           <div className="bg-blue-50/50 divide-y divide-slate-100">
             {assignments.today.map(a => (
-              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-blue-50 transition-colors">
+              <button 
+                key={a.id} 
+                onClick={() => { setSelectedAssignment(a); setIsSlideoutOpen(true); }}
+                className="w-full text-left block p-4 pl-12 hover:bg-blue-50 transition-colors"
+              >
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-bold text-slate-900">{a.room}</p>
@@ -92,7 +117,7 @@ export default function AssignmentList() {
                     <p className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-lg">{a.time}</p>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         )}
@@ -102,7 +127,11 @@ export default function AssignmentList() {
         {expandedGroups.tomorrow && (
           <div className="divide-y divide-slate-100">
             {assignments.tomorrow.map(a => (
-              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-slate-50 transition-colors">
+              <button 
+                key={a.id} 
+                onClick={() => { setSelectedAssignment(a); setIsSlideoutOpen(true); }}
+                className="w-full text-left block p-4 pl-12 hover:bg-slate-50 transition-colors"
+              >
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-bold text-slate-900">{a.room}</p>
@@ -112,7 +141,7 @@ export default function AssignmentList() {
                     <p className="text-sm font-medium text-slate-600">{a.time}</p>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         )}
@@ -122,7 +151,11 @@ export default function AssignmentList() {
         {expandedGroups.future && (
           <div className="divide-y divide-slate-100">
             {assignments.future.map(a => (
-              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-slate-50 transition-colors">
+              <button 
+                key={a.id} 
+                onClick={() => { setSelectedAssignment(a); setIsSlideoutOpen(true); }}
+                className="w-full text-left block p-4 pl-12 hover:bg-slate-50 transition-colors"
+              >
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-bold text-slate-900">{a.room}</p>
@@ -132,11 +165,27 @@ export default function AssignmentList() {
                     <p className="text-sm font-medium text-slate-600">{a.time}</p>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         )}
       </div>
+
+      <Slideout 
+        isOpen={isSlideoutOpen} 
+        onClose={() => setIsSlideoutOpen(false)} 
+        title="Cleaning Assignment"
+        width="max-w-2xl"
+      >
+        {selectedAssignment && (
+          <AssignmentDetail 
+            assignmentId={selectedAssignment.id} 
+            isSlideout={true} 
+            theme={getPropertyData(selectedAssignment.property).theme}
+            coverImage={getPropertyData(selectedAssignment.property).coverImage}
+          />
+        )}
+      </Slideout>
     </div>
   );
 }
