@@ -14,12 +14,13 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
   // Local state for room data
   const [roomData, setRoomData] = useState(() => {
     const saved = localStorage.getItem(`emerald_room_${id}`);
-    if (saved) return JSON.parse(saved);
+    const data = saved ? JSON.parse(saved) : null;
+    
     return {
-      name: roomName || 'Room 101',
-      property: propertyName || 'Emerald Grand',
-      intervalDays: 0,
-      tasks: []
+      name: roomName || (data ? data.name : 'Room 101'),
+      property: propertyName || (data ? data.property : 'Emerald Grand'),
+      intervalDays: data ? data.intervalDays : 0,
+      tasks: data ? data.tasks : []
     };
   });
 
