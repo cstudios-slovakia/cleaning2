@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical } from 'lucide-react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 export default function RoomDetail() {
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
   
   // Local state for room data
   const [roomData, setRoomData] = useState(() => {
@@ -14,7 +14,7 @@ export default function RoomDetail() {
     return {
       name: 'Room 101',
       property: 'Emerald Grand',
-      intervalDays: 2, // numerical input
+      intervalDays: 2, // numerical input, 0 means not set
       tasks: [
         { id: '1', text: 'Make bed' },
         { id: '2', text: 'Clean bathroom' },
@@ -56,14 +56,25 @@ export default function RoomDetail() {
     });
   };
 
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault(); // allow drop
+  };
+
+  const handleDrop = (e, index) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
     
-    const items = Array.from(editForm.tasks);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    const newTasks = [...editForm.tasks];
+    const draggedItem = newTasks[draggedIndex];
+    newTasks.splice(draggedIndex, 1);
+    newTasks.splice(index, 0, draggedItem);
     
-    setEditForm({ ...editForm, tasks: items });
+    setEditForm({ ...editForm, tasks: newTasks });
+    setDraggedIndex(null);
   };
 
   const handleAddTask = () => {
@@ -141,8 +152,14 @@ export default function RoomDetail() {
             <div className="card p-5 bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0">
               <p className="text-slate-400 font-semibold text-xs tracking-wider uppercase mb-1">Next Assignment</p>
               <div className="flex items-center space-x-2 mt-2">
-                <Clock size={20} className="text-orange-400"/> 
-                <span className="font-bold text-xl">Today, 14:00</span>
+                {roomData.intervalDays > 0 ? (
+                  <>
+                    <Clock size={20} className="text-orange-400"/> 
+                    <span className="font-bold text-xl">Today, 14:00</span>
+                  </>
+                ) : (
+                  <span className="font-bold text-lg text-slate-400">Not scheduled</span>
+                )}
               </div>
             </div>
             <div className="card p-5 flex flex-col justify-center">
@@ -151,15 +168,17 @@ export default function RoomDetail() {
                 <div className="flex items-center space-x-2 mt-1">
                   <input 
                     type="number" 
-                    min="1"
+                    min="0"
                     value={editForm.intervalDays}
-                    onChange={(e) => setEditForm({ ...editForm, intervalDays: parseInt(e.target.value) || 1 })}
+                    onChange={(e) => setEditForm({ ...editForm, intervalDays: parseInt(e.target.value) || 0 })}
                     className="w-20 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-bold text-lg text-slate-800"
                   />
-                  <span className="text-slate-500 font-medium">days</span>
+                  <span className="text-slate-500 font-medium">days (0 to disable)</span>
                 </div>
               ) : (
-                <p className="font-bold text-xl text-slate-800">Every {roomData.intervalDays} days</p>
+                <p className="font-bold text-xl text-slate-800">
+                  {roomData.intervalDays > 0 ? `Every ${roomData.intervalDays} days` : 'Disabled'}
+                </p>
               )}
             </div>
           </div>
@@ -176,39 +195,35 @@ export default function RoomDetail() {
             </div>
             <div className="p-5">
               {isEditing ? (
-                <DragDropContext onDragEnd={onDragEnd}>
-                  <Droppable droppableId="tasks">
-                    {(provided) => (
-                      <ul {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
-                        {editForm.tasks.map((task, index) => (
-                          <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided, snapshot) => (
-                              <li 
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                className={`flex items-center space-x-3 p-3 bg-white border rounded-xl transition-all ${snapshot.isDragging ? 'shadow-xl border-primary-500 ring-2 ring-primary-500/10 z-50 scale-[1.02]' : 'border-slate-200'}`}
-                              >
-                                <div {...provided.dragHandleProps} className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1">
-                                  <GripVertical size={20} />
-                                </div>
-                                <input 
-                                  type="text"
-                                  value={task.text}
-                                  onChange={(e) => handleTaskChange(task.id, e.target.value)}
-                                  className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700 bg-slate-50/50"
-                                />
-                                <button onClick={() => handleTaskDelete(task.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                                  <Trash2 size={18} />
-                                </button>
-                              </li>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </ul>
-                    )}
-                  </Droppable>
-                </DragDropContext>
+                <ul className="space-y-3">
+                  {editForm.tasks.map((task, index) => (
+                    <li 
+                      key={task.id}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDrop={(e) => handleDrop(e, index)}
+                      onDragEnd={() => setDraggedIndex(null)}
+                      className={`flex items-center space-x-3 p-3 bg-white border rounded-xl transition-all ${draggedIndex === index ? 'opacity-50 border-primary-300' : 'border-slate-200'}`}
+                    >
+                      <div className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1">
+                        <GripVertical size={20} />
+                      </div>
+                      <input 
+                        type="text"
+                        value={task.text}
+                        onChange={(e) => handleTaskChange(task.id, e.target.value)}
+                        className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700 bg-slate-50/50"
+                      />
+                      <button onClick={() => handleTaskDelete(task.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                        <Trash2 size={18} />
+                      </button>
+                    </li>
+                  ))}
+                  {editForm.tasks.length === 0 && (
+                    <li className="text-slate-500 text-sm italic">No tasks assigned to this room template.</li>
+                  )}
+                </ul>
               ) : (
                 <ul className="space-y-3">
                   {roomData.tasks.map((task) => (
