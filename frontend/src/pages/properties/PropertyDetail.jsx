@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Edit2, Users, BedDouble, Plus } from 'lucide-react';
+import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock } from 'lucide-react';
 import Modal from '../../components/Modal';
 
 export default function PropertyDetail() {
   const { id } = useParams();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  // Local state for property data
+  const [propertyData, setPropertyData] = useState({
+    name: 'Emerald Grand',
+    scheduleTime: '10:00 AM',
+    theme: 'blue'
+  });
+
+  const [editForm, setEditForm] = useState({ ...propertyData });
   const [newRoomName, setNewRoomName] = useState('');
   const [rooms, setRooms] = useState([
     { id: 101, name: 'Room 101' },
     { id: 102, name: 'Lobby' },
   ]);
+
+  const handleUpdateProperty = (e) => {
+    e.preventDefault();
+    setPropertyData({ ...editForm });
+    setIsEditModalOpen(false);
+  };
 
   const handleAddRoom = (e) => {
     e.preventDefault();
@@ -23,7 +39,7 @@ export default function PropertyDetail() {
     
     setRooms([...rooms, newRoom]);
     setNewRoomName('');
-    setIsModalOpen(false);
+    setIsRoomModalOpen(false);
   };
   
   return (
@@ -34,11 +50,17 @@ export default function PropertyDetail() {
             <ArrowLeft size={18} className="text-slate-600" />
           </Link>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">Emerald Grand</h2>
+            <h2 className="text-2xl font-bold text-slate-800">{propertyData.name}</h2>
             <p className="text-sm text-slate-500">Property details and settings</p>
           </div>
         </div>
-        <button className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors font-medium shadow-sm">
+        <button 
+          onClick={() => {
+            setEditForm({ ...propertyData });
+            setIsEditModalOpen(true);
+          }}
+          className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors font-medium shadow-sm"
+        >
           <Edit2 size={16} />
           <span>Edit</span>
         </button>
@@ -51,11 +73,11 @@ export default function PropertyDetail() {
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Name</p>
-                <p className="font-medium text-slate-900">Emerald Grand</p>
+                <p className="font-medium text-slate-900">{propertyData.name}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Default Schedule Time</p>
-                <p className="font-medium text-slate-900">10:00 AM</p>
+                <p className="font-medium text-slate-900">{propertyData.scheduleTime}</p>
               </div>
               <div className="col-span-2">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Color Theme</p>
@@ -71,7 +93,7 @@ export default function PropertyDetail() {
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
               <h3 className="font-bold text-slate-800 flex items-center space-x-2"><BedDouble size={18} className="text-slate-400"/> <span>Rooms</span></h3>
               <button 
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsRoomModalOpen(true)}
                 className="flex items-center space-x-1 text-sm text-primary-600 font-bold hover:text-primary-700 bg-primary-50 px-3 py-1.5 rounded-lg transition-colors"
               >
                 <Plus size={14} />
@@ -120,9 +142,58 @@ export default function PropertyDetail() {
         </div>
       </div>
 
+      {/* Edit Property Modal */}
       <Modal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        title="Edit Property"
+      >
+        <form onSubmit={handleUpdateProperty} className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Property Name</label>
+            <input 
+              type="text" 
+              value={editForm.name}
+              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Default Schedule Time</label>
+            <div className="relative">
+              <Clock size={18} className="absolute left-3 top-2.5 text-slate-400" />
+              <input 
+                type="text" 
+                value={editForm.scheduleTime}
+                onChange={(e) => setEditForm({ ...editForm, scheduleTime: e.target.value })}
+                placeholder="e.g. 10:00 AM"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+              />
+            </div>
+          </div>
+          <div className="flex space-x-3 pt-4">
+            <button 
+              type="button"
+              onClick={() => setIsEditModalOpen(false)}
+              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition-colors shadow-sm flex items-center justify-center space-x-2"
+            >
+              <Save size={18} />
+              <span>Save Changes</span>
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Add Room Modal */}
+      <Modal 
+        isOpen={isRoomModalOpen} 
+        onClose={() => setIsRoomModalOpen(false)} 
         title="Add New Room"
       >
         <form onSubmit={handleAddRoom} className="space-y-4">
@@ -140,7 +211,7 @@ export default function PropertyDetail() {
           <div className="flex space-x-3 pt-2">
             <button 
               type="button"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => setIsRoomModalOpen(false)}
               className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
             >
               Cancel
@@ -157,4 +228,5 @@ export default function PropertyDetail() {
     </div>
   );
 }
+
 
