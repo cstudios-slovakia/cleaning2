@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MoreVertical, Building2 } from 'lucide-react';
+import { Plus, MoreVertical, Building2, History } from 'lucide-react';
 import Modal from '../../components/Modal';
 
 export default function PropertyList() {
@@ -86,12 +86,22 @@ export default function PropertyList() {
                   <span className="text-xs uppercase tracking-wider">Managers</span>
                 </div>
               </div>
-              <Link 
-                to={`/properties/${prop.id}`} 
-                className="block w-full text-center bg-slate-50 hover:bg-slate-100 text-primary-600 font-medium px-4 py-2 rounded-xl transition-colors border border-slate-200"
-              >
-                Manage Property
-              </Link>
+              <div className="flex items-center space-x-2">
+                <Link
+                  to={`/properties/${prop.id}/logs`}
+                  style={{ backgroundColor: prop.theme || '#0ea5e9' }}
+                  className="flex items-center justify-center text-white px-4 py-2 rounded-xl transition-colors shadow-sm"
+                  title="View Cleaning Logs"
+                >
+                  <History size={18} />
+                </Link>
+                <Link 
+                  to={`/properties/${prop.id}`} 
+                  className="flex-1 text-center bg-slate-50 hover:bg-slate-100 text-primary-600 font-medium px-4 py-2 rounded-xl transition-colors border border-slate-200"
+                >
+                  Manage Property
+                </Link>
+              </div>
             </div>
           </div>
         ))}

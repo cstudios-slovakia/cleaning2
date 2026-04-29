@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import PropertyList from './pages/properties/PropertyList';
 import PropertyDetail from './pages/properties/PropertyDetail';
+import PropertyLogs from './pages/properties/PropertyLogs';
 import RoomList from './pages/rooms/RoomList';
 import RoomDetail from './pages/rooms/RoomDetail';
 import AssignmentList from './pages/assignments/AssignmentList';
@@ -27,6 +28,7 @@ function App() {
         
         <Route path="properties" element={<PropertyList />} />
         <Route path="properties/:id" element={<PropertyDetail />} />
+        <Route path="properties/:id/logs" element={<PropertyLogs />} />
         
         <Route path="rooms" element={<RoomList />} />
         <Route path="rooms/:id" element={<RoomDetail />} />
