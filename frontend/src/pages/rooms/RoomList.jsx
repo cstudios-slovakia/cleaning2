@@ -21,13 +21,16 @@ export default function RoomList() {
 
     properties.forEach(prop => {
       const rooms = JSON.parse(localStorage.getItem(`emerald_rooms_${prop.id}`) || '[]');
-      groups[prop.name] = rooms.map(r => ({
-        ...r,
-        property: prop.name,
-        propertyId: prop.id,
-        // Mock last cleaned for now if not present
-        lastCleaned: r.lastCleaned || 'Never'
-      }));
+      groups[prop.name] = {
+        id: prop.id,
+        rooms: rooms.map(r => ({
+          ...r,
+          property: prop.name,
+          propertyId: prop.id,
+          // Mock last cleaned for now if not present
+          lastCleaned: r.lastCleaned || 'Never'
+        }))
+      };
     });
 
     setGroupedRooms(groups);
@@ -95,7 +98,7 @@ export default function RoomList() {
           <h2 className="text-2xl font-bold text-slate-800">Rooms</h2>
           <p className="text-sm text-slate-500 mt-1">Manage cleaning units and intervals.</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
@@ -104,10 +107,6 @@ export default function RoomList() {
               className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full sm:w-64"
             />
           </div>
-          <button className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 shadow-sm font-medium transition-colors">
-            <Plus size={18} />
-            <span className="hidden sm:inline">Add Room</span>
-          </button>
         </div>
       </div>
 
@@ -124,16 +123,34 @@ export default function RoomList() {
         </div>
       ) : (
         <div className="space-y-6">
-          {Object.entries(groupedRooms).map(([propertyName, propertyRooms]) => (
+          {Object.entries(groupedRooms).map(([propertyName, group]) => (
             <div key={propertyName} className="card overflow-hidden">
-              <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center space-x-2">
-                <Building2 size={18} className="text-slate-400"/>
-                <h3 className="font-bold text-slate-800">{propertyName}</h3>
-                <span className="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs font-bold ml-2">
-                  {propertyRooms.length}
-                </span>
+              <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Building2 size={18} className="text-slate-400"/>
+                  <h3 className="font-bold text-slate-800">{propertyName}</h3>
+                  <span className="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-xs font-bold ml-2">
+                    {group.rooms.length}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Link 
+                    to={`/properties/${group.id}`} 
+                    className="flex items-center space-x-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                  >
+                    <Building2 size={14} />
+                    <span>Manage Property</span>
+                  </Link>
+                  <Link 
+                    to={`/properties/${group.id}`} 
+                    className="flex items-center space-x-1.5 text-xs font-bold text-primary-600 hover:text-primary-700 bg-primary-50 px-3 py-1.5 rounded-lg transition-colors border border-primary-100"
+                  >
+                    <Plus size={14} />
+                    <span>Add Room</span>
+                  </Link>
+                </div>
               </div>
-              {propertyRooms.length === 0 ? (
+              {group.rooms.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 text-sm">
                   No rooms added to this property yet.
                 </div>
@@ -148,7 +165,7 @@ export default function RoomList() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {propertyRooms.map(room => (
+                      {group.rooms.map(room => (
                         <tr key={room.id} className="hover:bg-slate-50 transition-colors">
                           <td className="p-4">
                             <div className="flex items-center space-x-3">
