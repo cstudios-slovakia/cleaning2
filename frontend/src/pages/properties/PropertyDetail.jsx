@@ -44,8 +44,25 @@ export default function PropertyDetail() {
     ];
   });
 
+  const [managers, setManagers] = useState(() => {
+    const saved = localStorage.getItem(`emerald_managers_${id}`);
+    if (saved) return JSON.parse(saved);
+    return [{ id: 1, name: 'John Doe', initials: 'JD' }];
+  });
+
+  const [cleaners, setCleaners] = useState(() => {
+    const saved = localStorage.getItem(`emerald_cleaners_${id}`);
+    if (saved) return JSON.parse(saved);
+    return [
+      { id: 1, name: 'Maria Garcia', initials: 'MG' },
+      { id: 2, name: 'Anna Novak', initials: 'AN' }
+    ];
+  });
+
   const [editForm, setEditForm] = useState({ ...propertyData });
   const [editRooms, setEditRooms] = useState([...rooms]);
+  const [editManagers, setEditManagers] = useState([...managers]);
+  const [editCleaners, setEditCleaners] = useState([...cleaners]);
 
   // Persist changes
   useEffect(() => {
@@ -56,16 +73,28 @@ export default function PropertyDetail() {
     localStorage.setItem(`emerald_rooms_${id}`, JSON.stringify(rooms));
   }, [rooms, id]);
 
+  useEffect(() => {
+    localStorage.setItem(`emerald_managers_${id}`, JSON.stringify(managers));
+  }, [managers, id]);
+
+  useEffect(() => {
+    localStorage.setItem(`emerald_cleaners_${id}`, JSON.stringify(cleaners));
+  }, [cleaners, id]);
+
   const handleUpdateProperty = () => {
     setPropertyData({ ...editForm });
     // Save rooms from edit state as well
     setRooms([...editRooms].filter(r => r.name.trim() !== ''));
+    setManagers([...editManagers].filter(m => m.name.trim() !== ''));
+    setCleaners([...editCleaners].filter(c => c.name.trim() !== ''));
     setIsEditing(false);
   };
 
   const handleCancelEdit = () => {
     setEditForm({ ...propertyData });
     setEditRooms([...rooms]);
+    setEditManagers([...managers]);
+    setEditCleaners([...cleaners]);
     setIsEditing(false);
   };
 
@@ -79,6 +108,35 @@ export default function PropertyDetail() {
 
   const handleRoomDelete = (roomId) => {
     setEditRooms(editRooms.filter(r => r.id !== roomId));
+  };
+
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name.trim().split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '?';
+  };
+
+  const handleAddManagerInline = () => {
+    setEditManagers([...editManagers, { id: Date.now(), name: '', initials: '?' }]);
+  };
+
+  const handleManagerChange = (id, newName) => {
+    setEditManagers(editManagers.map(m => m.id === id ? { ...m, name: newName, initials: getInitials(newName) } : m));
+  };
+
+  const handleManagerDelete = (id) => {
+    setEditManagers(editManagers.filter(m => m.id !== id));
+  };
+
+  const handleAddCleanerInline = () => {
+    setEditCleaners([...editCleaners, { id: Date.now(), name: '', initials: '?' }]);
+  };
+
+  const handleCleanerChange = (id, newName) => {
+    setEditCleaners(editCleaners.map(c => c.id === id ? { ...c, name: newName, initials: getInitials(newName) } : c));
+  };
+
+  const handleCleanerDelete = (id) => {
+    setEditCleaners(editCleaners.filter(c => c.id !== id));
   };
 
   const handleCloneRoom = (room) => {
@@ -271,29 +329,114 @@ export default function PropertyDetail() {
 
         <div className="space-y-6">
           <div className="card p-6">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2 flex items-center space-x-2"><Users size={16} className="text-slate-400"/> <span>Personnel</span></h3>
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Users size={16} className="text-slate-400"/> 
+                <span>Personnel</span>
+              </div>
+            </h3>
             
             <div className="mb-6">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Managers</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Managers</p>
+                {isEditing && (
+                  <button 
+                    onClick={handleAddManagerInline}
+                    className="flex items-center space-x-1 text-xs text-primary-600 font-bold hover:text-primary-700 bg-primary-50 px-2 py-1 rounded-lg transition-colors"
+                  >
+                    <Plus size={12} />
+                    <span>Add</span>
+                  </button>
+                )}
+              </div>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold">JD</div>
-                  <span className="text-sm font-medium text-slate-700">John Doe</span>
-                </div>
+                {isEditing ? (
+                  editManagers.map(manager => (
+                    <div key={manager.id} className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        {manager.initials}
+                      </div>
+                      <input 
+                        type="text" 
+                        value={manager.name}
+                        onChange={(e) => handleManagerChange(manager.id, e.target.value)}
+                        placeholder="Manager Name"
+                        className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        autoFocus={manager.name === ''}
+                      />
+                      <button 
+                        onClick={() => handleManagerDelete(manager.id)}
+                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  managers.map(manager => (
+                    <div key={manager.id} className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold">
+                        {manager.initials}
+                      </div>
+                      <span className="text-sm font-medium text-slate-700">{manager.name}</span>
+                    </div>
+                  ))
+                )}
+                {!isEditing && managers.length === 0 && (
+                  <p className="text-sm text-slate-500 italic">No managers assigned</p>
+                )}
               </div>
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Cleaners</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cleaners</p>
+                {isEditing && (
+                  <button 
+                    onClick={handleAddCleanerInline}
+                    className="flex items-center space-x-1 text-xs text-primary-600 font-bold hover:text-primary-700 bg-primary-50 px-2 py-1 rounded-lg transition-colors"
+                  >
+                    <Plus size={12} />
+                    <span>Add</span>
+                  </button>
+                )}
+              </div>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">MG</div>
-                  <span className="text-sm font-medium text-slate-700">Maria Garcia</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-xs font-bold">AN</div>
-                  <span className="text-sm font-medium text-slate-700">Anna Novak</span>
-                </div>
+                {isEditing ? (
+                  editCleaners.map(cleaner => (
+                    <div key={cleaner.id} className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        {cleaner.initials}
+                      </div>
+                      <input 
+                        type="text" 
+                        value={cleaner.name}
+                        onChange={(e) => handleCleanerChange(cleaner.id, e.target.value)}
+                        placeholder="Cleaner Name"
+                        className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        autoFocus={cleaner.name === ''}
+                      />
+                      <button 
+                        onClick={() => handleCleanerDelete(cleaner.id)}
+                        className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  cleaners.map(cleaner => (
+                    <div key={cleaner.id} className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">
+                        {cleaner.initials}
+                      </div>
+                      <span className="text-sm font-medium text-slate-700">{cleaner.name}</span>
+                    </div>
+                  ))
+                )}
+                {!isEditing && cleaners.length === 0 && (
+                  <p className="text-sm text-slate-500 italic">No cleaners assigned</p>
+                )}
               </div>
             </div>
           </div>
