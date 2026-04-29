@@ -409,14 +409,6 @@ export default function RoomList() {
                           <td className="p-4 text-right">
                             <div className="flex items-center justify-end space-x-2">
                               <button 
-                                onClick={() => handleCloneRoom(group.id, room)}
-                                className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
-                                title="Clone Room"
-                              >
-                                <Copy size={12} />
-                                <span className="hidden sm:inline">Clone</span>
-                              </button>
-                              <button 
                                 onClick={() => handleOpenRoomSlideout(room)}
                                 className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
                                 title="Cleaning Log"
@@ -425,18 +417,24 @@ export default function RoomList() {
                                 <span className="hidden sm:inline">Log</span>
                               </button>
                               <button 
-                                onClick={() => handleArchiveRoom(group.id, room)}
-                                className="flex items-center space-x-1 text-red-600 hover:text-red-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-red-50 rounded-lg hover:bg-red-100 transition-colors border border-red-100 shadow-sm"
-                                title="Archive Room"
-                              >
-                                <Archive size={12} />
-                                <span className="hidden sm:inline">Archive</span>
-                              </button>
-                              <button 
                                 onClick={() => handleOpenRoomSlideout(room)}
                                 className="text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100"
                               >
                                 Manage
+                              </button>
+                              <button 
+                                onClick={() => handleCloneRoom(group.id, room)}
+                                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                title="Clone Room"
+                              >
+                                <Copy size={16} />
+                              </button>
+                              <button 
+                                onClick={() => handleArchiveRoom(group.id, room)}
+                                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Archive Room"
+                              >
+                                <Archive size={16} />
                               </button>
                             </div>
                           </td>
