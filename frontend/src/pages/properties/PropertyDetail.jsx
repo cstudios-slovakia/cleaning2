@@ -24,6 +24,15 @@ export default function PropertyDetail() {
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
   const [isAssignmentSlideoutOpen, setIsAssignmentSlideoutOpen] = useState(false);
   
+  const isAssignmentDone = (id) => {
+    const saved = localStorage.getItem(`emerald_assignment_${id}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return !!parsed.doneBy;
+    }
+    return false;
+  };
+  
   // Local state for property data
   const [propertyData, setPropertyData] = useState(() => {
     const saved = localStorage.getItem(`emerald_property_${id}`);
@@ -398,51 +407,63 @@ export default function PropertyDetail() {
               </div>
               <div className="divide-y divide-slate-100">
                 {String(propertyData.id) === '1' ? (
+                {String(propertyData.id) === '1' ? (
                   <>
-                    <div className="p-4 bg-orange-50/50">
-                      <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3">Overdue</p>
-                      <div className="space-y-2">
-                        <button 
-                          onClick={() => { setSelectedAssignmentId('1'); setIsAssignmentSlideoutOpen(true); }}
-                          className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-orange-100 shadow-sm hover:bg-orange-50 transition-colors text-left"
-                        >
-                          <div>
-                            <p className="font-bold text-slate-800">Lobby</p>
-                            <p className="text-xs text-slate-500">Scheduled: Yesterday 10:00 AM</p>
-                          </div>
-                          <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg uppercase">Overdue</span>
-                        </button>
+                    {!isAssignmentDone('1') && (
+                      <div className="p-4 bg-orange-50/50">
+                        <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3">Overdue</p>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => { setSelectedAssignmentId('1'); setIsAssignmentSlideoutOpen(true); }}
+                            className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-orange-100 shadow-sm hover:bg-orange-50 transition-colors text-left"
+                          >
+                            <div>
+                              <p className="font-bold text-slate-800">Lobby</p>
+                              <p className="text-xs text-slate-500">Scheduled: Yesterday 10:00 AM</p>
+                            </div>
+                            <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg uppercase">Overdue</span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-4 bg-blue-50/50">
-                      <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">Today</p>
-                      <div className="space-y-2">
-                        <button 
-                          onClick={() => { setSelectedAssignmentId('3'); setIsAssignmentSlideoutOpen(true); }}
-                          className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-blue-100 shadow-sm hover:bg-blue-50 transition-colors text-left"
-                        >
-                          <div>
-                            <p className="font-bold text-slate-800">Room 101</p>
-                            <p className="text-xs text-slate-500">Scheduled: 10:00 AM</p>
-                          </div>
-                          <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-lg uppercase">Due</span>
-                        </button>
+                    )}
+                    {!isAssignmentDone('3') && (
+                      <div className="p-4 bg-blue-50/50">
+                        <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">Today</p>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => { setSelectedAssignmentId('3'); setIsAssignmentSlideoutOpen(true); }}
+                            className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-blue-100 shadow-sm hover:bg-blue-50 transition-colors text-left"
+                          >
+                            <div>
+                              <p className="font-bold text-slate-800">Room 101</p>
+                              <p className="text-xs text-slate-500">Scheduled: 10:00 AM</p>
+                            </div>
+                            <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-lg uppercase">Due</span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-4">
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Upcoming</p>
-                      <div className="space-y-2">
-                        <button 
-                          onClick={() => { setSelectedAssignmentId('4'); setIsAssignmentSlideoutOpen(true); }}
-                          className="w-full flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors text-left"
-                        >
-                          <div>
-                            <p className="font-bold text-slate-700">Room 102</p>
-                            <p className="text-xs text-slate-500">Scheduled: Tomorrow 10:00 AM</p>
-                          </div>
-                        </button>
+                    )}
+                    {!isAssignmentDone('4') && (
+                      <div className="p-4">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Upcoming</p>
+                        <div className="space-y-2">
+                          <button 
+                            onClick={() => { setSelectedAssignmentId('4'); setIsAssignmentSlideoutOpen(true); }}
+                            className="w-full flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors text-left"
+                          >
+                            <div>
+                              <p className="font-bold text-slate-700">Room 102</p>
+                              <p className="text-xs text-slate-500">Scheduled: Tomorrow 10:00 AM</p>
+                            </div>
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
+                    {(isAssignmentDone('1') && isAssignmentDone('3') && isAssignmentDone('4')) && (
+                      <div className="p-6 text-center text-slate-500 text-sm">
+                        All cleaning assignments for this property are complete.
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div className="p-6 text-center text-slate-500 text-sm">

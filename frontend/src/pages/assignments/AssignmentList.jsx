@@ -32,20 +32,29 @@ export default function AssignmentList() {
     return { theme: '#0ea5e9', coverImage: null };
   };
 
+  const isAssignmentDone = (id) => {
+    const saved = localStorage.getItem(`emerald_assignment_${id}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return !!parsed.doneBy;
+    }
+    return false;
+  };
+
   const assignments = {
     overdue: [
       { id: 1, room: 'Lobby', property: 'Emerald Grand', time: 'Yesterday 14:00' },
       { id: 2, room: 'Apt 4A', property: 'City Center Suite', time: 'Today 08:00 (Immediate)' },
-    ],
+    ].filter(a => !isAssignmentDone(a.id)),
     today: [
       { id: 3, room: 'Room 101', property: 'Emerald Grand', time: '14:00' },
-    ],
+    ].filter(a => !isAssignmentDone(a.id)),
     tomorrow: [
       { id: 4, room: 'Room 102', property: 'Emerald Grand', time: '10:00' },
-    ],
+    ].filter(a => !isAssignmentDone(a.id)),
     future: [
       { id: 5, room: 'Apt 4B', property: 'City Center Suite', time: 'Friday 10:00' },
-    ]
+    ].filter(a => !isAssignmentDone(a.id))
   };
 
   const GroupHeader = ({ id, title, count, colorClass, icon: Icon }) => (
