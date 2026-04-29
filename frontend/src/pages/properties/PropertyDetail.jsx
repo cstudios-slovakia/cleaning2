@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy, Archive, History, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy, Archive, History, CheckCircle, Settings, AlertTriangle } from 'lucide-react';
 import Slideout from '../../components/Slideout';
 import RoomDetail from '../rooms/RoomDetail';
 
@@ -19,6 +19,7 @@ export default function PropertyDetail() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
   const [slideoutRoomId, setSlideoutRoomId] = useState(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   
   // Local state for property data
   const [propertyData, setPropertyData] = useState(() => {
@@ -514,7 +515,12 @@ export default function PropertyDetail() {
                     </div>
                   </div>
                 ))}
-                <button className="text-sm text-primary-600 font-bold hover:underline">View full history →</button>
+                <button 
+                  onClick={() => setIsHistoryOpen(true)}
+                  className="text-sm text-primary-600 font-bold hover:underline w-full text-left"
+                >
+                  View full history →
+                </button>
               </div>
             </div>
           )}
@@ -657,6 +663,51 @@ export default function PropertyDetail() {
             propertyName={propertyData.name} 
           />
         )}
+      </Slideout>
+
+      <Slideout 
+        isOpen={isHistoryOpen} 
+        onClose={() => setIsHistoryOpen(false)} 
+        title="Full Property Logs"
+        width="max-w-2xl"
+      >
+        <div className="p-6 space-y-6">
+          <div className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <h4 className="font-bold text-slate-800">Log History</h4>
+            <span className="text-sm text-slate-500">Showing last 30 days</span>
+          </div>
+          
+          <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+            {[
+              { date: 'Today', time: '10:15 AM', action: 'Lobby cleaning started', user: 'Maria Garcia', type: 'start' },
+              { date: 'Today', time: '09:45 AM', action: 'Room 101 inspection passed', user: 'John Doe', type: 'check' },
+              { date: 'Today', time: '08:30 AM', action: 'New schedule generated', user: 'System', type: 'system' },
+              { date: 'Yesterday', time: '16:00 PM', action: 'All cleanings completed', user: 'System', type: 'complete' },
+              { date: 'Yesterday', time: '14:30 PM', action: 'Room 102 cleaning finished', user: 'Anna Novak', type: 'complete' },
+              { date: 'Yesterday', time: '09:00 AM', action: 'Cleaning staff checked in', user: 'Maria Garcia, Anna Novak', type: 'login' },
+              { date: 'Oct 24', time: '11:20 AM', action: 'Room 105 maintenance requested', user: 'John Doe', type: 'alert' },
+              { date: 'Oct 24', time: '10:00 AM', action: 'Schedule updated', user: 'Sarah Smith', type: 'system' },
+            ].map((log, i) => (
+              <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-200 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                  {log.type === 'start' && <Clock size={16} className="text-blue-500" />}
+                  {log.type === 'check' && <CheckCircle size={16} className="text-emerald-500" />}
+                  {log.type === 'complete' && <CheckCircle size={16} className="text-emerald-500" />}
+                  {log.type === 'system' && <Settings size={16} className="text-slate-500" />}
+                  {log.type === 'login' && <Users size={16} className="text-purple-500" />}
+                  {log.type === 'alert' && <AlertTriangle size={16} className="text-orange-500" />}
+                </div>
+                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] card p-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold text-slate-800">{log.action}</span>
+                    <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">{log.date} {log.time}</span>
+                  </div>
+                  <p className="text-sm text-slate-600">By {log.user}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </Slideout>
     </div>
   );
