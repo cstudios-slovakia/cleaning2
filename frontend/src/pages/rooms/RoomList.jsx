@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2 } from 'lucide-react';
+import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 
 export default function RoomList() {
