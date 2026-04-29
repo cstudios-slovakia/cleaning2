@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Building2, BedDouble, ClipboardList, Users, LogOut, Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
+import { CONFIG } from '../config';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -82,7 +83,7 @@ export default function Layout() {
             <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">
               {NAV_ITEMS.find(item => location.pathname.startsWith(item.path))?.name || 'Overview'}
             </h1>
-            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">v0.7.12</p>
+            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">v{CONFIG.VERSION}</p>
           </div>
           <div className="flex items-center space-x-6">
             <button className="text-slate-400 hover:text-slate-600 transition-colors">
