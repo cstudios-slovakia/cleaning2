@@ -23,7 +23,8 @@ export default function PropertyDetail() {
         return {
           name: prop.name,
           scheduleTime: '10:00 AM',
-          theme: 'blue'
+          theme: '#0ea5e9',
+          coverImage: ''
         };
       }
     }
@@ -31,32 +32,27 @@ export default function PropertyDetail() {
     return {
       name: 'Emerald Grand',
       scheduleTime: '10:00 AM',
-      theme: 'blue'
+      theme: '#0ea5e9',
+      coverImage: ''
     };
   });
 
   const [rooms, setRooms] = useState(() => {
     const saved = localStorage.getItem(`emerald_rooms_${id}`);
     if (saved) return JSON.parse(saved);
-    return [
-      { id: 101, name: 'Room 101' },
-      { id: 102, name: 'Lobby' },
-    ];
+    return [];
   });
 
   const [managers, setManagers] = useState(() => {
     const saved = localStorage.getItem(`emerald_managers_${id}`);
     if (saved) return JSON.parse(saved);
-    return [{ id: 1, name: 'John Doe', initials: 'JD' }];
+    return [];
   });
 
   const [cleaners, setCleaners] = useState(() => {
     const saved = localStorage.getItem(`emerald_cleaners_${id}`);
     if (saved) return JSON.parse(saved);
-    return [
-      { id: 1, name: 'Maria Garcia', initials: 'MG' },
-      { id: 2, name: 'Anna Novak', initials: 'AN' }
-    ];
+    return [];
   });
 
   const [editForm, setEditForm] = useState({ ...propertyData });
@@ -248,18 +244,47 @@ export default function PropertyDetail() {
               </div>
               <div className="col-span-2">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Color Theme</p>
-                <div className="flex space-x-2 mt-2">
-                  <button 
-                    onClick={() => isEditing && setEditForm({ ...editForm, theme: 'blue' })}
-                    className={`w-8 h-8 rounded-full bg-blue-500 shadow-sm border-2 ${editForm.theme === 'blue' || (!isEditing && propertyData.theme === 'blue') ? 'border-primary-500 ring-2 ring-primary-500/20' : 'border-slate-200'} transition-all`}
-                    disabled={!isEditing}
-                  ></button>
-                  <button 
-                    onClick={() => isEditing && setEditForm({ ...editForm, theme: 'slate' })}
-                    className={`w-8 h-8 rounded-full bg-slate-800 shadow-sm border-2 ${editForm.theme === 'slate' || (!isEditing && propertyData.theme === 'slate') ? 'border-slate-400 ring-2 ring-slate-400/20' : 'border-slate-200'} transition-all`}
-                    disabled={!isEditing}
-                  ></button>
+                <div className="mt-2">
+                  {isEditing ? (
+                    <div className="flex items-center space-x-3">
+                      <input 
+                        type="color" 
+                        value={editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}
+                        onChange={(e) => setEditForm({ ...editForm, theme: e.target.value })}
+                        className="h-8 w-16 cursor-pointer rounded border border-slate-200 p-0 shadow-sm bg-white"
+                      />
+                      <span className="text-sm font-medium text-slate-500 uppercase">{editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-3">
+                      <div 
+                        className="w-8 h-8 rounded-full shadow-sm border border-slate-200" 
+                        style={{ backgroundColor: propertyData.theme.startsWith('#') ? propertyData.theme : '#0ea5e9' }}
+                      ></div>
+                      <span className="text-sm font-medium text-slate-700 uppercase">{propertyData.theme.startsWith('#') ? propertyData.theme : '#0ea5e9'}</span>
+                    </div>
+                  )}
                 </div>
+              </div>
+              <div className="col-span-2">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Cover Image URL</p>
+                {isEditing ? (
+                  <input 
+                    type="text" 
+                    value={editForm.coverImage || ''}
+                    onChange={(e) => setEditForm({ ...editForm, coverImage: e.target.value })}
+                    className="w-full font-medium text-slate-900 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                ) : (
+                  propertyData.coverImage ? (
+                    <div className="mt-2">
+                      <img src={propertyData.coverImage} alt="Cover" className="w-full h-32 object-cover rounded-xl shadow-sm border border-slate-100" />
+                    </div>
+                  ) : (
+                    <p className="font-medium text-slate-500 italic text-sm mt-1">No cover image set</p>
+                  )
+                )}
               </div>
             </div>
           </div>
