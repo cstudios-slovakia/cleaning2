@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 export default function RoomDetail() {
   const { id } = useParams();
@@ -15,10 +16,10 @@ export default function RoomDetail() {
       property: 'Emerald Grand',
       intervalDays: 2, // numerical input
       tasks: [
-        { id: 1, text: 'Make bed' },
-        { id: 2, text: 'Clean bathroom' },
-        { id: 3, text: 'Vacuum floors' },
-        { id: 4, text: 'Empty trash' }
+        { id: '1', text: 'Make bed' },
+        { id: '2', text: 'Clean bathroom' },
+        { id: '3', text: 'Vacuum floors' },
+        { id: '4', text: 'Empty trash' }
       ]
     };
   });
@@ -55,24 +56,20 @@ export default function RoomDetail() {
     });
   };
 
-  const handleTaskMove = (index, direction) => {
-    const newTasks = [...editForm.tasks];
-    if (direction === 'up' && index > 0) {
-      const temp = newTasks[index];
-      newTasks[index] = newTasks[index - 1];
-      newTasks[index - 1] = temp;
-    } else if (direction === 'down' && index < newTasks.length - 1) {
-      const temp = newTasks[index];
-      newTasks[index] = newTasks[index + 1];
-      newTasks[index + 1] = temp;
-    }
-    setEditForm({ ...editForm, tasks: newTasks });
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    
+    const items = Array.from(editForm.tasks);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    
+    setEditForm({ ...editForm, tasks: items });
   };
 
   const handleAddTask = () => {
     setEditForm({
       ...editForm,
-      tasks: [...editForm.tasks, { id: Date.now(), text: 'New Task' }]
+      tasks: [...editForm.tasks, { id: Date.now().toString(), text: 'New Task' }]
     });
   };
 
@@ -167,7 +164,7 @@ export default function RoomDetail() {
             </div>
           </div>
 
-          <div className="card">
+          <div className="card overflow-hidden">
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
               <h3 className="font-bold text-slate-800">Task List Template</h3>
               {isEditing && (
@@ -178,37 +175,53 @@ export default function RoomDetail() {
               )}
             </div>
             <div className="p-5">
-              <ul className="space-y-3">
-                {(isEditing ? editForm.tasks : roomData.tasks).map((task, index) => (
-                  <li key={task.id} className="flex items-center space-x-3 p-3 bg-white border border-slate-200 rounded-xl">
-                    {isEditing ? (
-                      <>
-                        <div className="flex flex-col space-y-1 mr-2 text-slate-400">
-                          <button onClick={() => handleTaskMove(index, 'up')} disabled={index === 0} className="hover:text-primary-600 disabled:opacity-30"><ArrowUp size={14}/></button>
-                          <button onClick={() => handleTaskMove(index, 'down')} disabled={index === editForm.tasks.length - 1} className="hover:text-primary-600 disabled:opacity-30"><ArrowDown size={14}/></button>
-                        </div>
-                        <input 
-                          type="text"
-                          value={task.text}
-                          onChange={(e) => handleTaskChange(task.id, e.target.value)}
-                          className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700"
-                        />
-                        <button onClick={() => handleTaskDelete(task.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                          <Trash2 size={18} />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 size={18} className="text-slate-300" />
-                        <span className="font-medium text-slate-700">{task.text}</span>
-                      </>
+              {isEditing ? (
+                <DragDropContext onDragEnd={onDragEnd}>
+                  <Droppable droppableId="tasks">
+                    {(provided) => (
+                      <ul {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
+                        {editForm.tasks.map((task, index) => (
+                          <Draggable key={task.id} draggableId={task.id} index={index}>
+                            {(provided, snapshot) => (
+                              <li 
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={`flex items-center space-x-3 p-3 bg-white border rounded-xl transition-all ${snapshot.isDragging ? 'shadow-xl border-primary-500 ring-2 ring-primary-500/10 z-50 scale-[1.02]' : 'border-slate-200'}`}
+                              >
+                                <div {...provided.dragHandleProps} className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1">
+                                  <GripVertical size={20} />
+                                </div>
+                                <input 
+                                  type="text"
+                                  value={task.text}
+                                  onChange={(e) => handleTaskChange(task.id, e.target.value)}
+                                  className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700 bg-slate-50/50"
+                                />
+                                <button onClick={() => handleTaskDelete(task.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                  <Trash2 size={18} />
+                                </button>
+                              </li>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </ul>
                     )}
-                  </li>
-                ))}
-                {!isEditing && roomData.tasks.length === 0 && (
-                  <li className="text-slate-500 text-sm italic">No tasks assigned to this room template.</li>
-                )}
-              </ul>
+                  </Droppable>
+                </DragDropContext>
+              ) : (
+                <ul className="space-y-3">
+                  {roomData.tasks.map((task) => (
+                    <li key={task.id} className="flex items-center space-x-3 p-3 bg-white border border-slate-200 rounded-xl">
+                      <CheckCircle2 size={18} className="text-slate-300" />
+                      <span className="font-medium text-slate-700">{task.text}</span>
+                    </li>
+                  ))}
+                  {roomData.tasks.length === 0 && (
+                    <li className="text-slate-500 text-sm italic">No tasks assigned to this room template.</li>
+                  )}
+                </ul>
+              )}
             </div>
           </div>
         </div>
@@ -243,4 +256,5 @@ export default function RoomDetail() {
     </div>
   );
 }
+
 
