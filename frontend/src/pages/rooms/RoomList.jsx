@@ -386,7 +386,7 @@ export default function RoomList() {
                           <td className="p-4">
                             <div className="flex items-center space-x-3 group">
                               <span className="text-slate-500 text-sm whitespace-nowrap">{room.lastCleaned}</span>
-                              <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="flex items-center space-x-2">
                                 <button 
                                   onClick={() => handleExpressCleaning(room)}
                                   className="flex items-center space-x-1 text-orange-600 hover:text-orange-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-orange-50 rounded hover:bg-orange-100 transition-colors border border-orange-100"
