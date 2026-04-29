@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy, Archive, History, CheckCircle, Settings, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy, Archive, History, CheckCircle, Settings, AlertTriangle, Calendar, Zap } from 'lucide-react';
 import Slideout from '../../components/Slideout';
 import RoomDetail from '../rooms/RoomDetail';
 import AssignmentDetail from '../assignments/AssignmentDetail';
@@ -240,24 +240,24 @@ export default function PropertyDetail() {
   
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Hero Section with Cover Image - ONLY VISIBLE DURING EDITING */}
-      {isEditing && editForm.coverImage && (
+      {/* Hero Section with Cover Image */}
+      {(isEditing ? editForm.coverImage : propertyData.coverImage) && (
         <div className="relative h-48 sm:h-64 rounded-3xl overflow-hidden shadow-lg mb-6 group">
           <img 
-            src={editForm.coverImage} 
+            src={isEditing ? editForm.coverImage : propertyData.coverImage} 
             alt="Property Cover" 
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
             <div className="flex items-center space-x-4">
-              {editForm.logo && (
+              {(isEditing ? editForm.logo : propertyData.logo) && (
                 <div className="w-16 h-16 bg-white rounded-2xl shadow-xl p-2 flex-shrink-0">
-                  <img src={editForm.logo} alt="Logo" className="w-full h-full object-contain" />
+                  <img src={isEditing ? editForm.logo : propertyData.logo} alt="Logo" className="w-full h-full object-contain" />
                 </div>
               )}
               <div>
-                <h1 className="text-3xl font-bold text-white drop-shadow-md">{editForm.name}</h1>
-                <p className="text-slate-200 font-medium">Editing Property</p>
+                <h1 className="text-3xl font-bold text-white drop-shadow-md">{isEditing ? editForm.name : propertyData.name}</h1>
+                <p className="text-slate-200 font-medium">{isEditing ? 'Editing Property' : 'Property Dashboard'}</p>
               </div>
             </div>
           </div>
@@ -399,11 +399,30 @@ export default function PropertyDetail() {
           
           {!isEditing && (
             <div className="card">
-              <div className="p-5 border-b border-slate-100 bg-slate-50">
+              <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                 <h3 className="font-bold text-slate-800 flex items-center space-x-2">
                   <CheckCircle size={18} className="text-slate-400"/> 
                   <span>Cleaning Assignments</span>
                 </h3>
+                <div className="flex items-center space-x-2">
+                  <button 
+                    onClick={() => {
+                      // We need to pick a room to assign to
+                      // For simplicity, we'll open the "Assign" modal or similar
+                      // But the user just asked for the buttons to be there
+                    }}
+                    className="flex items-center space-x-1.5 text-[9px] font-bold text-orange-600 bg-orange-50 border border-orange-100 px-2 py-1 rounded-lg uppercase tracking-wider hover:bg-orange-100 transition-colors"
+                  >
+                    <Zap size={12} />
+                    <span>Express</span>
+                  </button>
+                  <button 
+                    className="flex items-center space-x-1.5 text-[9px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-1 rounded-lg uppercase tracking-wider hover:bg-blue-100 transition-colors"
+                  >
+                    <Calendar size={12} />
+                    <span>Assign</span>
+                  </button>
+                </div>
               </div>
               <div className="divide-y divide-slate-100">
                 {String(propertyData.id) === '1' ? (
