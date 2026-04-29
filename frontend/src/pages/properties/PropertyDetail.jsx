@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy, Archive, History, CheckCircle, Settings, AlertTriangle } from 'lucide-react';
 import Slideout from '../../components/Slideout';
 import RoomDetail from '../rooms/RoomDetail';
+import AssignmentDetail from '../assignments/AssignmentDetail';
 
 const AVAILABLE_USERS = [
   { id: 'u1', name: 'John Doe', role: 'manager' },
@@ -20,6 +21,8 @@ export default function PropertyDetail() {
   const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
   const [slideoutRoomId, setSlideoutRoomId] = useState(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
+  const [isAssignmentSlideoutOpen, setIsAssignmentSlideoutOpen] = useState(false);
   
   // Local state for property data
   const [propertyData, setPropertyData] = useState(() => {
@@ -399,36 +402,45 @@ export default function PropertyDetail() {
                     <div className="p-4 bg-orange-50/50">
                       <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3">Overdue</p>
                       <div className="space-y-2">
-                        <Link to="/assignments/1" className="flex justify-between items-center bg-white p-3 rounded-xl border border-orange-100 shadow-sm hover:bg-orange-50 transition-colors block">
+                        <button 
+                          onClick={() => { setSelectedAssignmentId('1'); setIsAssignmentSlideoutOpen(true); }}
+                          className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-orange-100 shadow-sm hover:bg-orange-50 transition-colors text-left"
+                        >
                           <div>
                             <p className="font-bold text-slate-800">Lobby</p>
                             <p className="text-xs text-slate-500">Scheduled: Yesterday 10:00 AM</p>
                           </div>
                           <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg uppercase">Overdue</span>
-                        </Link>
+                        </button>
                       </div>
                     </div>
                     <div className="p-4 bg-blue-50/50">
                       <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">Today</p>
                       <div className="space-y-2">
-                        <Link to="/assignments/3" className="flex justify-between items-center bg-white p-3 rounded-xl border border-blue-100 shadow-sm hover:bg-blue-50 transition-colors block">
+                        <button 
+                          onClick={() => { setSelectedAssignmentId('3'); setIsAssignmentSlideoutOpen(true); }}
+                          className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-blue-100 shadow-sm hover:bg-blue-50 transition-colors text-left"
+                        >
                           <div>
                             <p className="font-bold text-slate-800">Room 101</p>
                             <p className="text-xs text-slate-500">Scheduled: 10:00 AM</p>
                           </div>
                           <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-lg uppercase">Due</span>
-                        </Link>
+                        </button>
                       </div>
                     </div>
                     <div className="p-4">
                       <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Upcoming</p>
                       <div className="space-y-2">
-                        <Link to="/assignments/4" className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors block">
+                        <button 
+                          onClick={() => { setSelectedAssignmentId('4'); setIsAssignmentSlideoutOpen(true); }}
+                          className="w-full flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors text-left"
+                        >
                           <div>
                             <p className="font-bold text-slate-700">Room 102</p>
                             <p className="text-xs text-slate-500">Scheduled: Tomorrow 10:00 AM</p>
                           </div>
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   </>
@@ -716,6 +728,22 @@ export default function PropertyDetail() {
             ))}
           </div>
         </div>
+      </Slideout>
+
+      <Slideout 
+        isOpen={isAssignmentSlideoutOpen} 
+        onClose={() => setIsAssignmentSlideoutOpen(false)} 
+        title="Cleaning Assignment"
+        width="max-w-2xl"
+      >
+        {selectedAssignmentId && (
+          <AssignmentDetail 
+            assignmentId={selectedAssignmentId} 
+            isSlideout={true} 
+            theme={propertyData.theme}
+            coverImage={propertyData.coverImage}
+          />
+        )}
       </Slideout>
     </div>
   );

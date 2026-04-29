@@ -4,8 +4,9 @@ import { ArrowLeft, CheckCircle, Circle, Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function AssignmentDetail() {
-  const { id } = useParams();
+export default function AssignmentDetail({ assignmentId: propId, isSlideout = false, theme: propTheme, coverImage: propCoverImage }) {
+  const { id: routeId } = useParams();
+  const id = propId || routeId;
   const { user } = useAuth();
   
   const [assignment, setAssignment] = useState(() => {
@@ -28,6 +29,8 @@ export default function AssignmentDetail() {
       ]
     };
   });
+
+  const themeColor = propTheme || '#0ea5e9';
 
   // if the done by value is set, only admins, owners and managers can edit the assigment
   const canEdit = !assignment.doneBy || (user && ['admin', 'owner', 'manager'].includes(user.role));
@@ -60,24 +63,44 @@ export default function AssignmentDetail() {
   const isAllDone = assignment.tasks.every(t => t.done);
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto pb-24">
-      <div className="flex items-center space-x-4 mb-4">
-        <Link to="/properties/1" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
-          <ArrowLeft size={18} className="text-slate-600" />
-        </Link>
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800">Cleaning Assignment</h2>
-          <p className="text-sm text-slate-500">Task details and status.</p>
+    <div className={cn("space-y-6 max-w-2xl mx-auto pb-24", isSlideout ? "p-0 pb-32" : "p-4 sm:p-6")}>
+      {!isSlideout && (
+        <div className="flex items-center space-x-4 mb-4">
+          <Link to="/properties/1" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
+            <ArrowLeft size={18} className="text-slate-600" />
+          </Link>
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800">Cleaning Assignment</h2>
+            <p className="text-sm text-slate-500">Task details and status.</p>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="card p-6 md:p-8 space-y-8">
-        <div className="text-center space-y-2 border-b border-slate-100 pb-8">
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">{assignment.property}</p>
-          <h3 className="text-4xl font-extrabold text-slate-900 tracking-tight">{assignment.room}</h3>
+      {isSlideout && propCoverImage && (
+        <div className="relative h-48 -mx-6 -mt-6 mb-6 overflow-hidden">
+          <img src={propCoverImage} alt="Property" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+          <div className="absolute bottom-4 left-6">
+            <p className="text-white/80 font-bold uppercase tracking-widest text-xs">{assignment.property}</p>
+            <h3 className="text-2xl font-bold text-white tracking-tight">{assignment.room}</h3>
+          </div>
+        </div>
+      )}
+
+      <div className={cn("card p-6 md:p-8 space-y-8", isSlideout && "border-none shadow-none bg-transparent pt-0")}>
+        <div className={cn("text-center space-y-2 border-b border-slate-100 pb-8", isSlideout && "text-left border-none pb-4")}>
+          {!isSlideout && (
+            <>
+              <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">{assignment.property}</p>
+              <h3 className="text-4xl font-extrabold text-slate-900 tracking-tight">{assignment.room}</h3>
+            </>
+          )}
           
-          <div className="flex flex-col items-center mt-4 space-y-3">
-            <div className="inline-block bg-primary-50 border border-primary-200 text-primary-700 px-3 py-1 rounded-full text-sm font-bold">
+          <div className={cn("flex flex-col items-center mt-4 space-y-3", isSlideout && "items-start mt-2")}>
+            <div 
+              className="inline-block px-3 py-1 rounded-full text-sm font-bold border"
+              style={{ backgroundColor: `${themeColor}10`, borderColor: `${themeColor}30`, color: themeColor }}
+            >
               Scheduled: {assignment.date} {assignment.time}
             </div>
             
@@ -125,13 +148,15 @@ export default function AssignmentDetail() {
 
       {/* Fixed bottom bar for the finish button */}
       {canEdit && !assignment.doneBy && (
-        <div className="fixed bottom-0 left-0 right-0 md:left-20 lg:left-64 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 z-10">
+        <div className={cn(
+          "fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50",
+          !isSlideout && "md:left-20 lg:left-64"
+        )}>
           <div className="max-w-2xl mx-auto flex justify-end">
             <button 
               onClick={handleFinish}
-              className={cn(
-                "w-full md:w-auto px-8 py-3 rounded-xl font-semibold text-white shadow-sm transition-all bg-primary-600 hover:bg-primary-700"
-              )}
+              style={{ backgroundColor: themeColor }}
+              className="w-full md:w-auto px-8 py-3 rounded-xl font-semibold text-white shadow-sm transition-all hover:opacity-90"
             >
               Finish Cleaning
             </button>
