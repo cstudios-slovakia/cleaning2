@@ -48,6 +48,15 @@ export default function AssignmentList() {
     return !properties.find(p => p.name === propertyName);
   };
 
+  const getDynamicAssignments = () => {
+    const activeIds = JSON.parse(localStorage.getItem('emerald_active_assignment_ids') || '[]');
+    return activeIds
+      .map(id => JSON.parse(localStorage.getItem(`emerald_assignment_${id}`)))
+      .filter(a => a && !isAssignmentDone(a.id) && !isPropertyArchived(a.property));
+  };
+
+  const dynamicAssignments = getDynamicAssignments();
+
   const assignments = {
     overdue: [
       { id: 1, room: 'Lobby', property: 'Emerald Grand', time: 'Yesterday 14:00' },
@@ -55,12 +64,15 @@ export default function AssignmentList() {
     ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
     today: [
       { id: 3, room: 'Room 101', property: 'Emerald Grand', time: '14:00' },
+      ...dynamicAssignments.filter(a => a.date === 'Today')
     ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
     tomorrow: [
       { id: 4, room: 'Room 102', property: 'Emerald Grand', time: '10:00' },
+      ...dynamicAssignments.filter(a => a.date.includes('Tomorrow'))
     ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
     future: [
       { id: 5, room: 'Apt 4B', property: 'City Center Suite', time: 'Friday 10:00' },
+      ...dynamicAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow'))
     ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property))
   };
 
