@@ -1,32 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save } from 'lucide-react';
-import Modal from '../../components/Modal';
+import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 
 export default function RoomDetail() {
   const { id } = useParams();
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Local state for room data
-  const [roomData, setRoomData] = useState({
-    name: 'Room 101',
-    property: 'Emerald Grand',
-    interval: 'Every 2 days',
-    tasks: ['Make bed', 'Clean bathroom', 'Vacuum floors', 'Empty trash']
+  const [roomData, setRoomData] = useState(() => {
+    const saved = localStorage.getItem(`emerald_room_${id}`);
+    if (saved) return JSON.parse(saved);
+    return {
+      name: 'Room 101',
+      property: 'Emerald Grand',
+      intervalDays: 2, // numerical input
+      tasks: [
+        { id: 1, text: 'Make bed' },
+        { id: 2, text: 'Clean bathroom' },
+        { id: 3, text: 'Vacuum floors' },
+        { id: 4, text: 'Empty trash' }
+      ]
+    };
   });
 
   // Edit form state
   const [editForm, setEditForm] = useState({ ...roomData });
 
-  const handleUpdateRoom = (e) => {
-    e.preventDefault();
+  // Persist changes
+  useEffect(() => {
+    localStorage.setItem(`emerald_room_${id}`, JSON.stringify(roomData));
+  }, [roomData, id]);
+
+  const handleUpdateRoom = () => {
     setRoomData({ ...editForm });
-    setIsEditModalOpen(false);
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditForm({ ...roomData });
+    setIsEditing(false);
+  };
+
+  const handleTaskChange = (taskId, newText) => {
+    setEditForm({
+      ...editForm,
+      tasks: editForm.tasks.map(t => t.id === taskId ? { ...t, text: newText } : t)
+    });
+  };
+
+  const handleTaskDelete = (taskId) => {
+    setEditForm({
+      ...editForm,
+      tasks: editForm.tasks.filter(t => t.id !== taskId)
+    });
+  };
+
+  const handleTaskMove = (index, direction) => {
+    const newTasks = [...editForm.tasks];
+    if (direction === 'up' && index > 0) {
+      const temp = newTasks[index];
+      newTasks[index] = newTasks[index - 1];
+      newTasks[index - 1] = temp;
+    } else if (direction === 'down' && index < newTasks.length - 1) {
+      const temp = newTasks[index];
+      newTasks[index] = newTasks[index + 1];
+      newTasks[index + 1] = temp;
+    }
+    setEditForm({ ...editForm, tasks: newTasks });
+  };
+
+  const handleAddTask = () => {
+    setEditForm({
+      ...editForm,
+      tasks: [...editForm.tasks, { id: Date.now(), text: 'New Task' }]
+    });
   };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center space-x-4">
           <Link to="/rooms" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
             <ArrowLeft size={18} className="text-slate-600" />
@@ -35,24 +87,54 @@ export default function RoomDetail() {
             <div className="flex items-center space-x-2">
               <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">{roomData.property}</span>
             </div>
-            <h2 className="text-2xl font-bold text-slate-800">{roomData.name}</h2>
+            {isEditing ? (
+              <input 
+                type="text" 
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                className="text-2xl font-bold text-slate-800 bg-white border border-slate-200 rounded-lg px-2 py-1 mt-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            ) : (
+              <h2 className="text-2xl font-bold text-slate-800">{roomData.name}</h2>
+            )}
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <button 
-            onClick={() => {
-              setEditForm({ ...roomData });
-              setIsEditModalOpen(true);
-            }}
-            className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
-          >
-            <Edit2 size={16} />
-            <span className="hidden sm:inline">Edit Room</span>
-          </button>
-          <button className="flex items-center space-x-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors shadow-sm font-medium">
-            <Zap size={16} />
-            <span className="hidden sm:inline">Express Clean</span>
-          </button>
+          {isEditing ? (
+            <>
+              <button 
+                onClick={handleCancelEdit}
+                className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
+              >
+                <X size={16} />
+                <span className="hidden sm:inline">Cancel</span>
+              </button>
+              <button 
+                onClick={handleUpdateRoom}
+                className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
+              >
+                <Save size={16} />
+                <span className="hidden sm:inline">Save Changes</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                onClick={() => {
+                  setEditForm({ ...roomData });
+                  setIsEditing(true);
+                }}
+                className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
+              >
+                <Edit2 size={16} />
+                <span className="hidden sm:inline">Edit Room</span>
+              </button>
+              <button className="flex items-center space-x-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors shadow-sm font-medium">
+                <Zap size={16} />
+                <span className="hidden sm:inline">Express Clean</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -67,24 +149,65 @@ export default function RoomDetail() {
               </div>
             </div>
             <div className="card p-5 flex flex-col justify-center">
-              <p className="text-slate-500 font-semibold text-xs tracking-wider uppercase mb-1">Auto Interval</p>
-              <p className="font-bold text-xl text-slate-800">{roomData.interval}</p>
+              <p className="text-slate-500 font-semibold text-xs tracking-wider uppercase mb-1">Auto Interval (Days)</p>
+              {isEditing ? (
+                <div className="flex items-center space-x-2 mt-1">
+                  <input 
+                    type="number" 
+                    min="1"
+                    value={editForm.intervalDays}
+                    onChange={(e) => setEditForm({ ...editForm, intervalDays: parseInt(e.target.value) || 1 })}
+                    className="w-20 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-bold text-lg text-slate-800"
+                  />
+                  <span className="text-slate-500 font-medium">days</span>
+                </div>
+              ) : (
+                <p className="font-bold text-xl text-slate-800">Every {roomData.intervalDays} days</p>
+              )}
             </div>
           </div>
 
           <div className="card">
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
               <h3 className="font-bold text-slate-800">Task List Template</h3>
-              <button className="text-xs font-bold text-primary-600 hover:text-primary-700">Manage Tasks</button>
+              {isEditing && (
+                <button onClick={handleAddTask} className="flex items-center space-x-1 text-xs font-bold text-primary-600 hover:text-primary-700 bg-primary-50 px-2 py-1.5 rounded-lg transition-colors">
+                  <Plus size={14} />
+                  <span>Add Task</span>
+                </button>
+              )}
             </div>
             <div className="p-5">
               <ul className="space-y-3">
-                {roomData.tasks.map((task, i) => (
-                  <li key={i} className="flex items-center space-x-3 p-3 bg-white border border-slate-200 rounded-xl">
-                    <CheckCircle2 size={18} className="text-slate-300" />
-                    <span className="font-medium text-slate-700">{task}</span>
+                {(isEditing ? editForm.tasks : roomData.tasks).map((task, index) => (
+                  <li key={task.id} className="flex items-center space-x-3 p-3 bg-white border border-slate-200 rounded-xl">
+                    {isEditing ? (
+                      <>
+                        <div className="flex flex-col space-y-1 mr-2 text-slate-400">
+                          <button onClick={() => handleTaskMove(index, 'up')} disabled={index === 0} className="hover:text-primary-600 disabled:opacity-30"><ArrowUp size={14}/></button>
+                          <button onClick={() => handleTaskMove(index, 'down')} disabled={index === editForm.tasks.length - 1} className="hover:text-primary-600 disabled:opacity-30"><ArrowDown size={14}/></button>
+                        </div>
+                        <input 
+                          type="text"
+                          value={task.text}
+                          onChange={(e) => handleTaskChange(task.id, e.target.value)}
+                          className="flex-1 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium text-slate-700"
+                        />
+                        <button onClick={() => handleTaskDelete(task.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                          <Trash2 size={18} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={18} className="text-slate-300" />
+                        <span className="font-medium text-slate-700">{task.text}</span>
+                      </>
+                    )}
                   </li>
                 ))}
+                {!isEditing && roomData.tasks.length === 0 && (
+                  <li className="text-slate-500 text-sm italic">No tasks assigned to this room template.</li>
+                )}
               </ul>
             </div>
           </div>
@@ -117,54 +240,6 @@ export default function RoomDetail() {
           </div>
         </div>
       </div>
-
-      <Modal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
-        title="Edit Room Settings"
-      >
-        <form onSubmit={handleUpdateRoom} className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Room Name</label>
-            <input 
-              type="text" 
-              value={editForm.name}
-              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-              className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Cleaning Interval</label>
-            <select 
-              value={editForm.interval}
-              onChange={(e) => setEditForm({ ...editForm, interval: e.target.value })}
-              className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all appearance-none bg-white"
-            >
-              <option>Every day</option>
-              <option>Every 2 days</option>
-              <option>Every 3 days</option>
-              <option>Weekly</option>
-              <option>On demand</option>
-            </select>
-          </div>
-          <div className="flex space-x-3 pt-4">
-            <button 
-              type="button"
-              onClick={() => setIsEditModalOpen(false)}
-              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit"
-              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition-colors shadow-sm flex items-center justify-center space-x-2"
-            >
-              <Save size={18} />
-              <span>Save Changes</span>
-            </button>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 }

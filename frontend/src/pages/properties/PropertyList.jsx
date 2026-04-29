@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, MoreVertical, Building2 } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -6,10 +6,21 @@ import Modal from '../../components/Modal';
 export default function PropertyList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPropName, setNewPropName] = useState('');
-  const [properties, setProperties] = useState([
-    { id: 1, name: 'Emerald Grand', rooms: 15, managers: 2 },
-    { id: 2, name: 'City Center Suite', rooms: 4, managers: 1 },
-  ]);
+  
+  // Initialize from localStorage or use defaults
+  const [properties, setProperties] = useState(() => {
+    const saved = localStorage.getItem('emerald_properties');
+    if (saved) return JSON.parse(saved);
+    return [
+      { id: 1, name: 'Emerald Grand', rooms: 15, managers: 2 },
+      { id: 2, name: 'City Center Suite', rooms: 4, managers: 1 },
+    ];
+  });
+
+  // Save to localStorage whenever properties change
+  useEffect(() => {
+    localStorage.setItem('emerald_properties', JSON.stringify(properties));
+  }, [properties]);
 
   const handleAddProperty = (e) => {
     e.preventDefault();

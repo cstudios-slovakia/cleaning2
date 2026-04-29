@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -9,18 +9,36 @@ export default function PropertyDetail() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   // Local state for property data
-  const [propertyData, setPropertyData] = useState({
-    name: 'Emerald Grand',
-    scheduleTime: '10:00 AM',
-    theme: 'blue'
+  const [propertyData, setPropertyData] = useState(() => {
+    const saved = localStorage.getItem(`emerald_property_${id}`);
+    if (saved) return JSON.parse(saved);
+    return {
+      name: 'Emerald Grand',
+      scheduleTime: '10:00 AM',
+      theme: 'blue'
+    };
+  });
+
+  const [rooms, setRooms] = useState(() => {
+    const saved = localStorage.getItem(`emerald_rooms_${id}`);
+    if (saved) return JSON.parse(saved);
+    return [
+      { id: 101, name: 'Room 101' },
+      { id: 102, name: 'Lobby' },
+    ];
   });
 
   const [editForm, setEditForm] = useState({ ...propertyData });
   const [newRoomName, setNewRoomName] = useState('');
-  const [rooms, setRooms] = useState([
-    { id: 101, name: 'Room 101' },
-    { id: 102, name: 'Lobby' },
-  ]);
+
+  // Persist changes
+  useEffect(() => {
+    localStorage.setItem(`emerald_property_${id}`, JSON.stringify(propertyData));
+  }, [propertyData, id]);
+
+  useEffect(() => {
+    localStorage.setItem(`emerald_rooms_${id}`, JSON.stringify(rooms));
+  }, [rooms, id]);
 
   const handleUpdateProperty = (e) => {
     e.preventDefault();
