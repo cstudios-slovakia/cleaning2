@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical } from 'lucide-react';
 
-export default function RoomDetail({ roomId, isSlideout }) {
+export default function RoomDetail({ roomId, isSlideout, propertyName }) {
   const { id: paramId } = useParams();
   const id = roomId || paramId;
   const [isEditing, setIsEditing] = useState(false);
@@ -14,7 +14,7 @@ export default function RoomDetail({ roomId, isSlideout }) {
     if (saved) return JSON.parse(saved);
     return {
       name: 'Room 101',
-      property: 'Emerald Grand',
+      property: propertyName || 'Emerald Grand',
       intervalDays: 2, // numerical input, 0 means not set
       tasks: [
         { id: '1', text: 'Make bed' },

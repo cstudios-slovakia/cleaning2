@@ -311,7 +311,11 @@ export default function PropertyDetail() {
         width="max-w-4xl"
       >
         {slideoutRoomId && (
-          <RoomDetail roomId={slideoutRoomId} isSlideout={true} />
+          <RoomDetail 
+            roomId={slideoutRoomId} 
+            isSlideout={true} 
+            propertyName={propertyData.name} 
+          />
         )}
       </Slideout>
     </div>
