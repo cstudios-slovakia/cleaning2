@@ -4,6 +4,16 @@ import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy,
 import Slideout from '../../components/Slideout';
 import RoomDetail from '../rooms/RoomDetail';
 
+const AVAILABLE_USERS = [
+  { id: 'u1', name: 'John Doe', role: 'manager' },
+  { id: 'u2', name: 'Sarah Smith', role: 'manager' },
+  { id: 'u3', name: 'Mike Johnson', role: 'manager' },
+  { id: 'u4', name: 'Maria Garcia', role: 'cleaner' },
+  { id: 'u5', name: 'Anna Novak', role: 'cleaner' },
+  { id: 'u6', name: 'David Chen', role: 'cleaner' },
+  { id: 'u7', name: 'Elena Rodriguez', role: 'cleaner' },
+];
+
 export default function PropertyDetail() {
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
@@ -381,14 +391,16 @@ export default function PropertyDetail() {
                       <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
                         {manager.initials}
                       </div>
-                      <input 
-                        type="text" 
+                      <select 
                         value={manager.name}
                         onChange={(e) => handleManagerChange(manager.id, e.target.value)}
-                        placeholder="Manager Name"
-                        className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        autoFocus={manager.name === ''}
-                      />
+                        className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      >
+                        <option value="">Select Manager...</option>
+                        {AVAILABLE_USERS.filter(u => u.role === 'manager').map(u => (
+                          <option key={u.id} value={u.name}>{u.name}</option>
+                        ))}
+                      </select>
                       <button 
                         onClick={() => handleManagerDelete(manager.id)}
                         className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -433,14 +445,16 @@ export default function PropertyDetail() {
                       <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
                         {cleaner.initials}
                       </div>
-                      <input 
-                        type="text" 
+                      <select 
                         value={cleaner.name}
                         onChange={(e) => handleCleanerChange(cleaner.id, e.target.value)}
-                        placeholder="Cleaner Name"
-                        className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        autoFocus={cleaner.name === ''}
-                      />
+                        className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      >
+                        <option value="">Select Cleaner...</option>
+                        {AVAILABLE_USERS.filter(u => u.role === 'cleaner').map(u => (
+                          <option key={u.id} value={u.name}>{u.name}</option>
+                        ))}
+                      </select>
                       <button 
                         onClick={() => handleCleanerDelete(cleaner.id)}
                         className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
