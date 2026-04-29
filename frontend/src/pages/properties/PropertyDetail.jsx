@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock } from 'lucide-react';
-import Modal from '../../components/Modal';
+import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2 } from 'lucide-react';
 
 export default function PropertyDetail() {
   const { id } = useParams();
-  const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Local state for property data
   const [propertyData, setPropertyData] = useState(() => {
@@ -43,7 +41,7 @@ export default function PropertyDetail() {
   });
 
   const [editForm, setEditForm] = useState({ ...propertyData });
-  const [newRoomName, setNewRoomName] = useState('');
+  const [editRooms, setEditRooms] = useState([...rooms]);
 
   // Persist changes
   useEffect(() => {
@@ -54,48 +52,85 @@ export default function PropertyDetail() {
     localStorage.setItem(`emerald_rooms_${id}`, JSON.stringify(rooms));
   }, [rooms, id]);
 
-  const handleUpdateProperty = (e) => {
-    e.preventDefault();
+  const handleUpdateProperty = () => {
     setPropertyData({ ...editForm });
-    setIsEditModalOpen(false);
+    // Save rooms from edit state as well
+    setRooms([...editRooms].filter(r => r.name.trim() !== ''));
+    setIsEditing(false);
   };
 
-  const handleAddRoom = (e) => {
-    e.preventDefault();
-    if (!newRoomName.trim()) return;
-    
-    const newRoom = {
-      id: Date.now(),
-      name: newRoomName
-    };
-    
-    setRooms([...rooms, newRoom]);
-    setNewRoomName('');
-    setIsRoomModalOpen(false);
+  const handleCancelEdit = () => {
+    setEditForm({ ...propertyData });
+    setEditRooms([...rooms]);
+    setIsEditing(false);
+  };
+
+  const handleAddRoomInline = () => {
+    setEditRooms([...editRooms, { id: Date.now(), name: '' }]);
+  };
+
+  const handleRoomChange = (roomId, newName) => {
+    setEditRooms(editRooms.map(r => r.id === roomId ? { ...r, name: newName } : r));
+  };
+
+  const handleRoomDelete = (roomId) => {
+    setEditRooms(editRooms.filter(r => r.id !== roomId));
   };
   
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center space-x-4">
           <Link to="/properties" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
             <ArrowLeft size={18} className="text-slate-600" />
           </Link>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">{propertyData.name}</h2>
+            {isEditing ? (
+              <input 
+                type="text" 
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                className="text-2xl font-bold text-slate-800 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
+                placeholder="Property Name"
+              />
+            ) : (
+              <h2 className="text-2xl font-bold text-slate-800">{propertyData.name}</h2>
+            )}
             <p className="text-sm text-slate-500">Property details and settings</p>
           </div>
         </div>
-        <button 
-          onClick={() => {
-            setEditForm({ ...propertyData });
-            setIsEditModalOpen(true);
-          }}
-          className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors font-medium shadow-sm"
-        >
-          <Edit2 size={16} />
-          <span>Edit</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          {isEditing ? (
+            <>
+              <button 
+                onClick={handleCancelEdit}
+                className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
+              >
+                <X size={16} />
+                <span className="hidden sm:inline">Cancel</span>
+              </button>
+              <button 
+                onClick={handleUpdateProperty}
+                className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
+              >
+                <Save size={16} />
+                <span className="hidden sm:inline">Save Changes</span>
+              </button>
+            </>
+          ) : (
+            <button 
+              onClick={() => {
+                setEditForm({ ...propertyData });
+                setEditRooms([...rooms]);
+                setIsEditing(true);
+              }}
+              className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors font-medium shadow-sm"
+            >
+              <Edit2 size={16} />
+              <span>Edit Property</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -105,40 +140,98 @@ export default function PropertyDetail() {
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Name</p>
-                <p className="font-medium text-slate-900">{propertyData.name}</p>
+                {isEditing ? (
+                  <input 
+                    type="text" 
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    className="w-full font-medium text-slate-900 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                ) : (
+                  <p className="font-medium text-slate-900">{propertyData.name}</p>
+                )}
               </div>
               <div>
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Default Schedule Time</p>
-                <p className="font-medium text-slate-900">{propertyData.scheduleTime}</p>
+                {isEditing ? (
+                  <div className="relative">
+                    <Clock size={16} className="absolute left-2.5 top-2 text-slate-400" />
+                    <input 
+                      type="text" 
+                      value={editForm.scheduleTime}
+                      onChange={(e) => setEditForm({ ...editForm, scheduleTime: e.target.value })}
+                      className="w-full font-medium text-slate-900 bg-white border border-slate-200 rounded-lg pl-8 pr-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="e.g. 10:00 AM"
+                    />
+                  </div>
+                ) : (
+                  <p className="font-medium text-slate-900">{propertyData.scheduleTime}</p>
+                )}
               </div>
               <div className="col-span-2">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Color Theme</p>
                 <div className="flex space-x-2 mt-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 shadow-sm border border-slate-200"></div>
-                  <div className="w-8 h-8 rounded-full bg-slate-800 shadow-sm border border-slate-200"></div>
+                  <button 
+                    onClick={() => isEditing && setEditForm({ ...editForm, theme: 'blue' })}
+                    className={`w-8 h-8 rounded-full bg-blue-500 shadow-sm border-2 ${editForm.theme === 'blue' || (!isEditing && propertyData.theme === 'blue') ? 'border-primary-500 ring-2 ring-primary-500/20' : 'border-slate-200'} transition-all`}
+                    disabled={!isEditing}
+                  ></button>
+                  <button 
+                    onClick={() => isEditing && setEditForm({ ...editForm, theme: 'slate' })}
+                    className={`w-8 h-8 rounded-full bg-slate-800 shadow-sm border-2 ${editForm.theme === 'slate' || (!isEditing && propertyData.theme === 'slate') ? 'border-slate-400 ring-2 ring-slate-400/20' : 'border-slate-200'} transition-all`}
+                    disabled={!isEditing}
+                  ></button>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="card p-0">
+          <div className="card overflow-hidden">
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
               <h3 className="font-bold text-slate-800 flex items-center space-x-2"><BedDouble size={18} className="text-slate-400"/> <span>Rooms</span></h3>
-              <button 
-                onClick={() => setIsRoomModalOpen(true)}
-                className="flex items-center space-x-1 text-sm text-primary-600 font-bold hover:text-primary-700 bg-primary-50 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                <Plus size={14} />
-                <span>Add Room</span>
-              </button>
+              {isEditing && (
+                <button 
+                  onClick={handleAddRoomInline}
+                  className="flex items-center space-x-1 text-sm text-primary-600 font-bold hover:text-primary-700 bg-primary-50 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  <Plus size={14} />
+                  <span>Add Room</span>
+                </button>
+              )}
             </div>
             <div className="divide-y divide-slate-100">
-              {rooms.map(room => (
-                <div key={room.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                  <span className="font-medium text-slate-700">{room.name}</span>
-                  <Link to={`/rooms/${room.id}`} className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Manage</Link>
+              {isEditing ? (
+                editRooms.map(room => (
+                  <div key={room.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                    <input 
+                      type="text" 
+                      value={room.name}
+                      onChange={(e) => handleRoomChange(room.id, e.target.value)}
+                      placeholder="Room Name (e.g. Room 101)"
+                      className="flex-1 font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-1.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      autoFocus={room.name === ''}
+                    />
+                    <button 
+                      onClick={() => handleRoomDelete(room.id)}
+                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                rooms.map(room => (
+                  <div key={room.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                    <span className="font-medium text-slate-700">{room.name}</span>
+                    <Link to={`/rooms/${room.id}`} className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium">Manage</Link>
+                  </div>
+                ))
+              )}
+              {!isEditing && rooms.length === 0 && (
+                <div className="p-6 text-center text-slate-500 text-sm">
+                  No rooms added yet. Click Edit Property to add rooms.
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -173,92 +266,9 @@ export default function PropertyDetail() {
           </div>
         </div>
       </div>
-
-      {/* Edit Property Modal */}
-      <Modal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
-        title="Edit Property"
-      >
-        <form onSubmit={handleUpdateProperty} className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Property Name</label>
-            <input 
-              type="text" 
-              value={editForm.name}
-              onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-              className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Default Schedule Time</label>
-            <div className="relative">
-              <Clock size={18} className="absolute left-3 top-2.5 text-slate-400" />
-              <input 
-                type="text" 
-                value={editForm.scheduleTime}
-                onChange={(e) => setEditForm({ ...editForm, scheduleTime: e.target.value })}
-                placeholder="e.g. 10:00 AM"
-                className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-              />
-            </div>
-          </div>
-          <div className="flex space-x-3 pt-4">
-            <button 
-              type="button"
-              onClick={() => setIsEditModalOpen(false)}
-              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit"
-              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition-colors shadow-sm flex items-center justify-center space-x-2"
-            >
-              <Save size={18} />
-              <span>Save Changes</span>
-            </button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Add Room Modal */}
-      <Modal 
-        isOpen={isRoomModalOpen} 
-        onClose={() => setIsRoomModalOpen(false)} 
-        title="Add New Room"
-      >
-        <form onSubmit={handleAddRoom} className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1">Room Name / Number</label>
-            <input 
-              type="text" 
-              value={newRoomName}
-              onChange={(e) => setNewRoomName(e.target.value)}
-              placeholder="e.g. Room 204 or Lobby"
-              className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-              autoFocus
-            />
-          </div>
-          <div className="flex space-x-3 pt-2">
-            <button 
-              type="button"
-              onClick={() => setIsRoomModalOpen(false)}
-              className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit"
-              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition-colors shadow-sm"
-            >
-              Add Room
-            </button>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 }
+
 
 
