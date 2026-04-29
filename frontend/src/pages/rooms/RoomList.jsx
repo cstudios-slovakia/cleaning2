@@ -530,10 +530,11 @@ export default function RoomList() {
       <Slideout 
         isOpen={isRoomSlideoutOpen} 
         onClose={() => setIsRoomSlideoutOpen(false)}
-        title="Room Management"
+        title={roomForSlideout ? `Management: ${roomForSlideout.name}` : "Room Management"}
       >
         {roomForSlideout && (
           <RoomDetail 
+            key={roomForSlideout.id}
             roomId={roomForSlideout.id} 
             isSlideout={true} 
             propertyName={roomForSlideout.property}
