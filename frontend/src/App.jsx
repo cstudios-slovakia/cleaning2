@@ -34,6 +34,9 @@ function App() {
         <Route path="assignments/:id" element={<AssignmentDetail />} />
 
         <Route path="users" element={<UserList />} />
+        
+        {/* Catch-all route for unhandled paths like /index.html */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
   );
