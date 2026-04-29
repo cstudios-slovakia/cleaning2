@@ -31,18 +31,18 @@ export default function AssignmentList() {
     ]
   };
 
-  const GroupHeader = ({ id, title, count, color, icon: Icon }) => (
+  const GroupHeader = ({ id, title, count, colorClass, icon: Icon }) => (
     <button 
       onClick={() => toggleGroup(id)}
-      className="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors border-b border-gray-100"
+      className="w-full flex items-center justify-between p-4 bg-white hover:bg-slate-50 transition-colors border-b border-slate-100"
     >
       <div className="flex items-center space-x-3">
-        {expandedGroups[id] ? <ChevronDown size={20} className="text-gray-400"/> : <ChevronRight size={20} className="text-gray-400"/>}
-        <div className={cn("p-1.5 rounded-lg text-white", color)}>
-          <Icon size={18} />
+        {expandedGroups[id] ? <ChevronDown size={18} className="text-slate-400"/> : <ChevronRight size={18} className="text-slate-400"/>}
+        <div className={cn("p-1.5 rounded-lg text-white", colorClass)}>
+          <Icon size={16} />
         </div>
-        <span className="font-bold text-gray-800">{title}</span>
-        <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs font-bold">{count}</span>
+        <span className="font-bold text-slate-800">{title}</span>
+        <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-bold">{count}</span>
       </div>
     </button>
   );
@@ -50,23 +50,26 @@ export default function AssignmentList() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Cleaning Assignments</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">Cleaning Assignments</h2>
+          <p className="text-sm text-slate-500 mt-1">Track and manage task completion.</p>
+        </div>
       </div>
 
-      <div className="glass bg-white rounded-3xl overflow-hidden shadow-sm">
+      <div className="card">
         {/* Overdue */}
-        <GroupHeader id="overdue" title="Overdue" count={assignments.overdue.length} color="bg-orange-500" icon={AlertTriangle} />
+        <GroupHeader id="overdue" title="Overdue" count={assignments.overdue.length} colorClass="bg-orange-500" icon={AlertTriangle} />
         {expandedGroups.overdue && (
-          <div className="bg-orange-50/30 divide-y divide-gray-100/50">
+          <div className="bg-orange-50/50 divide-y divide-slate-100">
             {assignments.overdue.map(a => (
               <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-orange-50 transition-colors">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-bold text-gray-900">{a.room}</p>
-                    <p className="text-sm text-gray-500">{a.property}</p>
+                    <p className="font-bold text-slate-900">{a.room}</p>
+                    <p className="text-sm text-slate-500">{a.property}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-orange-600">{a.time}</p>
+                    <p className="text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">{a.time}</p>
                   </div>
                 </div>
               </Link>
@@ -75,18 +78,18 @@ export default function AssignmentList() {
         )}
 
         {/* Today */}
-        <GroupHeader id="today" title="Today" count={assignments.today.length} color="bg-blue-500" icon={Clock} />
+        <GroupHeader id="today" title="Today" count={assignments.today.length} colorClass="bg-blue-500" icon={Clock} />
         {expandedGroups.today && (
-          <div className="bg-blue-50/30 divide-y divide-gray-100/50">
+          <div className="bg-blue-50/50 divide-y divide-slate-100">
             {assignments.today.map(a => (
               <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-blue-50 transition-colors">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-bold text-gray-900">{a.room}</p>
-                    <p className="text-sm text-gray-500">{a.property}</p>
+                    <p className="font-bold text-slate-900">{a.room}</p>
+                    <p className="text-sm text-slate-500">{a.property}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-blue-600">{a.time}</p>
+                    <p className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-lg">{a.time}</p>
                   </div>
                 </div>
               </Link>
@@ -95,18 +98,18 @@ export default function AssignmentList() {
         )}
 
         {/* Tomorrow */}
-        <GroupHeader id="tomorrow" title="Tomorrow" count={assignments.tomorrow.length} color="bg-gray-400" icon={Clock} />
+        <GroupHeader id="tomorrow" title="Tomorrow" count={assignments.tomorrow.length} colorClass="bg-slate-400" icon={Clock} />
         {expandedGroups.tomorrow && (
-          <div className="bg-gray-50/50 divide-y divide-gray-100/50">
+          <div className="divide-y divide-slate-100">
             {assignments.tomorrow.map(a => (
-              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-gray-100 transition-colors">
+              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-slate-50 transition-colors">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-bold text-gray-900">{a.room}</p>
-                    <p className="text-sm text-gray-500">{a.property}</p>
+                    <p className="font-bold text-slate-900">{a.room}</p>
+                    <p className="text-sm text-slate-500">{a.property}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-600">{a.time}</p>
+                    <p className="text-sm font-medium text-slate-600">{a.time}</p>
                   </div>
                 </div>
               </Link>
@@ -115,18 +118,18 @@ export default function AssignmentList() {
         )}
 
         {/* Future */}
-        <GroupHeader id="future" title="Future" count={assignments.future.length} color="bg-gray-300" icon={Clock} />
+        <GroupHeader id="future" title="Future" count={assignments.future.length} colorClass="bg-slate-300" icon={Clock} />
         {expandedGroups.future && (
-          <div className="bg-gray-50/50 divide-y divide-gray-100/50">
+          <div className="divide-y divide-slate-100">
             {assignments.future.map(a => (
-              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-gray-100 transition-colors">
+              <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 pl-12 hover:bg-slate-50 transition-colors">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-bold text-gray-900">{a.room}</p>
-                    <p className="text-sm text-gray-500">{a.property}</p>
+                    <p className="font-bold text-slate-900">{a.room}</p>
+                    <p className="text-sm text-slate-500">{a.property}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-600">{a.time}</p>
+                    <p className="text-sm font-medium text-slate-600">{a.time}</p>
                   </div>
                 </div>
               </Link>
