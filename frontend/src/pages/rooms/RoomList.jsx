@@ -18,6 +18,7 @@ export default function RoomList() {
   
   const [isRoomSlideoutOpen, setIsRoomSlideoutOpen] = useState(false);
   const [roomForSlideout, setRoomForSlideout] = useState(null);
+  const [slideoutTab, setSlideoutTab] = useState('settings');
 
   const [archivedRoomBackup, setArchivedRoomBackup] = useState(null);
   const [undoCountdown, setUndoCountdown] = useState(0);
@@ -184,8 +185,9 @@ export default function RoomList() {
     setNewRoomName('');
   };
 
-  const handleOpenRoomSlideout = (room) => {
+  const handleOpenRoomSlideout = (room, tab = 'settings') => {
     setRoomForSlideout(room);
+    setSlideoutTab(tab);
     setIsRoomSlideoutOpen(true);
   };
 
@@ -409,7 +411,7 @@ export default function RoomList() {
                           <td className="p-4 text-right">
                             <div className="flex items-center justify-end space-x-2">
                               <button 
-                                onClick={() => handleOpenRoomSlideout(room)}
+                                onClick={() => handleOpenRoomSlideout(room, 'log')}
                                 className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
                                 title="Cleaning Log"
                               >
@@ -417,7 +419,7 @@ export default function RoomList() {
                                 <span className="hidden sm:inline">Log</span>
                               </button>
                               <button 
-                                onClick={() => handleOpenRoomSlideout(room)}
+                                onClick={() => handleOpenRoomSlideout(room, 'settings')}
                                 className="text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100"
                               >
                                 Manage
@@ -535,6 +537,7 @@ export default function RoomList() {
             roomId={roomForSlideout.id} 
             isSlideout={true} 
             propertyName={roomForSlideout.property}
+            initialTab={slideoutTab}
           />
         )}
       </Slideout>
