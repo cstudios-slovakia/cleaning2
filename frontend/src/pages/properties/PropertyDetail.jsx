@@ -95,21 +95,24 @@ export default function PropertyDetail() {
     
     // Update global list for PropertyList view
     const savedList = localStorage.getItem('emerald_properties');
-    if (savedList) {
-      let properties = JSON.parse(savedList);
-      const index = properties.findIndex(p => p.id.toString() === id.toString());
-      if (index !== -1) {
-        properties[index] = {
-          ...properties[index],
-          name: updatedData.name,
-          logo: updatedData.logo,
-          coverImage: updatedData.coverImage,
-          rooms: editRooms.filter(r => r.name.trim() !== '').length,
-          managers: editManagers.filter(m => m.name.trim() !== '').length
-        };
-        localStorage.setItem('emerald_properties', JSON.stringify(properties));
-      }
+    let properties = savedList ? JSON.parse(savedList) : [];
+    
+    const index = properties.findIndex(p => p.id.toString() === id.toString());
+    const propertySummary = {
+      id: properties[index]?.id || (isNaN(id) ? id : Number(id)),
+      name: updatedData.name,
+      logo: updatedData.logo,
+      coverImage: updatedData.coverImage,
+      rooms: editRooms.filter(r => r.name.trim() !== '').length,
+      managers: editManagers.filter(m => m.name.trim() !== '').length
+    };
+
+    if (index !== -1) {
+      properties[index] = propertySummary;
+    } else {
+      properties.push(propertySummary);
     }
+    localStorage.setItem('emerald_properties', JSON.stringify(properties));
 
     // Save rooms from edit state as well
     setRooms([...editRooms].filter(r => r.name.trim() !== ''));
@@ -224,6 +227,30 @@ export default function PropertyDetail() {
   
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Hero Section with Cover Image */}
+      {!isEditing && propertyData.coverImage && (
+        <div className="relative h-48 sm:h-64 rounded-3xl overflow-hidden shadow-lg mb-6 group">
+          <img 
+            src={propertyData.coverImage} 
+            alt="Property Cover" 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
+            <div className="flex items-center space-x-4">
+              {propertyData.logo && (
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-xl p-2 flex-shrink-0">
+                  <img src={propertyData.logo} alt="Logo" className="w-full h-full object-contain" />
+                </div>
+              )}
+              <div>
+                <h1 className="text-3xl font-bold text-white drop-shadow-md">{propertyData.name}</h1>
+                <p className="text-slate-200 font-medium">Property Overview</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center space-x-4">
           <Link to="/properties" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
