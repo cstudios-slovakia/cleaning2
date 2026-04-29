@@ -227,24 +227,24 @@ export default function PropertyDetail() {
   
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Hero Section with Cover Image */}
-      {!isEditing && propertyData.coverImage && (
+      {/* Hero Section with Cover Image - ONLY VISIBLE DURING EDITING */}
+      {isEditing && editForm.coverImage && (
         <div className="relative h-48 sm:h-64 rounded-3xl overflow-hidden shadow-lg mb-6 group">
           <img 
-            src={propertyData.coverImage} 
+            src={editForm.coverImage} 
             alt="Property Cover" 
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end p-8">
             <div className="flex items-center space-x-4">
-              {propertyData.logo && (
+              {editForm.logo && (
                 <div className="w-16 h-16 bg-white rounded-2xl shadow-xl p-2 flex-shrink-0">
-                  <img src={propertyData.logo} alt="Logo" className="w-full h-full object-contain" />
+                  <img src={editForm.logo} alt="Logo" className="w-full h-full object-contain" />
                 </div>
               )}
               <div>
-                <h1 className="text-3xl font-bold text-white drop-shadow-md">{propertyData.name}</h1>
-                <p className="text-slate-200 font-medium">Property Overview</p>
+                <h1 className="text-3xl font-bold text-white drop-shadow-md">{editForm.name}</h1>
+                <p className="text-slate-200 font-medium">Editing Property</p>
               </div>
             </div>
           </div>
@@ -256,19 +256,26 @@ export default function PropertyDetail() {
           <Link to="/properties" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
             <ArrowLeft size={18} className="text-slate-600" />
           </Link>
-          <div>
-            {isEditing ? (
-              <input 
-                type="text" 
-                value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="text-2xl font-bold text-slate-800 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
-                placeholder="Property Name"
-              />
-            ) : (
-              <h2 className="text-2xl font-bold text-slate-800">{propertyData.name}</h2>
+          <div className="flex items-center space-x-3">
+            {propertyData.logo && !isEditing && (
+              <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-slate-100 p-1">
+                <img src={propertyData.logo} alt="Logo" className="w-full h-full object-contain" />
+              </div>
             )}
-            <p className="text-sm text-slate-500">Property details and settings</p>
+            <div>
+              {isEditing ? (
+                <input 
+                  type="text" 
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="text-2xl font-bold text-slate-800 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
+                  placeholder="Property Name"
+                />
+              ) : (
+                <h2 className="text-2xl font-bold text-slate-800">{propertyData.name}</h2>
+              )}
+              <p className="text-sm text-slate-500">Property details and assignments</p>
+            </div>
           </div>
         </div>
         <div className="flex items-center space-x-3">
@@ -311,19 +318,6 @@ export default function PropertyDetail() {
             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">General Info</h3>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Name</p>
-                {isEditing ? (
-                  <input 
-                    type="text" 
-                    value={editForm.name}
-                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    className="w-full font-medium text-slate-900 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                ) : (
-                  <p className="font-medium text-slate-900">{propertyData.name}</p>
-                )}
-              </div>
-              <div>
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Default Schedule Time</p>
                 {isEditing ? (
                   <div className="relative">
@@ -340,84 +334,107 @@ export default function PropertyDetail() {
                   <p className="font-medium text-slate-900">{propertyData.scheduleTime}</p>
                 )}
               </div>
-              <div className="col-span-2">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Color Theme</p>
-                <div className="mt-2">
-                  {isEditing ? (
-                    <div className="flex items-center space-x-3">
+              
+              {isEditing && (
+                <>
+                  <div className="col-span-2">
+                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Color Theme</p>
+                    <div className="mt-2">
+                      <div className="flex items-center space-x-3">
+                        <input 
+                          type="color" 
+                          value={editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}
+                          onChange={(e) => setEditForm({ ...editForm, theme: e.target.value })}
+                          className="h-8 w-16 cursor-pointer rounded border border-slate-200 p-0 shadow-sm bg-white"
+                        />
+                        <span className="text-sm font-medium text-slate-500 uppercase">{editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property Logo</p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      {editForm.logo && (
+                        <img src={editForm.logo} alt="Logo Preview" className="w-12 h-12 object-contain bg-slate-50 border border-slate-200 rounded-lg" />
+                      )}
                       <input 
-                        type="color" 
-                        value={editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}
-                        onChange={(e) => setEditForm({ ...editForm, theme: e.target.value })}
-                        className="h-8 w-16 cursor-pointer rounded border border-slate-200 p-0 shadow-sm bg-white"
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'logo')}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors"
                       />
-                      <span className="text-sm font-medium text-slate-500 uppercase">{editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}</span>
                     </div>
-                  ) : (
-                    <div className="flex items-center space-x-3">
-                      <div 
-                        className="w-8 h-8 rounded-full shadow-sm border border-slate-200" 
-                        style={{ backgroundColor: propertyData.theme.startsWith('#') ? propertyData.theme : '#0ea5e9' }}
-                      ></div>
-                      <span className="text-sm font-medium text-slate-700 uppercase">{propertyData.theme.startsWith('#') ? propertyData.theme : '#0ea5e9'}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="col-span-2">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property Logo</p>
-                {isEditing ? (
-                  <div className="flex items-center space-x-4 mt-2">
-                    {editForm.logo && (
-                      <img src={editForm.logo} alt="Logo Preview" className="w-12 h-12 object-contain bg-slate-50 border border-slate-200 rounded-lg" />
-                    )}
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e, 'logo')}
-                      className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors"
-                    />
                   </div>
-                ) : (
-                  propertyData.logo ? (
-                    <div className="mt-2">
-                      <img src={propertyData.logo} alt="Logo" className="w-16 h-16 object-contain" />
+                  <div className="col-span-2">
+                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Cover Image</p>
+                    <div className="space-y-3 mt-2">
+                      {editForm.coverImage && (
+                        <img src={editForm.coverImage} alt="Cover Preview" className="w-full h-32 object-cover rounded-xl shadow-sm border border-slate-100" />
+                      )}
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'coverImage')}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors"
+                      />
                     </div>
-                  ) : (
-                    <p className="font-medium text-slate-500 italic text-sm mt-1">No logo set</p>
-                  )
-                )}
-              </div>
-              <div className="col-span-2">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Cover Image</p>
-                {isEditing ? (
-                  <div className="space-y-3 mt-2">
-                    {editForm.coverImage && (
-                      <img src={editForm.coverImage} alt="Cover Preview" className="w-full h-32 object-cover rounded-xl shadow-sm border border-slate-100" />
-                    )}
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e, 'coverImage')}
-                      className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors"
-                    />
                   </div>
-                ) : (
-                  propertyData.coverImage ? (
-                    <div className="mt-2">
-                      <img src={propertyData.coverImage} alt="Cover" className="w-full h-32 object-cover rounded-xl shadow-sm border border-slate-100" />
-                    </div>
-                  ) : (
-                    <p className="font-medium text-slate-500 italic text-sm mt-1">No cover image set</p>
-                  )
-                )}
-              </div>
+                </>
+              )}
             </div>
           </div>
+          
+          {!isEditing && (
+            <div className="card">
+              <div className="p-5 border-b border-slate-100 bg-slate-50">
+                <h3 className="font-bold text-slate-800 flex items-center space-x-2">
+                  <CheckCircle size={18} className="text-slate-400"/> 
+                  <span>Cleaning Assignments</span>
+                </h3>
+              </div>
+              <div className="divide-y divide-slate-100">
+                <div className="p-4 bg-orange-50/50">
+                  <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3">Overdue</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-orange-100 shadow-sm">
+                      <div>
+                        <p className="font-bold text-slate-800">Lobby</p>
+                        <p className="text-xs text-slate-500">Scheduled: Yesterday 10:00 AM</p>
+                      </div>
+                      <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg uppercase">Overdue</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 bg-blue-50/50">
+                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">Today</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
+                      <div>
+                        <p className="font-bold text-slate-800">Room 101</p>
+                        <p className="text-xs text-slate-500">Scheduled: 10:00 AM</p>
+                      </div>
+                      <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-lg uppercase">Due</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Upcoming</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      <div>
+                        <p className="font-bold text-slate-700">Room 102</p>
+                        <p className="text-xs text-slate-500">Scheduled: Tomorrow 10:00 AM</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="card overflow-hidden">
             <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-              <h3 className="font-bold text-slate-800 flex items-center space-x-2"><BedDouble size={18} className="text-slate-400"/> <span>Rooms</span></h3>
+              <h3 className="font-bold text-slate-800 flex items-center space-x-2"><BedDouble size={18} className="text-slate-400"/> <span>Rooms Management</span></h3>
               {isEditing && (
                 <button 
                   onClick={handleAddRoomInline}
@@ -476,6 +493,31 @@ export default function PropertyDetail() {
               )}
             </div>
           </div>
+
+          {!isEditing && (
+            <div className="card p-6">
+              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2 flex items-center space-x-2">
+                <History size={16} className="text-slate-400"/> 
+                <span>Property Logs</span>
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { time: '10:15 AM', action: 'Lobby cleaning started', user: 'Maria Garcia' },
+                  { time: '09:45 AM', action: 'Room 101 inspection passed', user: 'John Doe' },
+                  { time: '08:30 AM', action: 'New schedule generated', user: 'System' }
+                ].map((log, i) => (
+                  <div key={i} className="flex items-start space-x-3 text-sm">
+                    <div className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5"></div>
+                    <div>
+                      <p className="text-slate-700 font-medium">{log.action}</p>
+                      <p className="text-xs text-slate-500">{log.time} • {log.user}</p>
+                    </div>
+                  </div>
+                ))}
+                <button className="text-sm text-primary-600 font-bold hover:underline">View full history →</button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">
