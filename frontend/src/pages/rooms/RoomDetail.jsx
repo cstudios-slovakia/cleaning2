@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical } from 'lucide-react';
 
-export default function RoomDetail() {
-  const { id } = useParams();
+export default function RoomDetail({ roomId, isSlideout }) {
+  const { id: paramId } = useParams();
+  const id = roomId || paramId;
   const [isEditing, setIsEditing] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   
@@ -88,9 +89,11 @@ export default function RoomDetail() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center space-x-4">
-          <Link to="/rooms" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
-            <ArrowLeft size={18} className="text-slate-600" />
-          </Link>
+          {!isSlideout && (
+            <Link to="/rooms" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
+              <ArrowLeft size={18} className="text-slate-600" />
+            </Link>
+          )}
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">{roomData.property}</span>

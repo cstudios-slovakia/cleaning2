@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit2, Users, BedDouble, Plus, Save, Clock, X, Trash2, Copy, Archive } from 'lucide-react';
+import Slideout from '../../components/Slideout';
+import RoomDetail from '../rooms/RoomDetail';
 
 export default function PropertyDetail() {
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
+  const [slideoutRoomId, setSlideoutRoomId] = useState(null);
   
   // Local state for property data
   const [propertyData, setPropertyData] = useState(() => {
@@ -75,6 +79,22 @@ export default function PropertyDetail() {
 
   const handleRoomDelete = (roomId) => {
     setEditRooms(editRooms.filter(r => r.id !== roomId));
+  };
+
+  const handleCloneRoom = (room) => {
+    const newRoom = { ...room, id: Date.now(), name: `${room.name} (Copy)` };
+    setRooms([...rooms, newRoom]);
+    // Also clone the room details if they exist
+    const savedRoomDetails = localStorage.getItem(`emerald_room_${room.id}`);
+    if (savedRoomDetails) {
+      const clonedDetails = JSON.parse(savedRoomDetails);
+      clonedDetails.name = newRoom.name;
+      localStorage.setItem(`emerald_room_${newRoom.id}`, JSON.stringify(clonedDetails));
+    }
+  };
+
+  const handleArchiveRoom = (roomId) => {
+    setRooms(rooms.filter(r => r.id !== roomId));
   };
   
   return (
@@ -223,7 +243,20 @@ export default function PropertyDetail() {
                 rooms.map(room => (
                   <div key={room.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
                     <span className="font-medium text-slate-700">{room.name}</span>
-                    <Link to={`/rooms/${room.id}`} className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium">Manage</Link>
+                    <div className="flex items-center space-x-3">
+                      <button onClick={() => handleCloneRoom(room)} className="text-slate-400 hover:text-primary-600 transition-colors" title="Clone">
+                        <Copy size={16} />
+                      </button>
+                      <button onClick={() => handleArchiveRoom(room.id)} className="text-slate-400 hover:text-amber-600 transition-colors" title="Archive">
+                        <Archive size={16} />
+                      </button>
+                      <button 
+                        onClick={() => { setSlideoutRoomId(room.id); setIsSlideoutOpen(true); }}
+                        className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium"
+                      >
+                        Manage
+                      </button>
+                    </div>
                   </div>
                 ))
               )}
@@ -266,6 +299,21 @@ export default function PropertyDetail() {
           </div>
         </div>
       </div>
+
+      <Slideout 
+        isOpen={isSlideoutOpen} 
+        onClose={() => {
+          setIsSlideoutOpen(false);
+          // Optional: Delay setting to null to allow close animation to finish smoothly
+          setTimeout(() => setSlideoutRoomId(null), 300);
+        }} 
+        title="Manage Room"
+        width="max-w-4xl"
+      >
+        {slideoutRoomId && (
+          <RoomDetail roomId={slideoutRoomId} isSlideout={true} />
+        )}
+      </Slideout>
     </div>
   );
 }
