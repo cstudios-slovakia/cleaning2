@@ -3,12 +3,23 @@ import { X } from 'lucide-react';
 
 export default function Slideout({ isOpen, onClose, title, children, width = "max-w-2xl" }) {
   const [shouldRender, setRender] = useState(isOpen);
+  const [isAnimated, setIsAnimated] = useState(false);
 
   useEffect(() => {
-    if (isOpen) setRender(true);
+    if (isOpen) {
+      setRender(true);
+      // Small delay to ensure the browser has a frame with the initial state
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsAnimated(true);
+        });
+      });
+    } else {
+      setIsAnimated(false);
+    }
   }, [isOpen]);
 
-  const onAnimationEnd = () => {
+  const onTransitionEnd = () => {
     if (!isOpen) setRender(false);
   };
 
@@ -19,14 +30,14 @@ export default function Slideout({ isOpen, onClose, title, children, width = "ma
       <div className="absolute inset-0 overflow-hidden">
         {/* Background overlay */}
         <div 
-          className={`absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`} 
+          className={`absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${isAnimated ? 'opacity-100' : 'opacity-0'}`} 
           onClick={onClose}
         ></div>
 
         <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
           <div 
-            className={`pointer-events-auto w-screen ${width} transform transition duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
-            onTransitionEnd={onAnimationEnd}
+            className={`pointer-events-auto w-screen ${width} transform transition duration-300 ease-in-out ${isAnimated ? 'translate-x-0' : 'translate-x-full'}`}
+            onTransitionEnd={onTransitionEnd}
           >
             <div className="flex h-full flex-col overflow-y-scroll bg-slate-50 shadow-2xl">
               {/* Header */}
