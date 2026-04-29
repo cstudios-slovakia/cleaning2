@@ -56,10 +56,21 @@ export default function PropertyList() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {properties.map(prop => (
-          <div key={prop.id} className="card hover:shadow-md transition-shadow group">
-            <div className="h-32 bg-slate-100 flex items-center justify-center border-b border-slate-100 relative">
-              <span className="text-slate-400 font-bold text-lg">{prop.name.charAt(0)}</span>
-              <button className="absolute top-3 right-3 p-1.5 bg-white rounded-lg shadow-sm text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div key={prop.id} className="card hover:shadow-md transition-shadow group overflow-hidden flex flex-col">
+            <div className="h-32 bg-slate-100 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
+              {prop.coverImage ? (
+                <img src={prop.coverImage} alt={prop.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-slate-400 font-bold text-lg">{prop.name.charAt(0)}</span>
+              )}
+              
+              {prop.logo && (
+                <div className="absolute bottom-2 left-2 w-10 h-10 bg-white rounded-lg shadow-md p-1 z-10">
+                  <img src={prop.logo} alt="Logo" className="w-full h-full object-contain" />
+                </div>
+              )}
+              
+              <button className="absolute top-3 right-3 p-1.5 bg-white rounded-lg shadow-sm text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 <MoreVertical size={16} />
               </button>
             </div>

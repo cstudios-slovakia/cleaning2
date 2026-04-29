@@ -90,7 +90,27 @@ export default function PropertyDetail() {
   }, [cleaners, id]);
 
   const handleUpdateProperty = () => {
-    setPropertyData({ ...editForm });
+    const updatedData = { ...editForm };
+    setPropertyData(updatedData);
+    
+    // Update global list for PropertyList view
+    const savedList = localStorage.getItem('emerald_properties');
+    if (savedList) {
+      let properties = JSON.parse(savedList);
+      const index = properties.findIndex(p => p.id.toString() === id.toString());
+      if (index !== -1) {
+        properties[index] = {
+          ...properties[index],
+          name: updatedData.name,
+          logo: updatedData.logo,
+          coverImage: updatedData.coverImage,
+          rooms: editRooms.filter(r => r.name.trim() !== '').length,
+          managers: editManagers.filter(m => m.name.trim() !== '').length
+        };
+        localStorage.setItem('emerald_properties', JSON.stringify(properties));
+      }
+    }
+
     // Save rooms from edit state as well
     setRooms([...editRooms].filter(r => r.name.trim() !== ''));
     setManagers([...editManagers].filter(m => m.name.trim() !== ''));
