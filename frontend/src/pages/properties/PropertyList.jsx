@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MoreVertical, Building2, History } from 'lucide-react';
+import { Plus, Archive, Building2, History } from 'lucide-react';
 import Modal from '../../components/Modal';
 
 export default function PropertyList() {
@@ -70,8 +70,17 @@ export default function PropertyList() {
                 </div>
               )}
               
-              <button className="absolute top-3 right-3 p-1.5 bg-white rounded-lg shadow-sm text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                <MoreVertical size={16} />
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (window.confirm(`Are you sure you want to archive ${prop.name}?`)) {
+                    setProperties(properties.filter(p => p.id !== prop.id));
+                  }
+                }}
+                className="absolute top-3 right-3 p-1.5 bg-white rounded-lg shadow-sm text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all z-10"
+                title="Archive Property"
+              >
+                <Archive size={16} />
               </button>
             </div>
             <div className="p-5">
