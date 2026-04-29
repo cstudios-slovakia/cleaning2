@@ -108,7 +108,8 @@ export default function PropertyLogs() {
                 <p className="text-sm text-slate-600">By {log.user}</p>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>
