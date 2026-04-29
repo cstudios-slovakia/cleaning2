@@ -55,25 +55,47 @@ export default function AssignmentList() {
       .filter(a => a && !isAssignmentDone(a.id) && !isPropertyArchived(a.property));
   };
 
+  const isOverdue = (a) => {
+    if (a.date === 'Today' || a.time?.includes('Today')) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      
+      const timeMatch = a.time?.match(/(\d{1,2}):(\d{2})/);
+      if (timeMatch) {
+        const scheduledMinutes = parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]);
+        return scheduledMinutes < currentMinutes;
+      }
+    }
+    return a.date?.includes('Yesterday') || a.time?.includes('Yesterday');
+  };
+
   const dynamicAssignments = getDynamicAssignments();
+  
+  const allStaticAssignments = [
+    { id: 1, room: 'Lobby', property: 'Emerald Grand', time: 'Yesterday 14:00', date: 'Yesterday' },
+    { id: 2, room: 'Apt 4A', property: 'City Center Suite', time: 'Today 08:00 (Immediate)', date: 'Today' },
+    { id: 3, room: 'Room 101', property: 'Emerald Grand', time: '14:00', date: 'Today' },
+    { id: 4, room: 'Room 102', property: 'Emerald Grand', time: '10:00', date: 'Tomorrow' },
+    { id: 5, room: 'Apt 4B', property: 'City Center Suite', time: 'Friday 10:00', date: 'Friday' },
+  ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property));
 
   const assignments = {
     overdue: [
-      { id: 1, room: 'Lobby', property: 'Emerald Grand', time: 'Yesterday 14:00' },
-      { id: 2, room: 'Apt 4A', property: 'City Center Suite', time: 'Today 08:00 (Immediate)' },
-    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
+      ...allStaticAssignments.filter(isOverdue),
+      ...dynamicAssignments.filter(isOverdue)
+    ],
     today: [
-      { id: 3, room: 'Room 101', property: 'Emerald Grand', time: '14:00' },
-      ...dynamicAssignments.filter(a => a.date === 'Today')
-    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
+      ...allStaticAssignments.filter(a => a.date === 'Today' && !isOverdue(a)),
+      ...dynamicAssignments.filter(a => a.date === 'Today' && !isOverdue(a))
+    ],
     tomorrow: [
-      { id: 4, room: 'Room 102', property: 'Emerald Grand', time: '10:00' },
+      ...allStaticAssignments.filter(a => a.date.includes('Tomorrow')),
       ...dynamicAssignments.filter(a => a.date.includes('Tomorrow'))
-    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
+    ],
     future: [
-      { id: 5, room: 'Apt 4B', property: 'City Center Suite', time: 'Friday 10:00' },
-      ...dynamicAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow'))
-    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property))
+      ...allStaticAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a)),
+      ...dynamicAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && !isOverdue(a))
+    ]
   };
 
   const GroupHeader = ({ id, title, count, colorClass, icon: Icon }) => (
