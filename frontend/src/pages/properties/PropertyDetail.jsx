@@ -407,7 +407,6 @@ export default function PropertyDetail() {
               </div>
               <div className="divide-y divide-slate-100">
                 {String(propertyData.id) === '1' ? (
-                {String(propertyData.id) === '1' ? (
                   <>
                     {!isAssignmentDone('1') && (
                       <div className="p-4 bg-orange-50/50">

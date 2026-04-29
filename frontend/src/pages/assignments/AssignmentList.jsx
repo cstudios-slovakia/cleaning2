@@ -41,20 +41,27 @@ export default function AssignmentList() {
     return false;
   };
 
+  const isPropertyArchived = (propertyName) => {
+    const propertiesStr = localStorage.getItem('emerald_properties');
+    if (!propertiesStr) return false;
+    const properties = JSON.parse(propertiesStr);
+    return !properties.find(p => p.name === propertyName);
+  };
+
   const assignments = {
     overdue: [
       { id: 1, room: 'Lobby', property: 'Emerald Grand', time: 'Yesterday 14:00' },
       { id: 2, room: 'Apt 4A', property: 'City Center Suite', time: 'Today 08:00 (Immediate)' },
-    ].filter(a => !isAssignmentDone(a.id)),
+    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
     today: [
       { id: 3, room: 'Room 101', property: 'Emerald Grand', time: '14:00' },
-    ].filter(a => !isAssignmentDone(a.id)),
+    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
     tomorrow: [
       { id: 4, room: 'Room 102', property: 'Emerald Grand', time: '10:00' },
-    ].filter(a => !isAssignmentDone(a.id)),
+    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property)),
     future: [
       { id: 5, room: 'Apt 4B', property: 'City Center Suite', time: 'Friday 10:00' },
-    ].filter(a => !isAssignmentDone(a.id))
+    ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property))
   };
 
   const GroupHeader = ({ id, title, count, colorClass, icon: Icon }) => (
@@ -94,9 +101,20 @@ export default function AssignmentList() {
                 className="w-full text-left block p-4 pl-12 hover:bg-orange-50 transition-colors"
               >
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-bold text-slate-900">{a.room}</p>
-                    <p className="text-sm text-slate-500">{a.property}</p>
+                  <div className="flex flex-col items-start space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-bold text-slate-900">{a.room}</p>
+                    </div>
+                    <span 
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider"
+                      style={{
+                        backgroundColor: `${getPropertyData(a.property).theme}15`,
+                        color: getPropertyData(a.property).theme,
+                        borderColor: `${getPropertyData(a.property).theme}30`
+                      }}
+                    >
+                      {a.property}
+                    </span>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">{a.time}</p>
@@ -118,9 +136,20 @@ export default function AssignmentList() {
                 className="w-full text-left block p-4 pl-12 hover:bg-blue-50 transition-colors"
               >
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-bold text-slate-900">{a.room}</p>
-                    <p className="text-sm text-slate-500">{a.property}</p>
+                  <div className="flex flex-col items-start space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-bold text-slate-900">{a.room}</p>
+                    </div>
+                    <span 
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider"
+                      style={{
+                        backgroundColor: `${getPropertyData(a.property).theme}15`,
+                        color: getPropertyData(a.property).theme,
+                        borderColor: `${getPropertyData(a.property).theme}30`
+                      }}
+                    >
+                      {a.property}
+                    </span>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-lg">{a.time}</p>
@@ -142,9 +171,20 @@ export default function AssignmentList() {
                 className="w-full text-left block p-4 pl-12 hover:bg-slate-50 transition-colors"
               >
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-bold text-slate-900">{a.room}</p>
-                    <p className="text-sm text-slate-500">{a.property}</p>
+                  <div className="flex flex-col items-start space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-bold text-slate-900">{a.room}</p>
+                    </div>
+                    <span 
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider"
+                      style={{
+                        backgroundColor: `${getPropertyData(a.property).theme}15`,
+                        color: getPropertyData(a.property).theme,
+                        borderColor: `${getPropertyData(a.property).theme}30`
+                      }}
+                    >
+                      {a.property}
+                    </span>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-slate-600">{a.time}</p>
@@ -166,9 +206,20 @@ export default function AssignmentList() {
                 className="w-full text-left block p-4 pl-12 hover:bg-slate-50 transition-colors"
               >
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-bold text-slate-900">{a.room}</p>
-                    <p className="text-sm text-slate-500">{a.property}</p>
+                  <div className="flex flex-col items-start space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-bold text-slate-900">{a.room}</p>
+                    </div>
+                    <span 
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider"
+                      style={{
+                        backgroundColor: `${getPropertyData(a.property).theme}15`,
+                        color: getPropertyData(a.property).theme,
+                        borderColor: `${getPropertyData(a.property).theme}30`
+                      }}
+                    >
+                      {a.property}
+                    </span>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-slate-600">{a.time}</p>
