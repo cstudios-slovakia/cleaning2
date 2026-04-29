@@ -34,7 +34,8 @@ export default function PropertyDetail() {
           name: prop.name,
           scheduleTime: '10:00 AM',
           theme: '#0ea5e9',
-          coverImage: ''
+          coverImage: '',
+          logo: ''
         };
       }
     }
@@ -43,7 +44,8 @@ export default function PropertyDetail() {
       name: 'Emerald Grand',
       scheduleTime: '10:00 AM',
       theme: '#0ea5e9',
-      coverImage: ''
+      coverImage: '',
+      logo: ''
     };
   });
 
@@ -159,6 +161,17 @@ export default function PropertyDetail() {
 
   const handleArchiveRoom = (roomId) => {
     setRooms(rooms.filter(r => r.id !== roomId));
+  };
+
+  const handleImageUpload = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditForm({ ...editForm, [field]: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
   
   return (
@@ -277,15 +290,43 @@ export default function PropertyDetail() {
                 </div>
               </div>
               <div className="col-span-2">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Cover Image URL</p>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property Logo</p>
                 {isEditing ? (
-                  <input 
-                    type="text" 
-                    value={editForm.coverImage || ''}
-                    onChange={(e) => setEditForm({ ...editForm, coverImage: e.target.value })}
-                    className="w-full font-medium text-slate-900 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <div className="flex items-center space-x-4 mt-2">
+                    {editForm.logo && (
+                      <img src={editForm.logo} alt="Logo Preview" className="w-12 h-12 object-contain bg-slate-50 border border-slate-200 rounded-lg" />
+                    )}
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, 'logo')}
+                      className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors"
+                    />
+                  </div>
+                ) : (
+                  propertyData.logo ? (
+                    <div className="mt-2">
+                      <img src={propertyData.logo} alt="Logo" className="w-16 h-16 object-contain" />
+                    </div>
+                  ) : (
+                    <p className="font-medium text-slate-500 italic text-sm mt-1">No logo set</p>
+                  )
+                )}
+              </div>
+              <div className="col-span-2">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Cover Image</p>
+                {isEditing ? (
+                  <div className="space-y-3 mt-2">
+                    {editForm.coverImage && (
+                      <img src={editForm.coverImage} alt="Cover Preview" className="w-full h-32 object-cover rounded-xl shadow-sm border border-slate-100" />
+                    )}
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, 'coverImage')}
+                      className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors"
+                    />
+                  </div>
                 ) : (
                   propertyData.coverImage ? (
                     <div className="mt-2">
