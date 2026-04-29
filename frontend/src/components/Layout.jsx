@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Building2, BedDouble, ClipboardList, Users, LogOut, Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,7 +14,13 @@ const NAV_ITEMS = [
 
 export default function Layout() {
   const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
@@ -51,7 +57,10 @@ export default function Layout() {
         </nav>
         
         <div className="p-4 border-t border-slate-100">
-          <button className="flex items-center space-x-3 px-3 py-3 w-full rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center space-x-3 px-3 py-3 w-full rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+          >
             <LogOut size={22} className="text-slate-400" />
             <span className="hidden lg:block font-medium">Logout</span>
           </button>
@@ -70,7 +79,7 @@ export default function Layout() {
               <Settings size={20} />
             </button>
             <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 font-bold flex items-center justify-center text-sm border border-primary-200">
-              {user.name.charAt(0)}
+              {user?.name?.charAt(0)}
             </div>
           </div>
         </header>

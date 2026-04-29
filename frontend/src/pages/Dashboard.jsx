@@ -1,5 +1,6 @@
 import React from 'react';
 import { RefreshCcw, FileText, CheckCircle } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 const mockProperties = [
   { id: 1, name: 'Grand Hotel' },
