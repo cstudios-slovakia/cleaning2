@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2 } from 'lucide-react';
+import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2, Copy, Save, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 
@@ -11,6 +11,8 @@ export default function RoomList() {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [assignDate, setAssignDate] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [addingToPropertyId, setAddingToPropertyId] = useState(null);
+  const [newRoomName, setNewRoomName] = useState('');
 
   useEffect(() => {
     loadRooms();
@@ -110,6 +112,61 @@ export default function RoomList() {
     setAssignDate('');
   };
 
+  const handleSaveRoom = (propertyId) => {
+    if (!newRoomName.trim()) return;
+
+    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
+    const newRoom = {
+      id: Date.now(),
+      name: newRoomName.trim(),
+      lastCleaned: 'Never'
+    };
+
+    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, newRoom]));
+    
+    // Update property summary count
+    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
+    const updatedProperties = properties.map(p => 
+      p.id === propertyId ? { ...p, rooms: (p.rooms || 0) + 1 } : p
+    );
+    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
+
+    setNewRoomName('');
+    setAddingToPropertyId(null);
+    loadRooms();
+    
+    setSuccessMessage(`Room "${newRoom.name}" added successfully!`);
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
+  const handleCloneRoom = (propertyId, roomToClone) => {
+    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
+    const clonedRoom = {
+      ...roomToClone,
+      id: Date.now(),
+      name: `${roomToClone.name} (Copy)`,
+      lastCleaned: 'Never'
+    };
+
+    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, clonedRoom]));
+    
+    // Update property summary count
+    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
+    const updatedProperties = properties.map(p => 
+      p.id === propertyId ? { ...p, rooms: (p.rooms || 0) + 1 } : p
+    );
+    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
+
+    loadRooms();
+    setSuccessMessage(`Room "${clonedRoom.name}" cloned successfully!`);
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
+  const handleCancelAdd = () => {
+    setAddingToPropertyId(null);
+    setNewRoomName('');
+  };
+
   if (loading) return <div className="p-8 text-center text-slate-500">Loading rooms...</div>;
 
   const totalProperties = Object.keys(groupedRooms).length;
@@ -171,15 +228,18 @@ export default function RoomList() {
                     <Building2 size={14} />
                     <span>Manage Property</span>
                   </Link>
-                  <Link 
-                    to={`/properties/${group.id}`} 
+                  <button 
+                    onClick={() => {
+                      setAddingToPropertyId(group.id);
+                      setNewRoomName('');
+                    }}
                     className={cn("flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border",
                       parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
                       ? "bg-primary-600 text-white border-primary-700 hover:bg-primary-700" : "bg-white text-slate-900 border-white hover:bg-slate-50")}
                   >
                     <Plus size={14} />
                     <span>Add Room</span>
-                  </Link>
+                  </button>
                 </div>
               </div>
               {group.rooms.length === 0 ? (
@@ -197,6 +257,48 @@ export default function RoomList() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
+                      {addingToPropertyId === group.id && (
+                        <tr className="bg-primary-50/30">
+                          <td className="p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="p-2 bg-white text-primary-500 rounded-lg shadow-sm border border-primary-100">
+                                <BedDouble size={16} />
+                              </div>
+                              <input 
+                                autoFocus
+                                type="text"
+                                placeholder="Enter room name..."
+                                className="bg-white border border-primary-200 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 w-full max-w-xs transition-all"
+                                value={newRoomName}
+                                onChange={(e) => setNewRoomName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleSaveRoom(group.id);
+                                  if (e.key === 'Escape') handleCancelAdd();
+                                }}
+                              />
+                            </div>
+                          </td>
+                          <td className="p-4 text-slate-400 text-xs italic font-medium uppercase tracking-wider">New Room</td>
+                          <td className="p-4 text-right">
+                            <div className="flex items-center justify-end space-x-2">
+                              <button 
+                                onClick={() => handleSaveRoom(group.id)}
+                                className="p-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all shadow-sm active:scale-95"
+                                title="Save Room"
+                              >
+                                <Save size={16} />
+                              </button>
+                              <button 
+                                onClick={handleCancelAdd}
+                                className="p-1.5 bg-white text-slate-500 rounded-lg hover:bg-slate-50 transition-all shadow-sm border border-slate-200 active:scale-95"
+                                title="Cancel"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                       {group.rooms.map(room => (
                         <tr key={room.id} className="hover:bg-slate-50 transition-colors">
                           <td className="p-4">
@@ -225,6 +327,14 @@ export default function RoomList() {
                               >
                                 <Calendar size={12} />
                                 <span className="hidden sm:inline">Assign</span>
+                              </button>
+                              <button 
+                                onClick={() => handleCloneRoom(group.id, room)}
+                                className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
+                                title="Clone Room"
+                              >
+                                <Copy size={12} />
+                                <span className="hidden sm:inline">Clone</span>
                               </button>
                               <Link to={`/properties/${room.propertyId}`} className="text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors border border-slate-200">
                                 Manage
