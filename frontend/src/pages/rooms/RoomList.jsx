@@ -130,6 +130,15 @@ export default function RoomList() {
       lastCleaned: 'Never'
     };
 
+    // Initialize the room data entry with empty tasks
+    localStorage.setItem(`emerald_room_${newRoom.id}`, JSON.stringify({
+      id: newRoom.id,
+      name: newRoom.name,
+      property: Object.keys(groupedRooms).find(name => groupedRooms[name].id === propertyId),
+      intervalDays: 0,
+      tasks: []
+    }));
+
     localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, newRoom]));
     
     // Update property summary count
@@ -367,32 +376,38 @@ export default function RoomList() {
                       {group.rooms.map(room => (
                         <tr key={room.id} className="hover:bg-slate-50 transition-colors">
                           <td className="p-4">
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-3 group">
                               <div className="p-2 bg-slate-100 text-slate-500 rounded-lg">
                                 <BedDouble size={16} />
                               </div>
                               <span className="font-medium text-slate-800">{room.name}</span>
                             </div>
                           </td>
-                          <td className="p-4 text-slate-500 text-sm">{room.lastCleaned}</td>
+                          <td className="p-4">
+                            <div className="flex items-center space-x-3 group">
+                              <span className="text-slate-500 text-sm whitespace-nowrap">{room.lastCleaned}</span>
+                              <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button 
+                                  onClick={() => handleExpressCleaning(room)}
+                                  className="flex items-center space-x-1 text-orange-600 hover:text-orange-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-orange-50 rounded hover:bg-orange-100 transition-colors border border-orange-100"
+                                  title="Express Cleaning (Immediately)"
+                                >
+                                  <Zap size={10} />
+                                  <span>Express</span>
+                                </button>
+                                <button 
+                                  onClick={() => handleOpenAssignModal(room)}
+                                  className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 rounded hover:bg-blue-100 transition-colors border border-blue-100"
+                                  title="Assign Cleaning Date"
+                                >
+                                  <Calendar size={10} />
+                                  <span>Assign</span>
+                                </button>
+                              </div>
+                            </div>
+                          </td>
                           <td className="p-4 text-right">
                             <div className="flex items-center justify-end space-x-2">
-                              <button 
-                                onClick={() => handleExpressCleaning(room)}
-                                className="flex items-center space-x-1 text-orange-600 hover:text-orange-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors border border-orange-100"
-                                title="Express Cleaning (Immediately)"
-                              >
-                                <Zap size={12} />
-                                <span className="hidden sm:inline">Express</span>
-                              </button>
-                              <button 
-                                onClick={() => handleOpenAssignModal(room)}
-                                className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
-                                title="Assign Cleaning Date"
-                              >
-                                <Calendar size={12} />
-                                <span className="hidden sm:inline">Assign</span>
-                              </button>
                               <button 
                                 onClick={() => handleCloneRoom(group.id, room)}
                                 className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"

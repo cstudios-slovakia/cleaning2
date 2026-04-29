@@ -15,13 +15,8 @@ export default function RoomDetail({ roomId, isSlideout, propertyName }) {
     return {
       name: 'Room 101',
       property: propertyName || 'Emerald Grand',
-      intervalDays: 2, // numerical input, 0 means not set
-      tasks: [
-        { id: '1', text: 'Make bed' },
-        { id: '2', text: 'Clean bathroom' },
-        { id: '3', text: 'Vacuum floors' },
-        { id: '4', text: 'Empty trash' }
-      ]
+      intervalDays: 0,
+      tasks: []
     };
   });
 
