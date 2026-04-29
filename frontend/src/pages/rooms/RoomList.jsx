@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2, Copy, Save, X } from 'lucide-react';
+import { BedDouble, Plus, Search, Building2, Calendar, Zap, CheckCircle2, Copy, Save, X, Archive, RotateCcw } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 import Slideout from '../../components/Slideout';
@@ -18,6 +18,9 @@ export default function RoomList() {
   
   const [isRoomSlideoutOpen, setIsRoomSlideoutOpen] = useState(false);
   const [roomForSlideout, setRoomForSlideout] = useState(null);
+
+  const [archivedRoomBackup, setArchivedRoomBackup] = useState(null);
+  const [undoCountdown, setUndoCountdown] = useState(0);
 
   useEffect(() => {
     loadRooms();
@@ -176,6 +179,58 @@ export default function RoomList() {
     setRoomForSlideout(room);
     setIsRoomSlideoutOpen(true);
   };
+
+  const handleArchiveRoom = (propertyId, room) => {
+    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
+    const updatedRooms = existingRooms.filter(r => r.id !== room.id);
+    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify(updatedRooms));
+    
+    // Update property summary count
+    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
+    const updatedProperties = properties.map(p => 
+      p.id === propertyId ? { ...p, rooms: Math.max(0, (p.rooms || 0) - 1) } : p
+    );
+    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
+
+    setArchivedRoomBackup({ propertyId, room });
+    setUndoCountdown(100);
+    loadRooms();
+  };
+
+  const handleUndoArchive = () => {
+    if (!archivedRoomBackup) return;
+    const { propertyId, room } = archivedRoomBackup;
+    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
+    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, room]));
+    
+    // Update property summary count
+    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
+    const updatedProperties = properties.map(p => 
+      p.id === propertyId ? { ...p, rooms: (p.rooms || 0) + 1 } : p
+    );
+    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
+
+    setArchivedRoomBackup(null);
+    setUndoCountdown(0);
+    loadRooms();
+    setSuccessMessage(`Room "${room.name}" restored!`);
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
+  useEffect(() => {
+    if (undoCountdown > 0) {
+      const timer = setInterval(() => {
+        setUndoCountdown(prev => {
+          if (prev <= 1) {
+            setArchivedRoomBackup(null);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 100); // 10s = 100 * 100ms
+      return () => clearInterval(timer);
+    }
+  }, [undoCountdown]);
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading rooms...</div>;
 
@@ -347,6 +402,14 @@ export default function RoomList() {
                                 <span className="hidden sm:inline">Clone</span>
                               </button>
                               <button 
+                                onClick={() => handleArchiveRoom(group.id, room)}
+                                className="flex items-center space-x-1 text-red-600 hover:text-red-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-red-50 rounded-lg hover:bg-red-100 transition-colors border border-red-100 shadow-sm"
+                                title="Archive Room"
+                              >
+                                <Archive size={12} />
+                                <span className="hidden sm:inline">Archive</span>
+                              </button>
+                              <button 
                                 onClick={() => handleOpenRoomSlideout(room)}
                                 className="text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100"
                               >
@@ -362,6 +425,36 @@ export default function RoomList() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Undo Notification */}
+      {archivedRoomBackup && (
+        <div className="fixed bottom-6 right-6 bg-slate-900 text-white p-1 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col min-w-[320px] animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-slate-800 rounded-lg">
+                <Archive size={18} className="text-slate-400" />
+              </div>
+              <div>
+                <p className="text-sm font-bold">Room archived</p>
+                <p className="text-xs text-slate-400 font-medium">{archivedRoomBackup.room.name}</p>
+              </div>
+            </div>
+            <button 
+              onClick={handleUndoArchive}
+              className="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl transition-all font-bold text-xs active:scale-95 shadow-lg shadow-primary-900/20"
+            >
+              <RotateCcw size={14} />
+              <span>UNDO</span>
+            </button>
+          </div>
+          <div className="h-1.5 bg-slate-800 w-full">
+            <div 
+              className="h-full bg-primary-500 transition-all duration-100 ease-linear"
+              style={{ width: `${undoCountdown}%` }}
+            />
+          </div>
         </div>
       )}
 
