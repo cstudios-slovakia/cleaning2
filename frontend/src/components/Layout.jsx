@@ -80,9 +80,8 @@ export default function Layout() {
         {/* Header */}
         <header className="bg-white border-b border-slate-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-[0.2em]">{CONFIG.SYSTEM_NAME}</p>
-            <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">
-              {NAV_ITEMS.find(item => location.pathname.startsWith(item.path))?.name || 'Overview'}
+            <h1 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">
+              {CONFIG.SYSTEM_NAME}
             </h1>
             <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">v{CONFIG.VERSION}</p>
           </div>
