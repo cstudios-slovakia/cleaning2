@@ -20,6 +20,9 @@ function App() {
 
   return (
     <Routes>
+      {/* Explicitly catch index.html caused by server rewrites */}
+      <Route path="/index.html" element={<Navigate to="/dashboard" replace />} />
+      
       <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
@@ -34,10 +37,10 @@ function App() {
         <Route path="assignments/:id" element={<AssignmentDetail />} />
 
         <Route path="users" element={<UserList />} />
-        
-        {/* Catch-all route for unhandled paths like /index.html */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
+
+      {/* Catch-all route for unhandled paths */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }
