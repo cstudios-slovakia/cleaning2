@@ -537,6 +537,7 @@ export default function RoomList() {
             roomId={roomForSlideout.id} 
             isSlideout={true} 
             propertyName={roomForSlideout.property}
+            roomName={roomForSlideout.name}
             initialTab={slideoutTab}
           />
         )}

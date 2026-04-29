@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical } from 'lucide-react';
+import Slideout from '../../components/Slideout';
+import AssignmentDetail from '../assignments/AssignmentDetail';
 
-export default function RoomDetail({ roomId, isSlideout, propertyName, initialTab = 'settings' }) {
+export default function RoomDetail({ roomId, isSlideout, propertyName, roomName, initialTab = 'settings' }) {
   const { id: paramId } = useParams();
   const id = roomId || paramId;
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -14,12 +16,33 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, initialTa
     const saved = localStorage.getItem(`emerald_room_${id}`);
     if (saved) return JSON.parse(saved);
     return {
-      name: 'Room 101',
+      name: roomName || 'Room 101',
       property: propertyName || 'Emerald Grand',
       intervalDays: 0,
       tasks: []
     };
   });
+
+  const [completedAssignments, setCompletedAssignments] = useState([]);
+  const [selectedLogId, setSelectedLogId] = useState(null);
+  const [isAssignmentSlideoutOpen, setIsAssignmentSlideoutOpen] = useState(false);
+
+  useEffect(() => {
+    const assignments = [];
+    for(let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith('emerald_assignment_')) {
+        try {
+          const a = JSON.parse(localStorage.getItem(key));
+          if (a.room === roomData.name && a.property === roomData.property && a.doneBy) {
+            assignments.push(a);
+          }
+        } catch(e) {}
+      }
+    }
+    assignments.sort((a, b) => new Date(b.doneAt) - new Date(a.doneAt));
+    setCompletedAssignments(assignments);
+  }, [roomData.name, roomData.property]);
 
   // Edit form state
   const [editForm, setEditForm] = useState({ ...roomData });
@@ -264,34 +287,60 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, initialTa
           </div>
           <div className="p-5">
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:h-full before:w-0.5 before:bg-slate-100">
-              <div className="relative flex items-start space-x-4">
-                <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-white bg-green-500 text-white shadow-sm z-10 shrink-0"></div>
-                <div className="flex-1 -mt-1">
-                  <div className="font-bold text-slate-800 text-sm">Maria G.</div>
-                  <time className="text-xs font-medium text-slate-500">Yesterday, 14:30</time>
-                  <p className="text-xs text-slate-400 mt-1">Full cleaning completed</p>
-                </div>
-              </div>
-              <div className="relative flex items-start space-x-4">
-                <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-white bg-slate-300 text-white shadow-sm z-10 shrink-0"></div>
-                <div className="flex-1 -mt-1">
-                  <div className="font-bold text-slate-600 text-sm">Anna N.</div>
-                  <time className="text-xs font-medium text-slate-400">3 days ago, 11:15</time>
-                  <p className="text-xs text-slate-400 mt-1">Full cleaning completed</p>
-                </div>
-              </div>
-              <div className="relative flex items-start space-x-4">
-                <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-white bg-slate-300 text-white shadow-sm z-10 shrink-0"></div>
-                <div className="flex-1 -mt-1">
-                  <div className="font-bold text-slate-600 text-sm">Maria G.</div>
-                  <time className="text-xs font-medium text-slate-400">5 days ago, 15:45</time>
-                  <p className="text-xs text-slate-400 mt-1">Express cleaning completed</p>
-                </div>
-              </div>
+              {completedAssignments.length === 0 ? (
+                <p className="text-slate-500 italic text-sm pl-8">No cleaning history recorded yet.</p>
+              ) : (
+                completedAssignments.map(a => {
+                  const completedTasks = a.tasks ? a.tasks.filter(t => t.done).length : 0;
+                  const totalTasks = a.tasks ? a.tasks.length : 0;
+                  const percentage = totalTasks > 0 ? Math.round((completedTasks/totalTasks)*100) : 100;
+                  
+                  return (
+                    <div 
+                      key={a.id} 
+                      className="relative flex items-start space-x-4 cursor-pointer group p-3 -mx-3 rounded-xl hover:bg-slate-50 transition-colors"
+                      onClick={() => {
+                        setSelectedLogId(a.id);
+                        setIsAssignmentSlideoutOpen(true);
+                      }}
+                    >
+                      <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-white bg-green-500 text-white shadow-sm z-10 shrink-0 mt-1 group-hover:scale-110 transition-transform"></div>
+                      <div className="flex-1 -mt-1">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-bold text-slate-800 text-sm group-hover:text-primary-600 transition-colors">{a.doneBy}</div>
+                            <time className="text-xs font-medium text-slate-500">{a.doneAt}</time>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs font-bold text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded-lg shadow-sm">
+                              {percentage}% Done
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-2">{totalTasks} tasks checklist</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
       )}
+
+      <Slideout 
+        isOpen={isAssignmentSlideoutOpen} 
+        onClose={() => setIsAssignmentSlideoutOpen(false)}
+        title="Assignment Details"
+      >
+        {selectedLogId && (
+          <AssignmentDetail 
+            assignmentId={selectedLogId} 
+            isSlideout={true} 
+            theme="#0ea5e9"
+          />
+        )}
+      </Slideout>
     </div>
   );
 }
