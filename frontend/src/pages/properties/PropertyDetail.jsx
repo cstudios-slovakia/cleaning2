@@ -5,17 +5,7 @@ import Slideout from '../../components/Slideout';
 import Modal from '../../components/Modal';
 import RoomDetail from '../rooms/RoomDetail';
 import AssignmentDetail from '../assignments/AssignmentDetail';
-import { saveAssignment } from '../../lib/api';
-
-const AVAILABLE_USERS = [
-  { id: 'u1', name: 'John Doe', role: 'manager' },
-  { id: 'u2', name: 'Sarah Smith', role: 'manager' },
-  { id: 'u3', name: 'Mike Johnson', role: 'manager' },
-  { id: 'u4', name: 'Maria Garcia', role: 'cleaner' },
-  { id: 'u5', name: 'Anna Novak', role: 'cleaner' },
-  { id: 'u6', name: 'David Chen', role: 'cleaner' },
-  { id: 'u7', name: 'Elena Rodriguez', role: 'cleaner' },
-];
+import { saveAssignment, fetchUsers } from '../../lib/api';
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -50,12 +40,21 @@ export default function PropertyDetail() {
   const [editRooms, setEditRooms] = useState([]);
   const [editManagers, setEditManagers] = useState([]);
   const [editCleaners, setEditCleaners] = useState([]);
+  
+  const [availableUsers, setAvailableUsers] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const { fetchProperties, fetchRooms } = await import('../../lib/api');
-        const properties = await fetchProperties();
+        const { fetchProperties, fetchRooms, fetchUsers } = await import('../../lib/api');
+        
+        const [properties, usersData] = await Promise.all([
+          fetchProperties(),
+          fetchUsers()
+        ]);
+        
+        setAvailableUsers(usersData);
+        
         const p = properties.find(x => x.id.toString() === id.toString());
         
         if (p) {
@@ -87,8 +86,8 @@ export default function PropertyDetail() {
     const updatedData = { 
       ...editForm,
       id,
-      managers: editManagers.filter(m => m.name.trim() !== ''),
-      cleaners: editCleaners.filter(c => c.name.trim() !== '')
+      managers: editManagers.filter(m => (m.name || '').trim() !== ''),
+      cleaners: editCleaners.filter(c => (c.name || '').trim() !== '')
     };
     
     try {
@@ -676,7 +675,7 @@ export default function PropertyDetail() {
                         className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="">Select Manager...</option>
-                        {AVAILABLE_USERS.filter(u => u.role === 'manager').map(u => (
+                        {availableUsers.filter(u => u.role === 'manager' || u.role === 'admin').map(u => (
                           <option key={u.id} value={u.name}>{u.name}</option>
                         ))}
                       </select>
@@ -730,7 +729,7 @@ export default function PropertyDetail() {
                         className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="">Select Cleaner...</option>
-                        {AVAILABLE_USERS.filter(u => u.role === 'cleaner').map(u => (
+                        {availableUsers.filter(u => u.role === 'cleaner').map(u => (
                           <option key={u.id} value={u.name}>{u.name}</option>
                         ))}
                       </select>

@@ -74,3 +74,25 @@ export const deleteRoom = async (id) => {
     if (!res.ok) throw new Error('Failed to delete room');
     return res.json();
 };
+
+export const fetchUsers = async () => {
+    const res = await fetch(`${API_BASE_URL}/users.php`);
+    if (!res.ok) throw new Error('Failed to fetch users');
+    return res.json();
+};
+
+export const saveUser = async (user) => {
+    const res = await fetch(`${API_BASE_URL}/users.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
+    });
+    if (!res.ok) throw new Error('Failed to save user');
+    return res.json();
+};
+
+export const deleteUser = async (id) => {
+    const res = await fetch(`${API_BASE_URL}/users.php?id=${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to delete user');
+    return res.json();
+};
