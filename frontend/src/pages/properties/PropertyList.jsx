@@ -2,40 +2,61 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Archive, Building2, History } from 'lucide-react';
 import Modal from '../../components/Modal';
+import { fetchProperties, saveProperty, deleteProperty } from '../../lib/api';
 
 export default function PropertyList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPropName, setNewPropName] = useState('');
-  
-  // Initialize from localStorage or use defaults
-  const [properties, setProperties] = useState(() => {
-    const saved = localStorage.getItem('emerald_properties');
-    if (saved) return JSON.parse(saved);
-    return [
-      { id: 1, name: 'Emerald Grand', rooms: 15, managers: 2 },
-      { id: 2, name: 'City Center Suite', rooms: 4, managers: 1 },
-    ];
-  });
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Save to localStorage whenever properties change
   useEffect(() => {
-    localStorage.setItem('emerald_properties', JSON.stringify(properties));
-  }, [properties]);
+    loadProperties();
+  }, []);
 
-  const handleAddProperty = (e) => {
+  const loadProperties = async () => {
+    try {
+      const data = await fetchProperties();
+      setProperties(data);
+    } catch (e) {
+      console.error('Failed to load properties', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddProperty = async (e) => {
     e.preventDefault();
     if (!newPropName.trim()) return;
 
     const newProp = {
-      id: Date.now(),
+      id: Date.now().toString(),
       name: newPropName,
-      rooms: 0,
-      managers: 0
+      scheduleTime: '10:00 AM',
+      theme: '#0ea5e9',
+      coverImage: null,
+      logo: null
     };
 
-    setProperties([...properties, newProp]);
-    setNewPropName('');
-    setIsModalOpen(false);
+    try {
+      await saveProperty(newProp);
+      await loadProperties();
+      setNewPropName('');
+      setIsModalOpen(false);
+    } catch (e) {
+      console.error('Failed to add property', e);
+    }
+  };
+
+  const handleDelete = async (prop) => {
+    if (window.confirm(`Are you sure you want to archive ${prop.name}?`)) {
+      try {
+        await deleteProperty(prop.id);
+        await loadProperties();
+      } catch (e) {
+        console.error('Failed to delete property', e);
+      }
+    }
   };
 
   return (
@@ -73,9 +94,7 @@ export default function PropertyList() {
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  if (window.confirm(`Are you sure you want to archive ${prop.name}?`)) {
-                    setProperties(properties.filter(p => p.id !== prop.id));
-                  }
+                  handleDelete(prop);
                 }}
                 className="absolute top-3 right-3 p-1.5 bg-white rounded-lg shadow-sm text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all z-10"
                 title="Archive Property"
