@@ -36,6 +36,7 @@ try {
         $name = $input['name'] ?? 'New User';
         $username = $input['username'] ?? null;
         $email = $input['email'] ?? null;
+        $password = $input['password'] ?? null;
         $role = $input['role'] ?? 'cleaner';
         $status = $input['status'] ?? 'active';
         $lastActive = $input['lastActive'] ?? 'Never';
@@ -47,12 +48,12 @@ try {
 
         if ($exists) {
             // Update
-            $stmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, email = ?, role = ?, status = ?, lastActive = ? WHERE id = ?");
-            $stmt->execute([$name, $username, $email, $role, $status, $lastActive, $id]);
+            $stmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, email = ?, password = ?, role = ?, status = ?, lastActive = ? WHERE id = ?");
+            $stmt->execute([$name, $username, $email, $password, $role, $status, $lastActive, $id]);
         } else {
             // Insert
-            $stmt = $pdo->prepare("INSERT INTO users (id, name, username, email, role, status, lastActive) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$id, $name, $username, $email, $role, $status, $lastActive]);
+            $stmt = $pdo->prepare("INSERT INTO users (id, name, username, email, password, role, status, lastActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$id, $name, $username, $email, $password, $role, $status, $lastActive]);
         }
 
         echo json_encode(['success' => true, 'id' => $id]);

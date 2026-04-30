@@ -41,6 +41,7 @@ export default function UserList() {
         name: '',
         username: '',
         email: '',
+        password: '',
         role: activeTab === 'cleaners' ? 'cleaner' : 'manager',
         status: 'active'
       });
@@ -241,15 +242,27 @@ export default function UserList() {
                   />
                 </div>
               ) : (
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Email</label>
-                  <input 
-                    type="email" 
-                    value={editUser.email}
-                    onChange={(e) => setEditUser({...editUser, email: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="e.g. name@emerald.sk"
-                  />
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+                    <input 
+                      type="email" 
+                      value={editUser.email}
+                      onChange={(e) => setEditUser({...editUser, email: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="e.g. name@emerald.sk"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                    <input 
+                      type="password" 
+                      value={editUser.password || ''}
+                      onChange={(e) => setEditUser({...editUser, password: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
               )}
 

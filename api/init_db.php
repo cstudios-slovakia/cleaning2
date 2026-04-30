@@ -79,6 +79,7 @@ try {
             name VARCHAR(255) NOT NULL,
             username VARCHAR(255) DEFAULT NULL,
             email VARCHAR(255) DEFAULT NULL,
+            password VARCHAR(255) DEFAULT NULL,
             role VARCHAR(50) NOT NULL DEFAULT 'cleaner',
             status VARCHAR(50) NOT NULL DEFAULT 'active',
             lastActive VARCHAR(255) DEFAULT 'Never',
