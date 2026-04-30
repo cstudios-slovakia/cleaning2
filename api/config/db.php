@@ -7,6 +7,5 @@ return [
     'dbname' => 'h2XXazwm',
     'user' => 'V4deY1yo',
     'password' => 'CV8`c4O{4<E76yUG:Qve',
-    'charset' => 'utf8mb4',
-    'socket' => '/tmp/mariadb114.sock'
+    'charset' => 'utf8mb4'
 ];
