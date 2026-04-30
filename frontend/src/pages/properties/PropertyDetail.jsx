@@ -5,6 +5,7 @@ import Slideout from '../../components/Slideout';
 import Modal from '../../components/Modal';
 import RoomDetail from '../rooms/RoomDetail';
 import AssignmentDetail from '../assignments/AssignmentDetail';
+import { saveAssignment } from '../../lib/api';
 
 const AVAILABLE_USERS = [
   { id: 'u1', name: 'John Doe', role: 'manager' },
@@ -205,7 +206,7 @@ export default function PropertyDetail() {
     setRooms(rooms.filter(r => r.id !== roomId));
   };
 
-  const handleAssignCleaning = (e) => {
+  const handleAssignCleaning = async (e) => {
     e.preventDefault();
     if (!assignDate || !assignRoomId) return;
 
@@ -224,18 +225,19 @@ export default function PropertyDetail() {
       tasks: []
     };
 
-    localStorage.setItem(`emerald_assignment_${newId}`, JSON.stringify(newAssignment));
-    const activeIds = JSON.parse(localStorage.getItem('emerald_active_assignment_ids') || '[]');
-    localStorage.setItem('emerald_active_assignment_ids', JSON.stringify([...activeIds, newId]));
-
-    setIsAssignModalOpen(false);
-    setAssignDate('');
-    setAssignRoomId('');
-    setSuccessMessage(`Cleaning assigned for ${room.name}`);
-    setTimeout(() => setSuccessMessage(''), 3000);
+    try {
+      await saveAssignment(newAssignment);
+      setIsAssignModalOpen(false);
+      setAssignDate('');
+      setAssignRoomId('');
+      setSuccessMessage(`Cleaning assigned for ${room.name}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Failed to create assignment', err);
+    }
   };
 
-  const handleExpressCleaning = () => {
+  const handleExpressCleaning = async () => {
     if (rooms.length === 0) {
       setSuccessMessage('No rooms available to clean');
       setTimeout(() => setSuccessMessage(''), 3000);
@@ -255,11 +257,14 @@ export default function PropertyDetail() {
         doneAt: null,
         tasks: []
       };
-      localStorage.setItem(`emerald_assignment_${newId}`, JSON.stringify(newAssignment));
-      const activeIds = JSON.parse(localStorage.getItem('emerald_active_assignment_ids') || '[]');
-      localStorage.setItem('emerald_active_assignment_ids', JSON.stringify([...activeIds, newId]));
-      setSuccessMessage(`Express cleaning started for ${room.name}`);
-      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      try {
+        await saveAssignment(newAssignment);
+        setSuccessMessage(`Express cleaning started for ${room.name}`);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } catch (err) {
+        console.error('Failed to create express assignment', err);
+      }
     } else {
       setAssignDate(new Date().toISOString().split('T')[0]);
       setIsAssignModalOpen(true);

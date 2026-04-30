@@ -1,50 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Circle, Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
+import { fetchAssignments, saveAssignment } from '../../lib/api';
 
 export default function AssignmentDetail({ assignmentId: propId, isSlideout = false, theme: propTheme, coverImage: propCoverImage }) {
   const { id: routeId } = useParams();
   const id = propId || routeId;
   const { user } = useAuth();
   
-  const [assignment, setAssignment] = useState(() => {
-    const saved = localStorage.getItem(`emerald_assignment_${id}`);
-    if (saved) return JSON.parse(saved);
-    
-    return {
-      id: id,
-      property: 'Emerald Grand',
-      room: 'Room 101',
-      date: 'Today',
-      time: '14:00',
-      doneBy: null,
-      doneAt: null,
-      tasks: [
-        { id: 1, title: 'Make bed', done: false },
-        { id: 2, title: 'Clean bathroom', done: false },
-        { id: 3, title: 'Vacuum floors', done: false },
-        { id: 4, title: 'Empty trash', done: false },
-      ]
+  const [assignment, setAssignment] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchAssignments();
+        const a = data.find(x => x.id.toString() === id.toString());
+        if (a) {
+          // Merge to avoid overriding local optimistic state randomly if possible,
+          // but for simple real-time, just set it.
+          setAssignment(a);
+        }
+        setLoading(false);
+      } catch (e) {
+        console.error('Failed to fetch assignment details', e);
+      }
     };
-  });
+    load();
+    const interval = setInterval(load, 3000); // 3 second polling
+    return () => clearInterval(interval);
+  }, [id]);
 
   const themeColor = propTheme || '#0ea5e9';
 
-  // if the done by value is set, only admins, owners and managers can edit the assigment
-  const canEdit = !assignment.doneBy || (user && ['admin', 'owner', 'manager'].includes(user.role));
+  const canEdit = assignment && (!assignment.doneBy || (user && ['admin', 'owner', 'manager'].includes(user.role)));
 
-  const toggleTask = (taskId) => {
+  const toggleTask = async (taskId) => {
     if (!canEdit) return;
 
     const newTasks = assignment.tasks.map(t => t.id === taskId ? { ...t, done: !t.done } : t);
     const newAssignment = { ...assignment, tasks: newTasks };
+    
+    // Optimistic update
     setAssignment(newAssignment);
-    localStorage.setItem(`emerald_assignment_${id}`, JSON.stringify(newAssignment));
+    
+    // Save to DB
+    try {
+      await saveAssignment(newAssignment);
+    } catch (e) {
+      console.error('Save failed', e);
+    }
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (!canEdit) return;
     
     const now = new Date();
@@ -52,13 +62,19 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     
     const newAssignment = { 
       ...assignment, 
-      doneBy: user.name,
+      doneBy: user?.name || 'User',
       doneAt: doneAt
     };
     
     setAssignment(newAssignment);
-    localStorage.setItem(`emerald_assignment_${id}`, JSON.stringify(newAssignment));
+    try {
+      await saveAssignment(newAssignment);
+    } catch (e) {
+      console.error('Finish failed', e);
+    }
   };
+
+  if (loading || !assignment) return <div className="p-8 text-center text-slate-500">Loading assignment...</div>;
 
   const isAllDone = assignment.tasks.every(t => t.done);
 

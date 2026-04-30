@@ -5,6 +5,7 @@ import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 import Slideout from '../../components/Slideout';
 import RoomDetail from './RoomDetail';
+import { saveAssignment } from '../../lib/api';
 
 export default function RoomList() {
   const [groupedRooms, setGroupedRooms] = useState({});
@@ -71,7 +72,7 @@ export default function RoomList() {
     return (yiq >= 160) ? 'text-slate-600' : 'text-white/70';
   };
 
-  const createAssignment = (room, date, time) => {
+  const createAssignment = async (room, date, time) => {
     const newId = Date.now().toString();
     const newAssignment = {
       id: newId,
@@ -89,14 +90,13 @@ export default function RoomList() {
       ]
     };
 
-    localStorage.setItem(`emerald_assignment_${newId}`, JSON.stringify(newAssignment));
-    
-    // Track this new assignment ID globally
-    const activeIds = JSON.parse(localStorage.getItem('emerald_active_assignment_ids') || '[]');
-    localStorage.setItem('emerald_active_assignment_ids', JSON.stringify([...activeIds, newId]));
-    
-    setSuccessMessage(`Cleaning assigned for ${room.name}`);
-    setTimeout(() => setSuccessMessage(''), 3000);
+    try {
+      await saveAssignment(newAssignment);
+      setSuccessMessage(`Cleaning assigned for ${room.name}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (e) {
+      console.error('Failed to create assignment', e);
+    }
   };
 
   const handleExpressCleaning = (room) => {

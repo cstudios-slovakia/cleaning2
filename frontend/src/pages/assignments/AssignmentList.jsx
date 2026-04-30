@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight, AlertTriangle, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from './AssignmentDetail';
+import { fetchAssignments } from '../../lib/api';
 
 export default function AssignmentList() {
   const [expandedGroups, setExpandedGroups] = useState({
@@ -19,6 +20,22 @@ export default function AssignmentList() {
 
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
+  const [dbAssignments, setDbAssignments] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchAssignments();
+        // Only show active assignments
+        setDbAssignments(data.filter(a => !a.doneBy));
+      } catch (e) {
+        console.error('Failed to fetch assignments', e);
+      }
+    };
+    load();
+    const interval = setInterval(load, 3000); // Poll every 3 seconds for real-time feel
+    return () => clearInterval(interval);
+  }, []);
 
   // Helper to get property data for the slideout
   const getPropertyData = (propertyName) => {
@@ -30,29 +47,6 @@ export default function AssignmentList() {
     if (propertyName === 'Emerald Grand') return { theme: '#0ea5e9', coverImage: null };
     if (propertyName === 'City Center Suite') return { theme: '#10b981', coverImage: null };
     return { theme: '#0ea5e9', coverImage: null };
-  };
-
-  const isAssignmentDone = (id) => {
-    const saved = localStorage.getItem(`emerald_assignment_${id}`);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return !!parsed.doneBy;
-    }
-    return false;
-  };
-
-  const isPropertyArchived = (propertyName) => {
-    const propertiesStr = localStorage.getItem('emerald_properties');
-    if (!propertiesStr) return false;
-    const properties = JSON.parse(propertiesStr);
-    return !properties.find(p => p.name === propertyName);
-  };
-
-  const getDynamicAssignments = () => {
-    const activeIds = JSON.parse(localStorage.getItem('emerald_active_assignment_ids') || '[]');
-    return activeIds
-      .map(id => JSON.parse(localStorage.getItem(`emerald_assignment_${id}`)))
-      .filter(a => a && !isAssignmentDone(a.id) && !isPropertyArchived(a.property));
   };
 
   const isOverdue = (a) => {
@@ -69,33 +63,11 @@ export default function AssignmentList() {
     return a.date?.includes('Yesterday') || a.time?.includes('Yesterday');
   };
 
-  const dynamicAssignments = getDynamicAssignments();
-  
-  const allStaticAssignments = [
-    { id: 1, room: 'Lobby', property: 'Emerald Grand', time: 'Yesterday 14:00', date: 'Yesterday' },
-    { id: 2, room: 'Apt 4A', property: 'City Center Suite', time: 'Today 08:00 (Immediate)', date: 'Today' },
-    { id: 3, room: 'Room 101', property: 'Emerald Grand', time: '14:00', date: 'Today' },
-    { id: 4, room: 'Room 102', property: 'Emerald Grand', time: '10:00', date: 'Tomorrow' },
-    { id: 5, room: 'Apt 4B', property: 'City Center Suite', time: 'Friday 10:00', date: 'Friday' },
-  ].filter(a => !isAssignmentDone(a.id) && !isPropertyArchived(a.property));
-
   const assignments = {
-    overdue: [
-      ...allStaticAssignments.filter(isOverdue),
-      ...dynamicAssignments.filter(isOverdue)
-    ],
-    today: [
-      ...allStaticAssignments.filter(a => a.date === 'Today' && !isOverdue(a)),
-      ...dynamicAssignments.filter(a => a.date === 'Today' && !isOverdue(a))
-    ],
-    tomorrow: [
-      ...allStaticAssignments.filter(a => a.date.includes('Tomorrow')),
-      ...dynamicAssignments.filter(a => a.date.includes('Tomorrow'))
-    ],
-    future: [
-      ...allStaticAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a)),
-      ...dynamicAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && !isOverdue(a))
-    ]
+    overdue: dbAssignments.filter(isOverdue),
+    today: dbAssignments.filter(a => a.date === 'Today' && !isOverdue(a)),
+    tomorrow: dbAssignments.filter(a => a.date.includes('Tomorrow')),
+    future: dbAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a))
   };
 
   const GroupHeader = ({ id, title, count, colorClass, icon: Icon }) => (
