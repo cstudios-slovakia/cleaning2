@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar as CalendarIcon, Clock, CheckCircle, Users, Settings, AlertTriangle, History } from 'lucide-react';
+import { useAssignments } from '../../hooks/useAssignments';
 
 export default function PropertyLogs() {
   const { id } = useParams();
@@ -19,37 +20,31 @@ export default function PropertyLogs() {
   // Using a simple date input for calendar selection
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Load real logs from assignments
+  // Load real logs from assignments API
+  const { assignments } = useAssignments();
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
     const allLogs = [];
-    for(let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key.startsWith('emerald_assignment_')) {
-        try {
-          const a = JSON.parse(localStorage.getItem(key));
-          // Filter by property name and ensure it's completed
-          if (a.property === property.name && a.doneBy) {
-            // Optional: Filter by selectedDate if needed, or show all
-            // For now, let's show all but highlight or filter by date if you want
-            allLogs.push({
-              id: a.id,
-              date: a.doneAt.split(',')[0],
-              time: a.doneAt.split(',')[1] || '',
-              action: `${a.room} cleaning completed`,
-              user: a.doneBy,
-              type: 'complete'
-            });
-          }
-        } catch(e) {}
+    
+    assignments.forEach(a => {
+      // Filter by property name and ensure it's completed
+      if (a.property === property.name && a.doneBy) {
+        allLogs.push({
+          id: a.id,
+          date: a.doneAt ? a.doneAt.split(',')[0] : '',
+          time: a.doneAt && a.doneAt.includes(',') ? a.doneAt.split(',')[1].trim() : '',
+          action: `${a.room} cleaning completed`,
+          user: a.doneBy,
+          type: 'complete'
+        });
       }
-    }
+    });
     
     // Sort by date/time descending
-    allLogs.sort((a, b) => new Date(b.date + b.time) - new Date(a.date + a.time));
+    allLogs.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
     setLogs(allLogs);
-  }, [property.name, selectedDate]);
+  }, [property.name, selectedDate, assignments]);
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-24">
