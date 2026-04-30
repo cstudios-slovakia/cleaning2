@@ -5,7 +5,7 @@ import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 import Slideout from '../../components/Slideout';
 import RoomDetail from './RoomDetail';
-import { saveAssignment } from '../../lib/api';
+import { saveAssignment, fetchProperties, fetchRooms, saveRoom } from '../../lib/api';
 
 export default function RoomList() {
   const [groupedRooms, setGroupedRooms] = useState({});
@@ -28,30 +28,30 @@ export default function RoomList() {
     loadRooms();
   }, []);
 
-  const loadRooms = () => {
-    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
-    const groups = {};
-
-    properties.forEach(prop => {
-      const fullData = JSON.parse(localStorage.getItem(`emerald_property_${prop.id}`) || '{}');
-      const theme = fullData.theme || '#0ea5e9';
-      const rooms = JSON.parse(localStorage.getItem(`emerald_rooms_${prop.id}`) || '[]');
+  const loadRooms = async () => {
+    try {
+      const properties = await fetchProperties();
+      const rooms = await fetchRooms();
       
-      groups[prop.name] = {
-        id: prop.id,
-        theme: theme,
-        rooms: rooms.map(r => ({
-          ...r,
-          property: prop.name,
-          propertyId: prop.id,
-          // Mock last cleaned for now if not present
-          lastCleaned: r.lastCleaned || 'Never'
-        }))
-      };
-    });
-
-    setGroupedRooms(groups);
-    setLoading(false);
+      const groups = {};
+      properties.forEach(prop => {
+        groups[prop.name] = {
+          id: prop.id,
+          theme: prop.theme || '#0ea5e9',
+          rooms: rooms.filter(r => r.property_id.toString() === prop.id.toString()).map(r => ({
+            ...r,
+            property: prop.name,
+            propertyId: prop.id,
+            lastCleaned: r.lastCleaned || 'Never'
+          }))
+        };
+      });
+      setGroupedRooms(groups);
+    } catch (e) {
+      console.error('Failed to load rooms', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getContrastColor = (hex) => {
@@ -121,81 +121,52 @@ export default function RoomList() {
     setAssignDate('');
   };
 
-  const handleSaveRoom = (propertyId) => {
+  const handleSaveRoom = async (propertyId) => {
     if (!newRoomName.trim()) return;
 
-    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
     const newRoom = {
-      id: Date.now(),
+      id: Date.now().toString(),
+      property_id: propertyId,
       name: newRoomName.trim(),
-      lastCleaned: 'Never'
-    };
-
-    // Initialize the room data entry with empty tasks
-    localStorage.setItem(`emerald_room_${newRoom.id}`, JSON.stringify({
-      id: newRoom.id,
-      name: newRoom.name,
-      property: Object.keys(groupedRooms).find(name => groupedRooms[name].id === propertyId),
+      lastCleaned: 'Never',
       intervalDays: 0,
       tasks: []
-    }));
-
-    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, newRoom]));
-    
-    // Update property summary count
-    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
-    const updatedProperties = properties.map(p => 
-      p.id === propertyId ? { ...p, rooms: (p.rooms || 0) + 1 } : p
-    );
-    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
-
-    setNewRoomName('');
-    setAddingToPropertyId(null);
-    loadRooms();
-    
-    setSuccessMessage(`Room "${newRoom.name}" added successfully!`);
-    setTimeout(() => setSuccessMessage(''), 3000);
-  };
-
-  const handleCloneRoom = (propertyId, roomToClone) => {
-    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
-    const clonedRoom = {
-      ...roomToClone,
-      id: Date.now(),
-      name: `${roomToClone.name} (Copy)`,
-      lastCleaned: 'Never'
     };
 
-    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, clonedRoom]));
-    
-    // Copy the room detail data (template settings/tasks) if it exists
-    const detail = localStorage.getItem(`emerald_room_${roomToClone.id}`);
-    if (detail) {
-      const newDetail = JSON.parse(detail);
-      newDetail.id = clonedRoom.id;
-      newDetail.name = clonedRoom.name;
-      localStorage.setItem(`emerald_room_${clonedRoom.id}`, JSON.stringify(newDetail));
-    } else {
-      // Initialize with defaults if no source detail exists
-      localStorage.setItem(`emerald_room_${clonedRoom.id}`, JSON.stringify({
-        id: clonedRoom.id,
-        name: clonedRoom.name,
-        property: roomToClone.property,
-        intervalDays: 0,
-        tasks: []
-      }));
+    try {
+      await saveRoom(newRoom);
+      setNewRoomName('');
+      setAddingToPropertyId(null);
+      await loadRooms();
+      setSuccessMessage(`Room "${newRoom.name}" added successfully!`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (e) {
+      console.error('Failed to save room', e);
     }
-    
-    // Update property summary count
-    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
-    const updatedProperties = properties.map(p => 
-      p.id === propertyId ? { ...p, rooms: (p.rooms || 0) + 1 } : p
-    );
-    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
+  };
 
-    loadRooms();
-    setSuccessMessage(`Room "${clonedRoom.name}" cloned successfully!`);
-    setTimeout(() => setSuccessMessage(''), 3000);
+  const handleCloneRoom = async (propertyId, roomToClone) => {
+    try {
+      // Fetch full details to get tasks
+      const { fetchRoomDetails } = await import('../../lib/api');
+      const details = await fetchRoomDetails(roomToClone.id);
+      
+      const clonedRoom = {
+        ...roomToClone,
+        id: Date.now().toString(),
+        property_id: propertyId,
+        name: `${roomToClone.name} (Copy)`,
+        lastCleaned: 'Never',
+        tasks: details?.tasks || []
+      };
+
+      await saveRoom(clonedRoom);
+      await loadRooms();
+      setSuccessMessage(`Room "${clonedRoom.name}" cloned successfully!`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (e) {
+      console.error('Failed to clone room', e);
+    }
   };
 
   const handleCancelAdd = () => {
@@ -209,41 +180,39 @@ export default function RoomList() {
     setIsRoomSlideoutOpen(true);
   };
 
-  const handleArchiveRoom = (propertyId, room) => {
-    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
-    const updatedRooms = existingRooms.filter(r => r.id !== room.id);
-    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify(updatedRooms));
-    
-    // Update property summary count
-    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
-    const updatedProperties = properties.map(p => 
-      p.id === propertyId ? { ...p, rooms: Math.max(0, (p.rooms || 0) - 1) } : p
-    );
-    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
-
-    setArchivedRoomBackup({ propertyId, room });
-    setUndoCountdown(100);
-    loadRooms();
+  const handleArchiveRoom = async (propertyId, room) => {
+    try {
+      const { deleteRoom } = await import('../../lib/api');
+      await deleteRoom(room.id);
+      setArchivedRoomBackup({ propertyId, room });
+      setUndoCountdown(100);
+      await loadRooms();
+    } catch (e) {
+      console.error('Failed to archive room', e);
+    }
   };
 
-  const handleUndoArchive = () => {
+  const handleUndoArchive = async () => {
     if (!archivedRoomBackup) return;
     const { propertyId, room } = archivedRoomBackup;
-    const existingRooms = JSON.parse(localStorage.getItem(`emerald_rooms_${propertyId}`) || '[]');
-    localStorage.setItem(`emerald_rooms_${propertyId}`, JSON.stringify([...existingRooms, room]));
     
-    // Update property summary count
-    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
-    const updatedProperties = properties.map(p => 
-      p.id === propertyId ? { ...p, rooms: (p.rooms || 0) + 1 } : p
-    );
-    localStorage.setItem('emerald_properties', JSON.stringify(updatedProperties));
-
-    setArchivedRoomBackup(null);
-    setUndoCountdown(0);
-    loadRooms();
-    setSuccessMessage(`Room "${room.name}" restored!`);
-    setTimeout(() => setSuccessMessage(''), 3000);
+    try {
+      await saveRoom({
+        id: room.id,
+        property_id: propertyId,
+        name: room.name,
+        intervalDays: room.intervalDays || 0,
+        lastCleaned: room.lastCleaned || 'Never',
+        tasks: room.tasks || []
+      });
+      setArchivedRoomBackup(null);
+      setUndoCountdown(0);
+      await loadRooms();
+      setSuccessMessage(`Room "${room.name}" restored!`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (e) {
+      console.error('Failed to restore room', e);
+    }
   };
 
   useEffect(() => {

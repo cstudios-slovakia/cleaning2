@@ -5,17 +5,22 @@ import { useAssignments } from '../../hooks/useAssignments';
 
 export default function PropertyLogs() {
   const { id } = useParams();
-  
-  // Load real property data
-  const [property, setProperty] = useState(() => {
-    const saved = localStorage.getItem('emerald_properties');
-    if (saved) {
-      const props = JSON.parse(saved);
-      const p = props.find(p => p.id.toString() === id.toString());
-      if (p) return p;
-    }
-    return { id, name: 'Unknown Property', theme: '#0ea5e9' };
-  });
+  const [property, setProperty] = useState({ id, name: 'Loading...', theme: '#0ea5e9' });
+
+  useEffect(() => {
+    const loadProp = async () => {
+      try {
+        const { fetchProperties } = await import('../../lib/api');
+        const properties = await fetchProperties();
+        const p = properties.find(p => p.id.toString() === id.toString());
+        if (p) setProperty(p);
+      } catch (e) {
+        console.error('Failed to load property', e);
+        setProperty({ id, name: 'Unknown Property', theme: '#0ea5e9' });
+      }
+    };
+    loadProp();
+  }, [id]);
 
   // Using a simple date input for calendar selection
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);

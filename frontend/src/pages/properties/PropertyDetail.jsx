@@ -40,106 +40,93 @@ export default function PropertyDetail() {
     return false;
   };
   
-  // Local state for property data
-  const [propertyData, setPropertyData] = useState(() => {
-    const saved = localStorage.getItem(`emerald_property_${id}`);
-    if (saved) return JSON.parse(saved);
-    
-    const savedList = localStorage.getItem('emerald_properties');
-    if (savedList) {
-      const properties = JSON.parse(savedList);
-      const prop = properties.find(p => p.id.toString() === id.toString());
-      if (prop) {
-        return {
-          name: prop.name,
-          scheduleTime: '10:00 AM',
-          theme: '#0ea5e9',
-          coverImage: '',
-          logo: ''
-        };
+  const [propertyData, setPropertyData] = useState(null);
+  const [rooms, setRooms] = useState([]);
+  const [managers, setManagers] = useState([]);
+  const [cleaners, setCleaners] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [editForm, setEditForm] = useState(null);
+  const [editRooms, setEditRooms] = useState([]);
+  const [editManagers, setEditManagers] = useState([]);
+  const [editCleaners, setEditCleaners] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { fetchProperties, fetchRooms } = await import('../../lib/api');
+        const properties = await fetchProperties();
+        const p = properties.find(x => x.id.toString() === id.toString());
+        
+        if (p) {
+          setPropertyData(p);
+          setEditForm(p);
+          setManagers(p.managers || []);
+          setEditManagers(p.managers || []);
+          setCleaners(p.cleaners || []);
+          setEditCleaners(p.cleaners || []);
+        } else {
+          const defaultData = { name: 'Unknown Property', scheduleTime: '10:00 AM', theme: '#0ea5e9', coverImage: null, logo: null };
+          setPropertyData(defaultData);
+          setEditForm(defaultData);
+        }
+
+        const roomData = await fetchRooms(id);
+        setRooms(roomData);
+        setEditRooms(roomData);
+        setLoading(false);
+      } catch (e) {
+        console.error('Failed to load property details', e);
+        setLoading(false);
       }
-    }
-    
-    return {
-      name: 'Emerald Grand',
-      scheduleTime: '10:00 AM',
-      theme: '#0ea5e9',
-      coverImage: '',
-      logo: ''
     };
-  });
+    loadData();
+  }, [id]);
 
-  const [rooms, setRooms] = useState(() => {
-    const saved = localStorage.getItem(`emerald_rooms_${id}`);
-    if (saved) return JSON.parse(saved);
-    return [];
-  });
-
-  const [managers, setManagers] = useState(() => {
-    const saved = localStorage.getItem(`emerald_managers_${id}`);
-    if (saved) return JSON.parse(saved);
-    return [];
-  });
-
-  const [cleaners, setCleaners] = useState(() => {
-    const saved = localStorage.getItem(`emerald_cleaners_${id}`);
-    if (saved) return JSON.parse(saved);
-    return [];
-  });
-
-  const [editForm, setEditForm] = useState({ ...propertyData });
-  const [editRooms, setEditRooms] = useState([...rooms]);
-  const [editManagers, setEditManagers] = useState([...managers]);
-  const [editCleaners, setEditCleaners] = useState([...cleaners]);
-
-  // Persist changes
-  useEffect(() => {
-    localStorage.setItem(`emerald_property_${id}`, JSON.stringify(propertyData));
-  }, [propertyData, id]);
-
-  useEffect(() => {
-    localStorage.setItem(`emerald_rooms_${id}`, JSON.stringify(rooms));
-  }, [rooms, id]);
-
-  useEffect(() => {
-    localStorage.setItem(`emerald_managers_${id}`, JSON.stringify(managers));
-  }, [managers, id]);
-
-  useEffect(() => {
-    localStorage.setItem(`emerald_cleaners_${id}`, JSON.stringify(cleaners));
-  }, [cleaners, id]);
-
-  const handleUpdateProperty = () => {
-    const updatedData = { ...editForm };
-    setPropertyData(updatedData);
-    
-    // Update global list for PropertyList view
-    const savedList = localStorage.getItem('emerald_properties');
-    let properties = savedList ? JSON.parse(savedList) : [];
-    
-    const index = properties.findIndex(p => p.id.toString() === id.toString());
-    const propertySummary = {
-      id: properties[index]?.id || (isNaN(id) ? id : Number(id)),
-      name: updatedData.name,
-      logo: updatedData.logo,
-      coverImage: updatedData.coverImage,
-      rooms: editRooms.filter(r => r.name.trim() !== '').length,
-      managers: editManagers.filter(m => m.name.trim() !== '').length
+  const handleUpdateProperty = async () => {
+    const updatedData = { 
+      ...editForm,
+      id,
+      managers: editManagers.filter(m => m.name.trim() !== ''),
+      cleaners: editCleaners.filter(c => c.name.trim() !== '')
     };
+    
+    try {
+      const { saveProperty, saveRoom, deleteRoom } = await import('../../lib/api');
+      await saveProperty(updatedData);
+      
+      setPropertyData(updatedData);
+      setManagers(updatedData.managers);
+      setCleaners(updatedData.cleaners);
 
-    if (index !== -1) {
-      properties[index] = propertySummary;
-    } else {
-      properties.push(propertySummary);
+      // Handle rooms
+      const validRooms = editRooms.filter(r => r.name.trim() !== '');
+      for (const r of validRooms) {
+        await saveRoom({
+          id: r.id || Date.now().toString(),
+          property_id: id,
+          name: r.name,
+          intervalDays: r.intervalDays || 0,
+          lastCleaned: r.lastCleaned || 'Never'
+        });
+      }
+
+      // Refresh rooms from server to ensure IDs match
+      const { fetchRooms } = await import('../../lib/api');
+      const freshRooms = await fetchRooms(id);
+      setRooms(freshRooms);
+      setEditRooms(freshRooms);
+
+      setIsEditing(false);
+      setSuccessMessage('Property updated successfully');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (e) {
+      console.error('Failed to update property', e);
     }
-    localStorage.setItem('emerald_properties', JSON.stringify(properties));
-
-    // Save rooms from edit state as well
-    setRooms([...editRooms].filter(r => r.name.trim() !== ''));
-    setManagers([...editManagers].filter(m => m.name.trim() !== ''));
-    setCleaners([...editCleaners].filter(c => c.name.trim() !== ''));
-    setIsEditing(false);
   };
+
+  if (loading) return <div className="p-8 text-center text-slate-500">Loading property details...</div>;
+
 
   const handleCancelEdit = () => {
     setEditForm({ ...propertyData });

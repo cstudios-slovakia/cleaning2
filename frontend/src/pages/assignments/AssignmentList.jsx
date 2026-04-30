@@ -4,7 +4,7 @@ import { ChevronDown, ChevronRight, AlertTriangle, Clock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from './AssignmentDetail';
-import { fetchAssignments } from '../../lib/api';
+import { fetchAssignments, fetchProperties } from '../../lib/api';
 
 export default function AssignmentList() {
   const [expandedGroups, setExpandedGroups] = useState({
@@ -21,6 +21,22 @@ export default function AssignmentList() {
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
   const [dbAssignments, setDbAssignments] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [loadingProps, setLoadingProps] = useState(true);
+
+  useEffect(() => {
+    const loadProperties = async () => {
+      try {
+        const data = await fetchProperties();
+        setProperties(data);
+      } catch (e) {
+        console.error('Failed to load properties', e);
+      } finally {
+        setLoadingProps(false);
+      }
+    };
+    loadProperties();
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -39,7 +55,6 @@ export default function AssignmentList() {
 
   // Helper to get property data for the slideout
   const getPropertyData = (propertyName) => {
-    const properties = JSON.parse(localStorage.getItem('emerald_properties') || '[]');
     const prop = properties.find(p => p.name === propertyName);
     if (prop) return prop;
     

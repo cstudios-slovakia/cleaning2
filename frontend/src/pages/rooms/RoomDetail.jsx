@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical } from 'lucide-react';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from '../assignments/AssignmentDetail';
+import { fetchRoomDetails, saveRoom } from '../../lib/api';
+import { useAssignments } from '../../hooks/useAssignments';
 
 export default function RoomDetail({ roomId, isSlideout, propertyName, roomName, initialTab = 'settings' }) {
   const { id: paramId } = useParams();
@@ -11,7 +13,6 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
   const [isEditing, setIsEditing] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
   
-  // Local state for room data
   const [roomData, setRoomData] = useState({
     name: roomName || 'Room 101',
     property: propertyName || 'Emerald Grand',
@@ -24,54 +25,54 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
   const [isAssignmentSlideoutOpen, setIsAssignmentSlideoutOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load data on mount or ID change
+  const { assignments } = useAssignments();
+
   useEffect(() => {
-    const saved = localStorage.getItem(`emerald_room_${id}`);
-    if (saved) {
-      setRoomData(JSON.parse(saved));
-    } else if (roomName || propertyName) {
-      setRoomData(prev => ({
-        ...prev,
-        name: roomName || prev.name,
-        property: propertyName || prev.property
-      }));
-    }
-    setIsLoaded(true);
+    const loadRoom = async () => {
+      try {
+        const data = await fetchRoomDetails(id);
+        if (data) {
+          // Normalize tasks structure from API
+          const normalizedTasks = (data.tasks || []).map(t => ({
+            id: t.id,
+            text: t.title, // Maps DB 'title' to frontend 'text'
+            position: t.position
+          }));
+          setRoomData({ ...data, tasks: normalizedTasks });
+        } else if (roomName || propertyName) {
+          setRoomData(prev => ({ ...prev, name: roomName || prev.name, property: propertyName || prev.property }));
+        }
+        setIsLoaded(true);
+      } catch (e) {
+        console.error('Failed to load room', e);
+        setIsLoaded(true);
+      }
+    };
+    if (id) loadRoom();
   }, [id, roomName, propertyName]);
 
-  // Fetch log data
   useEffect(() => {
-    if (!isLoaded) return;
-    const assignments = [];
-    for(let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key.startsWith('emerald_assignment_')) {
-        try {
-          const a = JSON.parse(localStorage.getItem(key));
-          if (a.room === roomData.name && a.property === roomData.property && a.doneBy) {
-            assignments.push(a);
-          }
-        } catch(e) {}
-      }
-    }
-    assignments.sort((a, b) => new Date(b.doneAt) - new Date(a.doneAt));
-    setCompletedAssignments(assignments);
-  }, [roomData.name, roomData.property, isLoaded]);
+    if (!isLoaded || !roomData.name) return;
+    const logs = assignments.filter(a => a.room === roomData.name && a.property === roomData.property && a.doneBy);
+    logs.sort((a, b) => new Date(b.doneAt) - new Date(a.doneAt));
+    setCompletedAssignments(logs);
+  }, [assignments, roomData.name, roomData.property, isLoaded]);
 
-  // Edit form state
   const [editForm, setEditForm] = useState({ ...roomData });
 
-  // Sync editForm when roomData is loaded
   useEffect(() => {
-    if (isLoaded) {
-      setEditForm({ ...roomData });
-    }
+    if (isLoaded) setEditForm({ ...roomData });
   }, [roomData, isLoaded]);
 
-  // Persist changes
-  const persistRoomData = (newData) => {
-    localStorage.setItem(`emerald_room_${id}`, JSON.stringify(newData));
-    setRoomData(newData);
+  const persistRoomData = async (newData) => {
+    try {
+      // Map frontend 'text' back to DB 'title'
+      const dbTasks = newData.tasks.map((t, i) => ({ title: t.text, position: i }));
+      await saveRoom({ ...newData, tasks: dbTasks });
+      setRoomData(newData);
+    } catch (e) {
+      console.error('Failed to save room', e);
+    }
   };
 
   const handleUpdateRoom = () => {

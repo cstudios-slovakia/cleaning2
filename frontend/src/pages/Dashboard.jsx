@@ -1,23 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { RefreshCcw, FileText, CheckCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
-
-const mockProperties = [
-  { id: 1, name: 'Grand Hotel' },
-  { id: 2, name: 'City Center' },
-  { id: 3, name: 'Riverside' }
-];
-
-const mockRooms = [
-  { id: 101, propId: 1, name: 'Room 101', status: 'ok' },
-  { id: 102, propId: 1, name: 'Room 102', status: 'due' },
-  { id: 103, propId: 1, name: 'Lobby', status: 'overdue' },
-  { id: 201, propId: 2, name: 'Apt 4A', status: 'immediate' },
-  { id: 202, propId: 2, name: 'Apt 4B', status: 'cleaning' },
-  { id: 301, propId: 3, name: 'Suite 1', status: 'ok' },
-];
+import { fetchProperties, fetchRooms } from '../lib/api';
+import { useAssignments } from '../hooks/useAssignments';
 
 export default function Dashboard() {
+  const [properties, setProperties] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { assignments } = useAssignments();
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const p = await fetchProperties();
+      const r = await fetchRooms();
+      setProperties(p);
+      setRooms(r);
+    } catch (e) {
+      console.error('Failed to load dashboard data', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
   const getStatusStyle = (status) => {
     switch (status) {
       case 'ok': return 'bg-slate-100 text-slate-400';
@@ -29,6 +39,14 @@ export default function Dashboard() {
     }
   };
 
+  // Compute stats
+  const activeAssignments = assignments.filter(a => !a.doneBy);
+  const completedToday = assignments.filter(a => {
+    if (!a.doneBy || !a.doneAt) return false;
+    const today = new Date().toLocaleDateString();
+    return a.doneAt.includes(today) || a.date === 'Today'; // Simple check
+  }).length;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
@@ -36,8 +54,11 @@ export default function Dashboard() {
           <h2 className="text-4xl font-black text-slate-900 tracking-tighter leading-none mb-2 uppercase">System Landscape</h2>
           <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Key performance indicators and status.</p>
         </div>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 shadow-sm transition-colors">
-          <RefreshCcw size={16} />
+        <button 
+          onClick={loadData}
+          className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 shadow-sm transition-colors"
+        >
+          <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
           <span>Refresh</span>
         </button>
       </div>
@@ -46,15 +67,15 @@ export default function Dashboard() {
         <div className="rounded-2xl p-6 bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-md relative overflow-hidden">
           <FileText size={120} className="absolute -right-6 -bottom-6 text-white/10" />
           <p className="text-blue-100 font-semibold text-sm tracking-wider uppercase mb-2">Assignments Due</p>
-          <h3 className="text-4xl font-extrabold mb-1">24</h3>
-          <p className="text-sm text-blue-100">8 overdue across properties</p>
+          <h3 className="text-4xl font-extrabold mb-1">{activeAssignments.length}</h3>
+          <p className="text-sm text-blue-100">Across {properties.length} properties</p>
         </div>
         
         <div className="rounded-2xl p-6 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-md relative overflow-hidden">
           <CheckCircle size={120} className="absolute -right-6 -bottom-6 text-white/10" />
           <p className="text-emerald-100 font-semibold text-sm tracking-wider uppercase mb-2">Completed Today</p>
-          <h3 className="text-4xl font-extrabold mb-1">17</h3>
-          <p className="text-sm text-emerald-100">92% completion rate</p>
+          <h3 className="text-4xl font-extrabold mb-1">{completedToday}</h3>
+          <p className="text-sm text-emerald-100">Across all teams</p>
         </div>
 
         <div className="card p-6 flex flex-col justify-center">
@@ -78,31 +99,43 @@ export default function Dashboard() {
             <thead>
               <tr>
                 <th className="pb-4 font-semibold text-slate-500 text-sm w-1/4 uppercase tracking-wider">Room</th>
-                {mockProperties.map(p => (
+                {properties.map(p => (
                   <th key={p.id} className="pb-4 font-semibold text-slate-700 text-center">{p.name}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {mockRooms.map(room => (
-                <tr key={room.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="py-4 font-medium text-slate-800">{room.name}</td>
-                  {mockProperties.map(p => (
-                    <td key={p.id} className="py-4 text-center">
-                      {room.propId === p.id ? (
-                        <div 
-                          className={cn("w-10 h-10 mx-auto rounded-xl shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center justify-center font-bold text-xs", getStatusStyle(room.status))}
-                          title={`Status: ${room.status}`}
-                        >
-                          {room.status === 'ok' && '✓'}
-                        </div>
-                      ) : (
-                        <div className="w-10 h-10 mx-auto rounded-xl bg-slate-50 border border-slate-100"></div>
-                      )}
-                    </td>
-                  ))}
+              {rooms.map(room => {
+                // Determine mock status based on active assignments
+                const hasAssignment = activeAssignments.some(a => a.room === room.name && a.property === room.property);
+                const status = hasAssignment ? 'due' : 'ok';
+                return (
+                  <tr key={room.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="py-4 font-medium text-slate-800">{room.name}</td>
+                    {properties.map(p => (
+                      <td key={p.id} className="py-4 text-center">
+                        {room.property_id === p.id ? (
+                          <div 
+                            className={cn("w-10 h-10 mx-auto rounded-xl shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center justify-center font-bold text-xs", getStatusStyle(status))}
+                            title={`Status: ${status}`}
+                          >
+                            {status === 'ok' && '✓'}
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 mx-auto rounded-xl bg-slate-50 border border-slate-100"></div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+              {rooms.length === 0 && (
+                <tr>
+                  <td colSpan={properties.length + 1} className="py-8 text-center text-slate-500">
+                    No rooms added yet.
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
