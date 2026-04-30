@@ -139,7 +139,7 @@ export default function UserList() {
                         <div>
                           <p className="font-bold text-slate-800">{user.name}</p>
                           <p className="text-sm text-slate-500">
-                            {user.role === 'cleaner' ? `@${user.username || 'unknown'}` : user.email}
+                            {user.role === 'cleaner' ? `PIN: ${user.username || '?'}` : user.email}
                           </p>
                         </div>
                       </div>
@@ -204,7 +204,9 @@ export default function UserList() {
             </div>
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Full Name</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  {editUser.role === 'cleaner' ? 'Username' : 'Full Name'}
+                </label>
                 <input 
                   type="text" 
                   value={editUser.name}
@@ -229,13 +231,13 @@ export default function UserList() {
 
               {editUser.role === 'cleaner' ? (
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Username (PIN)</label>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">PIN</label>
                   <input 
-                    type="text" 
+                    type="number" 
                     value={editUser.username}
                     onChange={(e) => setEditUser({...editUser, username: e.target.value})}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="e.g. maria"
+                    placeholder="e.g. 1234"
                   />
                 </div>
               ) : (
