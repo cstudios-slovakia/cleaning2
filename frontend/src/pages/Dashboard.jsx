@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCcw, FileText, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { fetchProperties, fetchRooms } from '../lib/api';
 import { useAssignments } from '../hooks/useAssignments';
@@ -63,7 +64,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="rounded-2xl p-6 bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-md relative overflow-hidden">
           <FileText size={120} className="absolute -right-6 -bottom-6 text-white/10" />
           <p className="text-blue-100 font-semibold text-sm tracking-wider uppercase mb-2">Assignments Due</p>
@@ -77,22 +78,18 @@ export default function Dashboard() {
           <h3 className="text-4xl font-extrabold mb-1">{completedToday}</h3>
           <p className="text-sm text-emerald-100">Across all teams</p>
         </div>
-
-        <div className="card p-6 flex flex-col justify-center">
-          <h3 className="text-slate-800 font-bold mb-4">Legend</h3>
-          <div className="grid grid-cols-2 gap-3 text-sm font-medium text-slate-600">
-            <div className="flex items-center space-x-2"><div className="w-3 h-3 rounded-full bg-slate-200"></div><span>OK</span></div>
-            <div className="flex items-center space-x-2"><div className="w-3 h-3 rounded-full bg-blue-500"></div><span>Due</span></div>
-            <div className="flex items-center space-x-2"><div className="w-3 h-3 rounded-full bg-orange-500"></div><span>Overdue</span></div>
-            <div className="flex items-center space-x-2"><div className="w-3 h-3 rounded-full bg-red-500"></div><span>Immediate</span></div>
-            <div className="flex items-center space-x-2"><div className="w-3 h-3 rounded-full bg-purple-500"></div><span>Cleaning</span></div>
-          </div>
-        </div>
       </div>
 
       <div className="card">
-        <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+        <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h3 className="font-bold text-slate-800">Property Status Matrix</h3>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <div className="flex items-center space-x-1.5"><div className="w-2.5 h-2.5 rounded-full bg-slate-200"></div><span>OK</span></div>
+            <div className="flex items-center space-x-1.5"><div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div><span>Due</span></div>
+            <div className="flex items-center space-x-1.5"><div className="w-2.5 h-2.5 rounded-full bg-orange-500"></div><span>Overdue</span></div>
+            <div className="flex items-center space-x-1.5"><div className="w-2.5 h-2.5 rounded-full bg-red-500"></div><span>Immediate</span></div>
+            <div className="flex items-center space-x-1.5"><div className="w-2.5 h-2.5 rounded-full bg-purple-500"></div><span>Cleaning</span></div>
+          </div>
         </div>
         <div className="flex gap-6 overflow-x-auto p-5 pb-8 items-start">
           {properties.map(p => (
@@ -131,13 +128,14 @@ export default function Dashboard() {
                   }
 
                   return (
-                    <div 
+                    <Link 
                       key={room.id} 
-                      className={cn("p-4 rounded-xl border text-center font-bold text-sm transition-transform hover:scale-105 cursor-pointer shadow-sm", getStatusStyle(status))}
+                      to={`/rooms/${room.id}`}
+                      className={cn("block p-4 rounded-xl border text-center font-bold text-sm transition-transform hover:scale-105 cursor-pointer shadow-sm", getStatusStyle(status))}
                       title={`Status: ${status}`}
                     >
                       {room.name}
-                    </div>
+                    </Link>
                   );
                 })}
                 {rooms.filter(r => r.property_id === p.id).length === 0 && (
