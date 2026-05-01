@@ -5,7 +5,7 @@ import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 import Slideout from '../../components/Slideout';
 import RoomDetail from './RoomDetail';
-import { saveAssignment, fetchProperties, fetchRooms, saveRoom } from '../../lib/api';
+import { saveAssignment, fetchProperties, fetchRooms, saveRoom, fetchRoomDetails } from '../../lib/api';
 
 export default function RoomList() {
   const [groupedRooms, setGroupedRooms] = useState({});
@@ -73,24 +73,24 @@ export default function RoomList() {
   };
 
   const createAssignment = async (room, date, time) => {
-    const newId = Date.now().toString();
-    const newAssignment = {
-      id: newId,
-      property: room.property,
-      room: room.name,
-      date: date,
-      time: time,
-      doneBy: null,
-      doneAt: null,
-      tasks: [
-        { id: 1, title: 'Make bed', done: false },
-        { id: 2, title: 'Clean bathroom', done: false },
-        { id: 3, title: 'Vacuum floors', done: false },
-        { id: 4, title: 'Empty trash', done: false },
-      ]
-    };
-
     try {
+      const roomData = await fetchRoomDetails(room.id);
+      const tasks = roomData?.tasks || [];
+
+      const newId = Date.now().toString();
+      const newAssignment = {
+        id: newId,
+        property: room.property,
+        room: room.name,
+        date: date,
+        time: time,
+        doneBy: null,
+        doneAt: null,
+        tasks: tasks.length > 0
+          ? tasks.map(t => ({ title: t.title, done: false }))
+          : [{ title: 'The room is cleaned', done: false }]
+      };
+
       await saveAssignment(newAssignment);
       setSuccessMessage(`Cleaning assigned for ${room.name}`);
       setTimeout(() => setSuccessMessage(''), 3000);

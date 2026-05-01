@@ -5,7 +5,7 @@ import Slideout from '../../components/Slideout';
 import Modal from '../../components/Modal';
 import RoomDetail from '../rooms/RoomDetail';
 import AssignmentDetail from '../assignments/AssignmentDetail';
-import { saveAssignment, fetchUsers } from '../../lib/api';
+import { saveAssignment, fetchUsers, fetchRoomDetails } from '../../lib/api';
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -192,26 +192,31 @@ export default function PropertyDetail() {
     setRooms(rooms.filter(r => r.id !== roomId));
   };
 
-  const handleAssignCleaning = async (e) => {
+  const handleAssignSubmit = async (e) => {
     e.preventDefault();
     if (!assignDate || !assignRoomId) return;
 
     const room = rooms.find(r => r.id.toString() === assignRoomId.toString());
     if (!room) return;
 
-    const newId = Date.now().toString();
-    const newAssignment = {
-      id: newId,
-      property: propertyData.name,
-      room: room.name,
-      date: new Date(assignDate).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }),
-      time: '10:00 AM',
-      doneBy: null,
-      doneAt: null,
-      tasks: []
-    };
-
     try {
+      const roomData = await fetchRoomDetails(room.id);
+      const tasks = roomData?.tasks || [];
+
+      const newId = Date.now().toString();
+      const newAssignment = {
+        id: newId,
+        property: propertyData.name,
+        room: room.name,
+        date: new Date(assignDate).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }),
+        time: '10:00 AM',
+        doneBy: null,
+        doneAt: null,
+        tasks: tasks.length > 0 
+          ? tasks.map(t => ({ title: t.title, done: false })) 
+          : [{ title: 'The room is cleaned', done: false }]
+      };
+
       await saveAssignment(newAssignment);
       setIsAssignModalOpen(false);
       setAssignDate('');
@@ -232,24 +237,29 @@ export default function PropertyDetail() {
     
     if (rooms.length === 1) {
       const room = rooms[0];
-      const newId = Date.now().toString();
-      const newAssignment = {
-        id: newId,
-        property: propertyData.name,
-        room: room.name,
-        date: 'Today',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        doneBy: null,
-        doneAt: null,
-        tasks: []
-      };
-      
       try {
+        const roomData = await fetchRoomDetails(room.id);
+        const tasks = roomData?.tasks || [];
+
+        const newId = Date.now().toString();
+        const newAssignment = {
+          id: newId,
+          property: propertyData.name,
+          room: room.name,
+          date: 'Today',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          doneBy: null,
+          doneAt: null,
+          tasks: tasks.length > 0 
+            ? tasks.map(t => ({ title: t.title, done: false })) 
+            : [{ title: 'The room is cleaned', done: false }]
+        };
+        
         await saveAssignment(newAssignment);
         setSuccessMessage(`Express cleaning started for ${room.name}`);
         setTimeout(() => setSuccessMessage(''), 3000);
       } catch (err) {
-        console.error('Failed to create express assignment', err);
+        console.error('Failed to start express cleaning', err);
       }
     } else {
       setAssignDate(new Date().toISOString().split('T')[0]);
