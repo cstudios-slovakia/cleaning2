@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCcw, FileText, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn } from '../lib/utils';
+import { cn, parseDateString } from '../lib/utils';
 import { fetchProperties, fetchRooms } from '../lib/api';
 import { useAssignments } from '../hooks/useAssignments';
 
@@ -45,11 +45,11 @@ export default function Dashboard() {
   const activeAssignments = assignments.filter(a => !a.doneBy);
   const completedAssignments = assignments
     .filter(a => a.doneBy && a.doneAt)
-    .sort((a, b) => new Date(b.doneAt) - new Date(a.doneAt));
+    .sort((a, b) => parseDateString(b.doneAt) - parseDateString(a.doneAt));
 
   const todaysCleanings = completedAssignments.filter(a => {
     const today = new Date().toLocaleDateString();
-    return a.doneAt.includes(today) || a.date === 'Today';
+    return parseDateString(a.doneAt).toLocaleDateString() === today || a.date === 'Today';
   });
 
   const completedToday = todaysCleanings.length;
@@ -70,21 +70,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-md relative overflow-hidden">
-          <FileText size={120} className="absolute -right-6 -bottom-6 text-white/10" />
-          <p className="text-blue-100 font-semibold text-sm tracking-wider uppercase mb-2">Assignments Due</p>
-          <h3 className="text-4xl font-extrabold mb-1">{activeAssignments.length}</h3>
-          <p className="text-sm text-blue-100">Across {properties.length} properties</p>
-        </div>
-        
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-md relative overflow-hidden">
-          <CheckCircle size={120} className="absolute -right-6 -bottom-6 text-white/10" />
-          <p className="text-emerald-100 font-semibold text-sm tracking-wider uppercase mb-2">Completed Today</p>
-          <h3 className="text-4xl font-extrabold mb-1">{completedToday}</h3>
-          <p className="text-sm text-emerald-100">Across all teams</p>
-        </div>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Today's Tasks Matrix */}
@@ -157,45 +143,57 @@ export default function Dashboard() {
 
         {/* Tabbed Activity Card */}
         <div className="card h-full flex flex-col min-h-[500px]">
-          <div className="border-b border-slate-100 bg-slate-50/50 p-1 flex">
-            <button
-              onClick={() => setActiveLogsTab('today')}
-              className={cn(
-                "flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all",
-                activeLogsTab === 'today' ? "bg-white text-blue-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
-              )}
-            >
-              Today's Cleanings
-            </button>
-            <button
-              onClick={() => setActiveLogsTab('logs')}
-              className={cn(
-                "flex-1 py-3 text-xs font-bold uppercase tracking-widest rounded-xl transition-all",
-                activeLogsTab === 'logs' ? "bg-white text-blue-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
-              )}
-            >
-              Recent Logs
-            </button>
+          <div className="p-2 border-b border-slate-100 bg-slate-50/50">
+            <div className="flex bg-slate-200/50 p-1 rounded-xl w-full">
+              <button
+                onClick={() => setActiveLogsTab('today')}
+                className={cn(
+                  "flex-1 py-3 text-xs font-extrabold uppercase tracking-widest rounded-lg transition-all",
+                  activeLogsTab === 'today' ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
+                )}
+              >
+                Today's Cleanings
+              </button>
+              <button
+                onClick={() => setActiveLogsTab('logs')}
+                className={cn(
+                  "flex-1 py-3 text-xs font-extrabold uppercase tracking-widest rounded-lg transition-all",
+                  activeLogsTab === 'logs' ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
+                )}
+              >
+                Recent Logs
+              </button>
+            </div>
           </div>
           
           <div className="p-0 flex-1 overflow-y-auto max-h-[600px]">
             {activeLogsTab === 'today' ? (
               <div className="h-full">
                 {todaysCleanings.length > 0 ? (
-                  <ul className="divide-y divide-slate-100">
-                    {todaysCleanings.map(a => (
-                      <li key={a.id} className="p-4 hover:bg-slate-50 transition-colors">
-                        <p className="font-bold text-slate-800">{a.room} <span className="text-slate-400 font-medium text-xs ml-1 uppercase tracking-wider">({a.property})</span></p>
-                        <div className="flex items-center space-x-2 text-sm mt-1.5">
-                          <span className="font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md text-xs">✓ Cleaned by {a.doneBy}</span>
-                          <span className="text-slate-300">•</span>
-                          <span className="text-slate-500 font-medium text-xs">
-                            {new Date(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div className="px-6 py-6 space-y-6">
+                    {todaysCleanings.map((a, i) => (
+                      <div key={a.id} className="relative pl-6">
+                        {i !== todaysCleanings.length - 1 && (
+                          <div className="absolute left-2 top-6 bottom-[-24px] w-0.5 bg-slate-100"></div>
+                        )}
+                        <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-white bg-emerald-500 shadow-sm"></div>
+                        
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                          <div>
+                            <p className="font-bold text-slate-800 text-sm">
+                              {a.room} <span className="text-slate-400 font-medium text-[10px] ml-1 uppercase tracking-wider">({a.property})</span>
+                            </p>
+                            <div className="flex items-center space-x-1.5 text-xs mt-1">
+                              <span className="font-semibold text-emerald-600">✓ Cleaned by {a.doneBy}</span>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-50 px-2 py-1 rounded-md">
+                            {parseDateString(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 ) : (
                   <div className="p-12 text-center flex flex-col items-center justify-center h-full opacity-60">
                     <CheckCircle size={40} className="text-slate-300 mb-4" />
@@ -206,23 +204,31 @@ export default function Dashboard() {
             ) : (
               <div className="h-full">
                 {completedAssignments.length > 0 ? (
-                  <ul className="divide-y divide-slate-100">
-                    {completedAssignments.slice(0, 50).map(a => (
-                      <li key={a.id} className="p-4 hover:bg-slate-50 transition-colors">
-                        <div className="flex justify-between items-start gap-4">
+                  <div className="px-6 py-6 space-y-6">
+                    {completedAssignments.slice(0, 50).map((a, i) => (
+                      <div key={a.id} className="relative pl-6">
+                        {i !== Math.min(completedAssignments.length, 50) - 1 && (
+                          <div className="absolute left-2 top-6 bottom-[-24px] w-0.5 bg-slate-100"></div>
+                        )}
+                        <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-white bg-blue-500 shadow-sm"></div>
+                        
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                           <div>
-                            <p className="font-bold text-slate-800">{a.room} <span className="text-slate-400 font-medium text-xs ml-1 uppercase tracking-wider">({a.property})</span></p>
-                            <p className="text-xs text-slate-500 mt-1">
+                            <p className="font-bold text-slate-800 text-sm">
+                              {a.room} <span className="text-slate-400 font-medium text-[10px] ml-1 uppercase tracking-wider">({a.property})</span>
+                            </p>
+                            <p className="text-xs text-slate-500 mt-0.5">
                               <span className="font-semibold text-slate-700">{a.doneBy}</span> completed cleaning
                             </p>
                           </div>
-                          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-1 rounded-lg shrink-0">
-                            {new Date(a.doneAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-50 px-2 py-1 rounded-md">
+                            {parseDateString(a.doneAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}{' '}
+                            {parseDateString(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 ) : (
                   <div className="p-12 text-center flex flex-col items-center justify-center h-full opacity-60">
                     <FileText size={40} className="text-slate-300 mb-4" />

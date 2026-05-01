@@ -58,7 +58,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     if (!canEdit) return;
     
     const now = new Date();
-    const doneAt = now.toLocaleString();
+    const doneAt = now.toISOString();
     
     const newAssignment = { 
       ...assignment, 
