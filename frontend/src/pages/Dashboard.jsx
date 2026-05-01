@@ -84,7 +84,9 @@ export default function Dashboard() {
         time: 'Immediate',
         doneBy: null,
         doneAt: null,
-        tasks: tasks.map(t => ({ title: t.title, done: false }))
+        tasks: tasks.length > 0 
+          ? tasks.map(t => ({ title: t.title, done: false }))
+          : [{ title: 'The room is cleaned', done: false }]
       };
       
       await saveAssignment(newAssignment);
