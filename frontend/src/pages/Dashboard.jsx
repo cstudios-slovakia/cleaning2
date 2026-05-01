@@ -61,6 +61,8 @@ export default function Dashboard() {
     return 'ok';
   };
 
+  const activeAssignments = assignments.filter(a => !a.doneBy);
+  
   const pendingTodayOrOverdue = activeAssignments.filter(a => {
     const status = getAssignmentStatus(a);
     return status === 'due' || status === 'overdue';
