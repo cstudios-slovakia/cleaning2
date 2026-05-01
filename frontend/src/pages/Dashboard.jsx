@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RefreshCcw, FileText, CheckCircle, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn, parseDateString } from '../lib/utils';
-import { fetchProperties, fetchRooms, saveAssignment } from '../lib/api';
+import { fetchProperties, fetchRooms, saveAssignment, fetchRoomDetails } from '../lib/api';
 import { useAssignments } from '../hooks/useAssignments';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -63,31 +63,37 @@ export default function Dashboard() {
     return 'ok';
   };
 
-  const handleExpressClean = async (e, propertyName, roomName) => {
+  const handleCreateImmediateAssignment = async (e, property, room) => {
     e.preventDefault();
     e.stopPropagation();
     
-    const targetAssignment = activeAssignments.find(a => a.room === roomName && a.property === propertyName);
-    
-    if (!targetAssignment) {
-      return;
-    }
-
-    if (!confirm(`Express Clean: Mark ${roomName} as finished?`)) return;
+    if (!confirm(`Create immediate cleaning assignment for ${room.name}?`)) return;
 
     try {
-      const now = new Date();
-      const updatedAssignment = {
-        ...targetAssignment,
-        doneBy: user?.name || 'Quick Clean',
-        doneAt: now.toISOString(),
-        tasks: targetAssignment.tasks?.map(t => ({ ...t, done: true })) || []
+      setLoading(true);
+      // 1. Fetch room tasks
+      const roomData = await fetchRoomDetails(room.id); 
+      const tasks = roomData?.tasks || [];
+
+      // 2. Create new immediate assignment
+      const newAssignment = {
+        id: Date.now().toString(),
+        property: property.name,
+        room: room.name,
+        date: 'Today',
+        time: 'Immediate',
+        doneBy: null,
+        doneAt: null,
+        tasks: tasks.map(t => ({ title: t.title, done: false }))
       };
       
-      await saveAssignment(updatedAssignment);
+      await saveAssignment(newAssignment);
       loadData();
     } catch (err) {
-      console.error("Express clean failed", err);
+      console.error("Failed to create assignment", err);
+      alert("Failed to create immediate assignment.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,15 +173,16 @@ export default function Dashboard() {
                         >
                           {room.name}
                         </Link>
-                        {status !== 'ok' && (
                           <button
-                            onClick={(e) => handleExpressClean(e, p.name, room.name)}
-                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-md bg-white/20 hover:bg-white/40 text-white transition-colors opacity-0 group-hover/item:opacity-100"
-                            title="Express Clean"
+                            onClick={(e) => handleCreateImmediateAssignment(e, p, room)}
+                            className={cn(
+                              "absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-all opacity-0 group-hover/item:opacity-100",
+                              status === 'ok' ? "bg-slate-200 hover:bg-slate-300 text-slate-600" : "bg-white/20 hover:bg-white/40 text-white"
+                            )}
+                            title="Create Immediate Assignment"
                           >
-                            <Zap size={12} fill="currentColor" />
+                            <Zap size={10} fill="currentColor" />
                           </button>
-                        )}
                       </div>
                     );
                   })}
