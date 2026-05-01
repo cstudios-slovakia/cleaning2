@@ -41,18 +41,36 @@ export default function Dashboard() {
     }
   };
 
+  const getAssignmentStatus = (a) => {
+    if (a.date === 'Today' || a.time?.includes('Today')) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const timeMatch = a.time?.match(/(\d{1,2}):(\d{2})/);
+      if (timeMatch) {
+        const isPM = a.time.toLowerCase().includes('pm');
+        let hours = parseInt(timeMatch[1]);
+        if (isPM && hours !== 12) hours += 12;
+        if (!isPM && hours === 12) hours = 0;
+        const scheduledMinutes = hours * 60 + parseInt(timeMatch[2]);
+        if (scheduledMinutes < currentMinutes) return 'overdue';
+      }
+      return 'due';
+    } else if (a.date?.includes('Yesterday') || a.time?.includes('Yesterday')) {
+      return 'overdue';
+    }
+    return 'ok';
+  };
+
+  const pendingTodayOrOverdue = activeAssignments.filter(a => {
+    const status = getAssignmentStatus(a);
+    return status === 'due' || status === 'overdue';
+  });
+
   // Compute stats
-  const activeAssignments = assignments.filter(a => !a.doneBy);
+  const activeAssignmentsCount = activeAssignments.length;
   const completedAssignments = assignments
     .filter(a => a.doneBy && a.doneAt)
     .sort((a, b) => parseDateString(b.doneAt) - parseDateString(a.doneAt));
-
-  const todaysCleanings = completedAssignments.filter(a => {
-    const today = new Date().toLocaleDateString();
-    return parseDateString(a.doneAt).toLocaleDateString() === today || a.date === 'Today';
-  });
-
-  const completedToday = todaysCleanings.length;
 
   return (
     <div className="space-y-6">
@@ -97,28 +115,12 @@ export default function Dashboard() {
                     
                     let status = 'ok';
                     for (const a of roomAssignments) {
-                      let isOverdue = false;
-                      if (a.date === 'Today' || a.time?.includes('Today')) {
-                        const now = new Date();
-                        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-                        const timeMatch = a.time?.match(/(\d{1,2}):(\d{2})/);
-                        if (timeMatch) {
-                          const isPM = a.time.toLowerCase().includes('pm');
-                          let hours = parseInt(timeMatch[1]);
-                          if (isPM && hours !== 12) hours += 12;
-                          if (!isPM && hours === 12) hours = 0;
-                          const scheduledMinutes = hours * 60 + parseInt(timeMatch[2]);
-                          if (scheduledMinutes < currentMinutes) isOverdue = true;
-                        }
-                      } else if (a.date?.includes('Yesterday') || a.time?.includes('Yesterday')) {
-                        isOverdue = true;
-                      }
-                      
-                      if (isOverdue) {
+                      const aStatus = getAssignmentStatus(a);
+                      if (aStatus === 'overdue') {
                         status = 'overdue';
                         break;
                       }
-                      if (a.date === 'Today') status = 'due';
+                      if (aStatus === 'due') status = 'due';
                     }
 
                     return (
@@ -152,7 +154,7 @@ export default function Dashboard() {
                   activeLogsTab === 'today' ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
                 )}
               >
-                Today's Cleanings
+                Pending Today
               </button>
               <button
                 onClick={() => setActiveLogsTab('logs')}
@@ -168,36 +170,42 @@ export default function Dashboard() {
           
           <div className="p-0 flex-1 overflow-y-auto max-h-[600px]">
             {activeLogsTab === 'today' ? (
-              <div className="h-full">
-                {todaysCleanings.length > 0 ? (
-                  <div className="px-6 py-6 space-y-6">
-                    {todaysCleanings.map((a, i) => (
-                      <div key={a.id} className="relative pl-6">
-                        {i !== todaysCleanings.length - 1 && (
-                          <div className="absolute left-2 top-6 bottom-[-24px] w-0.5 bg-slate-100"></div>
-                        )}
-                        <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-white bg-emerald-500 shadow-sm"></div>
-                        
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                          <div>
-                            <p className="font-bold text-slate-800 text-sm">
-                              {a.room} <span className="text-slate-400 font-medium text-[10px] ml-1 uppercase tracking-wider">({a.property})</span>
-                            </p>
-                            <div className="flex items-center space-x-1.5 text-xs mt-1">
-                              <span className="font-semibold text-emerald-600">✓ Cleaned by {a.doneBy}</span>
+              <div className="h-full p-4">
+                {pendingTodayOrOverdue.length > 0 ? (
+                  <div className="space-y-3">
+                    {pendingTodayOrOverdue.map((a) => {
+                      const status = getAssignmentStatus(a);
+                      return (
+                        <Link key={a.id} to={`/assignments/${a.id}`} className="block p-4 bg-white border border-slate-100 hover:border-blue-200 rounded-xl shadow-sm hover:shadow-md transition-all group">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                                {a.room} <span className="text-slate-400 font-medium text-[10px] ml-1 uppercase tracking-wider">({a.property})</span>
+                              </p>
+                              <div className="flex items-center space-x-2 mt-1.5">
+                                {status === 'overdue' ? (
+                                  <span className="text-[10px] font-bold text-white bg-orange-500 px-2 py-0.5 rounded-md uppercase tracking-wider">Overdue</span>
+                                ) : (
+                                  <span className="text-[10px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-md uppercase tracking-wider">Due Today</span>
+                                )}
+                                <span className="text-xs text-slate-500 font-medium flex items-center">
+                                  <div className="w-1 h-1 rounded-full bg-slate-300 mx-1.5"></div>
+                                  {a.time}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-slate-300 group-hover:text-blue-500 transition-colors">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                             </div>
                           </div>
-                          <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-50 px-2 py-1 rounded-md">
-                            {parseDateString(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                        </Link>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="p-12 text-center flex flex-col items-center justify-center h-full opacity-60">
                     <CheckCircle size={40} className="text-slate-300 mb-4" />
-                    <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Nothing finished today yet</p>
+                    <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">No pending tasks today</p>
                   </div>
                 )}
               </div>
