@@ -42,11 +42,16 @@ export default function Dashboard() {
 
   // Compute stats
   const activeAssignments = assignments.filter(a => !a.doneBy);
-  const completedToday = assignments.filter(a => {
-    if (!a.doneBy || !a.doneAt) return false;
+  const completedAssignments = assignments
+    .filter(a => a.doneBy && a.doneAt)
+    .sort((a, b) => new Date(b.doneAt) - new Date(a.doneAt));
+
+  const todaysCleanings = completedAssignments.filter(a => {
     const today = new Date().toLocaleDateString();
-    return a.doneAt.includes(today) || a.date === 'Today'; // Simple check
-  }).length;
+    return a.doneAt.includes(today) || a.date === 'Today';
+  });
+
+  const completedToday = todaysCleanings.length;
 
   return (
     <div className="space-y-6">
@@ -149,6 +154,69 @@ export default function Dashboard() {
               No properties available.
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="card flex flex-col max-h-[500px]">
+          <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+            <h3 className="font-bold text-slate-800">Today's Cleanings</h3>
+          </div>
+          <div className="p-0 flex-1 overflow-y-auto">
+            {todaysCleanings.length > 0 ? (
+              <ul className="divide-y divide-slate-100">
+                {todaysCleanings.map(a => (
+                  <li key={a.id} className="p-4 hover:bg-slate-50 transition-colors">
+                    <p className="font-bold text-slate-800">{a.room} <span className="text-slate-400 font-medium text-xs ml-1 uppercase tracking-wider">({a.property})</span></p>
+                    <div className="flex items-center space-x-2 text-sm mt-1.5">
+                      <span className="font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">✓ Cleaned by {a.doneBy}</span>
+                      <span className="text-slate-300">•</span>
+                      <span className="text-slate-500 font-medium">
+                        {new Date(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="p-8 text-center flex flex-col items-center justify-center h-full">
+                <CheckCircle size={32} className="text-slate-300 mb-3" />
+                <p className="text-slate-500 font-medium">No cleanings completed today yet.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="card flex flex-col max-h-[500px]">
+          <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+            <h3 className="font-bold text-slate-800">Recent Cleaning Logs</h3>
+          </div>
+          <div className="p-0 flex-1 overflow-y-auto">
+            {completedAssignments.length > 0 ? (
+              <ul className="divide-y divide-slate-100">
+                {completedAssignments.slice(0, 50).map(a => (
+                  <li key={a.id} className="p-4 hover:bg-slate-50 transition-colors">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-bold text-slate-800">{a.room} <span className="text-slate-400 font-medium text-xs ml-1 uppercase tracking-wider">({a.property})</span></p>
+                        <p className="text-sm text-slate-500 mt-1">
+                          <span className="font-semibold text-slate-700">{a.doneBy}</span> completed cleaning
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg shrink-0">
+                        {new Date(a.doneAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="p-8 text-center flex flex-col items-center justify-center h-full">
+                <FileText size={32} className="text-slate-300 mb-3" />
+                <p className="text-slate-500 font-medium">No cleaning logs available.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
