@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCcw, FileText, CheckCircle } from 'lucide-react';
+import { RefreshCcw, FileText, CheckCircle, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn, parseDateString } from '../lib/utils';
-import { fetchProperties, fetchRooms } from '../lib/api';
+import { fetchProperties, fetchRooms, saveAssignment } from '../lib/api';
 import { useAssignments } from '../hooks/useAssignments';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
   const [properties, setProperties] = useState([]);
@@ -11,6 +12,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [activeLogsTab, setActiveLogsTab] = useState('today'); // 'today' or 'logs'
   const { assignments } = useAssignments();
+  const { user } = useAuth();
 
   const loadData = async () => {
     setLoading(true);
@@ -59,6 +61,34 @@ export default function Dashboard() {
       return 'overdue';
     }
     return 'ok';
+  };
+
+  const handleExpressClean = async (e, propertyName, roomName) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const targetAssignment = activeAssignments.find(a => a.room === roomName && a.property === propertyName);
+    
+    if (!targetAssignment) {
+      return;
+    }
+
+    if (!confirm(`Express Clean: Mark ${roomName} as finished?`)) return;
+
+    try {
+      const now = new Date();
+      const updatedAssignment = {
+        ...targetAssignment,
+        doneBy: user?.name || 'Quick Clean',
+        doneAt: now.toISOString(),
+        tasks: targetAssignment.tasks?.map(t => ({ ...t, done: true })) || []
+      };
+      
+      await saveAssignment(updatedAssignment);
+      loadData();
+    } catch (err) {
+      console.error("Express clean failed", err);
+    }
   };
 
   const activeAssignments = assignments.filter(a => !a.doneBy);
@@ -126,14 +156,27 @@ export default function Dashboard() {
                     }
 
                     return (
-                      <Link 
-                        key={room.id} 
-                        to={`/rooms/${room.id}`}
-                        className={cn("block p-3 rounded-lg border text-center font-bold text-[11px] transition-transform hover:scale-105 cursor-pointer shadow-sm", getStatusStyle(status))}
-                        title={`Status: ${status}`}
-                      >
-                        {room.name}
-                      </Link>
+                      <div key={room.id} className="relative group/item">
+                        <Link 
+                          to={`/rooms/${room.id}`}
+                          className={cn(
+                            "block p-3 rounded-lg border text-center font-bold text-[11px] transition-all hover:translate-y-[-2px] cursor-pointer shadow-sm pr-8", 
+                            getStatusStyle(status)
+                          )}
+                          title={`Status: ${status}`}
+                        >
+                          {room.name}
+                        </Link>
+                        {status !== 'ok' && (
+                          <button
+                            onClick={(e) => handleExpressClean(e, p.name, room.name)}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-md bg-white/20 hover:bg-white/40 text-white transition-colors opacity-0 group-hover/item:opacity-100"
+                            title="Express Clean"
+                          >
+                            <Zap size={12} fill="currentColor" />
+                          </button>
+                        )}
+                      </div>
                     );
                   })}
                   {rooms.filter(r => r.property_id === p.id).length === 0 && (
