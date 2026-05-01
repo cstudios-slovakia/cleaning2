@@ -30,12 +30,12 @@ export default function Dashboard() {
 
   const getStatusStyle = (status) => {
     switch (status) {
-      case 'ok': return 'bg-slate-100 text-slate-400';
-      case 'due': return 'bg-blue-100 text-blue-600 border-blue-200 border';
-      case 'overdue': return 'bg-orange-100 text-orange-600 border-orange-200 border';
-      case 'immediate': return 'bg-red-100 text-red-600 border-red-200 border';
-      case 'cleaning': return 'bg-purple-100 text-purple-600 border-purple-200 border';
-      default: return 'bg-slate-50';
+      case 'ok': return 'bg-slate-100 text-slate-500 border-slate-200';
+      case 'due': return 'bg-blue-500 text-white border-blue-600 shadow-blue-500/30 shadow-sm';
+      case 'overdue': return 'bg-orange-500 text-white border-orange-600 shadow-orange-500/30 shadow-sm';
+      case 'immediate': return 'bg-red-500 text-white border-red-600 shadow-red-500/30 shadow-sm';
+      case 'cleaning': return 'bg-purple-500 text-white border-purple-600 shadow-purple-500/30 shadow-sm';
+      default: return 'bg-slate-100 text-slate-500 border-slate-200';
     }
   };
 
@@ -94,50 +94,63 @@ export default function Dashboard() {
         <div className="p-5 border-b border-slate-100 bg-slate-50/50">
           <h3 className="font-bold text-slate-800">Property Status Matrix</h3>
         </div>
-        <div className="overflow-x-auto p-5">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr>
-                <th className="pb-4 font-semibold text-slate-500 text-sm w-1/4 uppercase tracking-wider">Room</th>
-                {properties.map(p => (
-                  <th key={p.id} className="pb-4 font-semibold text-slate-700 text-center">{p.name}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {rooms.map(room => {
-                // Determine mock status based on active assignments
-                const hasAssignment = activeAssignments.some(a => a.room === room.name && a.property === room.property);
-                const status = hasAssignment ? 'due' : 'ok';
-                return (
-                  <tr key={room.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-4 font-medium text-slate-800">{room.name}</td>
-                    {properties.map(p => (
-                      <td key={p.id} className="py-4 text-center">
-                        {room.property_id === p.id ? (
-                          <div 
-                            className={cn("w-10 h-10 mx-auto rounded-xl shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center justify-center font-bold text-xs", getStatusStyle(status))}
-                            title={`Status: ${status}`}
-                          >
-                            {status === 'ok' && '✓'}
-                          </div>
-                        ) : (
-                          <div className="w-10 h-10 mx-auto rounded-xl bg-slate-50 border border-slate-100"></div>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
-              {rooms.length === 0 && (
-                <tr>
-                  <td colSpan={properties.length + 1} className="py-8 text-center text-slate-500">
-                    No rooms added yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="flex gap-6 overflow-x-auto p-5 pb-8 items-start">
+          {properties.map(p => (
+            <div key={p.id} className="flex-1 min-w-[240px] border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white shrink-0">
+              <div className="bg-slate-50 p-4 border-b border-slate-200">
+                <h4 className="font-bold text-slate-800 text-center">{p.name}</h4>
+              </div>
+              <div className="p-3 space-y-3">
+                {rooms.filter(r => r.property_id === p.id).map(room => {
+                  const roomAssignments = activeAssignments.filter(a => a.room === room.name && a.property === p.name);
+                  
+                  let status = 'ok';
+                  for (const a of roomAssignments) {
+                    let isOverdue = false;
+                    if (a.date === 'Today' || a.time?.includes('Today')) {
+                      const now = new Date();
+                      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                      const timeMatch = a.time?.match(/(\d{1,2}):(\d{2})/);
+                      if (timeMatch) {
+                        const isPM = a.time.toLowerCase().includes('pm');
+                        let hours = parseInt(timeMatch[1]);
+                        if (isPM && hours !== 12) hours += 12;
+                        if (!isPM && hours === 12) hours = 0;
+                        const scheduledMinutes = hours * 60 + parseInt(timeMatch[2]);
+                        if (scheduledMinutes < currentMinutes) isOverdue = true;
+                      }
+                    } else if (a.date?.includes('Yesterday') || a.time?.includes('Yesterday')) {
+                      isOverdue = true;
+                    }
+                    
+                    if (isOverdue) {
+                      status = 'overdue';
+                      break;
+                    }
+                    if (a.date === 'Today') status = 'due';
+                  }
+
+                  return (
+                    <div 
+                      key={room.id} 
+                      className={cn("p-4 rounded-xl border text-center font-bold text-sm transition-transform hover:scale-105 cursor-pointer shadow-sm", getStatusStyle(status))}
+                      title={`Status: ${status}`}
+                    >
+                      {room.name}
+                    </div>
+                  );
+                })}
+                {rooms.filter(r => r.property_id === p.id).length === 0 && (
+                  <p className="text-center text-slate-400 text-sm py-6 italic">No rooms added</p>
+                )}
+              </div>
+            </div>
+          ))}
+          {properties.length === 0 && (
+            <div className="w-full text-center text-slate-500 py-8 italic">
+              No properties available.
+            </div>
+          )}
         </div>
       </div>
     </div>
