@@ -26,6 +26,19 @@ export function parseDateString(dateStr) {
     if (!isNaN(d.getTime())) return d;
   }
   
-  // 3. Fallback to current time if unparseable to prevent crashes
+  // 3. Try DD/MM/YYYY format
+  const partsSlash = dateStr.match(/(\d+)\/(\d+)\/(\d+)(?:,\s*(\d+):(\d+):(\d+))?/);
+  if (partsSlash) {
+    const day = partsSlash[1].padStart(2, '0');
+    const month = partsSlash[2].padStart(2, '0');
+    const year = partsSlash[3];
+    const hour = partsSlash[4] ? partsSlash[4].padStart(2, '0') : '00';
+    const min = partsSlash[5] ? partsSlash[5].padStart(2, '0') : '00';
+    const sec = partsSlash[6] ? partsSlash[6].padStart(2, '0') : '00';
+    d = new Date(`${year}-${month}-${day}T${hour}:${min}:${sec}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+
+  // 4. Fallback to current time if unparseable to prevent crashes
   return new Date(); 
 }
