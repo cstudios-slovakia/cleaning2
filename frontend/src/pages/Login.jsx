@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { fetchUsers } from '../lib/api';
 
 function Login() {
   const [activeTab, setActiveTab] = useState('manager'); // 'manager' or 'cleaner'
@@ -8,17 +9,52 @@ function Login() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (activeTab === 'manager') {
-      login({ email, role: 'admin' }); // default manager/admin role for now
-      navigate('/dashboard');
-    } else {
-      login({ username, role: 'cleaner' });
-      navigate('/assignments');
+    setError('');
+    setLoading(true);
+
+    try {
+      const users = await fetchUsers();
+      let foundUser = null;
+
+      if (activeTab === 'manager') {
+        foundUser = users.find(u => u.email === email && u.password === password && ['admin', 'manager', 'owner'].includes(u.role));
+        if (foundUser && foundUser.isActive === false) {
+          setError('This account is deactivated.');
+          setLoading(false);
+          return;
+        }
+        if (!foundUser) {
+          setError('Invalid email or password.');
+          setLoading(false);
+          return;
+        }
+      } else {
+        foundUser = users.find(u => u.username === username && u.pin === pin && u.role === 'cleaner');
+        if (foundUser && foundUser.isActive === false) {
+          setError('This account is deactivated.');
+          setLoading(false);
+          return;
+        }
+        if (!foundUser) {
+          setError('Invalid username or PIN.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      login({ ...foundUser, name: foundUser.name || foundUser.username || foundUser.email });
+      navigate(activeTab === 'manager' ? '/dashboard' : '/assignments');
+    } catch (err) {
+      setError('Failed to connect to the server.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +89,12 @@ function Login() {
               Cleaner
             </button>
           </div>
+
+          {error && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-100 mb-6">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {activeTab === 'manager' ? (
@@ -110,12 +152,13 @@ function Login() {
               </>
             )}
 
-            <button
-              type="submit"
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-primary-600/30 transition-all transform hover:-translate-y-0.5"
-            >
-              Sign In
-            </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-primary-600/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0"
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
           </form>
         </div>
       </div>

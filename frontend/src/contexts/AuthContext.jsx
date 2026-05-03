@@ -9,15 +9,8 @@ export function AuthProvider({ children }) {
   });
 
   const login = (userData) => {
-    // Fake login
-    const newUser = {
-      id: 1,
-      name: userData.username || userData.email || 'Test User',
-      role: userData.role || 'admin',
-      email: userData.email || 'admin@emerald.sk'
-    };
-    setUser(newUser);
-    localStorage.setItem('emerald_user', JSON.stringify(newUser));
+    setUser(userData);
+    localStorage.setItem('emerald_user', JSON.stringify(userData));
   };
 
   const logout = () => {
