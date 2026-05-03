@@ -52,6 +52,17 @@
     "system_language_help": "Can be set by admin only. This applies to users who haven't selected a personal preference.",
     "default": "System Default",
     "profile": "Profile Settings",
-    "pin": "Your PIN"
+    "pin": "Your PIN",
+    "system_preferences": "System Preferences",
+    "update_pin": "Update PIN",
+    "new_pin": "New PIN",
+    "confirm_pin": "Confirm PIN",
+    "update_password": "Update Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "errors": {
+      "password_mismatch": "Passwords do not match",
+      "save_failed": "Failed to save password"
+    }
   }
 }

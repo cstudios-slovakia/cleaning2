@@ -20,14 +20,14 @@ export default function Settings() {
     setPasswordError('');
     if (newPassword || confirmPassword) {
       if (newPassword !== confirmPassword) {
-        setPasswordError('Passwords do not match');
+        setPasswordError(t('settings.errors.password_mismatch'));
         return;
       }
       try {
         // Save user's new password/pin
         await saveUser({ ...user, password: newPassword });
       } catch (err) {
-        setPasswordError('Failed to save password');
+        setPasswordError(t('settings.errors.save_failed'));
         return;
       }
     }
@@ -78,11 +78,11 @@ export default function Settings() {
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <h3 className="text-sm font-bold text-slate-800 flex items-center space-x-2">
                   <Key size={16} />
-                  <span>Update PIN</span>
+                  <span>{t('settings.update_pin')}</span>
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">New PIN</label>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.new_pin')}</label>
                     <input 
                       type="password"
                       maxLength={4}
@@ -93,7 +93,7 @@ export default function Settings() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Confirm PIN</label>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.confirm_pin')}</label>
                     <input 
                       type="password"
                       maxLength={4}
@@ -110,11 +110,11 @@ export default function Settings() {
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 <h3 className="text-sm font-bold text-slate-800 flex items-center space-x-2">
                   <Key size={16} />
-                  <span>Update Password</span>
+                  <span>{t('settings.update_password')}</span>
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">New Password</label>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.new_password')}</label>
                     <input 
                       type="password"
                       value={newPassword}
@@ -124,7 +124,7 @@ export default function Settings() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Confirm Password</label>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.confirm_password')}</label>
                     <input 
                       type="password"
                       value={confirmPassword}
@@ -147,7 +147,7 @@ export default function Settings() {
               <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
                 <Globe size={20} />
               </div>
-              <h2 className="text-lg font-bold text-slate-800">System Preferences</h2>
+              <h2 className="text-lg font-bold text-slate-800">{t('settings.system_preferences')}</h2>
             </div>
 
             <div className="space-y-5">

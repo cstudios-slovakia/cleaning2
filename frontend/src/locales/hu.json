@@ -52,6 +52,17 @@
     "system_language_help": "Csak az adminisztrátor állíthatja be. Azokra a felhasználókra vonatkozik, akik nem választottak saját nyelvet.",
     "default": "Rendszer alapértelmezett",
     "profile": "Profil beállítások",
-    "pin": "Az Ön PIN kódja"
+    "pin": "Az Ön PIN kódja",
+    "system_preferences": "Rendszerpreferenciák",
+    "update_pin": "PIN frissítése",
+    "new_pin": "Új PIN",
+    "confirm_pin": "PIN megerősítése",
+    "update_password": "Jelszó frissítése",
+    "new_password": "Új jelszó",
+    "confirm_password": "Jelszó megerősítése",
+    "errors": {
+      "password_mismatch": "A jelszavak nem egyeznek",
+      "save_failed": "A jelszó mentése sikertelen"
+    }
   }
 }

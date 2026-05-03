@@ -52,6 +52,17 @@
     "system_language_help": "Kann nur vom Administrator eingestellt werden. Gilt für Benutzer, die keine persönliche Sprache gewählt haben.",
     "default": "Systemstandard",
     "profile": "Profileinstellungen",
-    "pin": "Ihre PIN"
+    "pin": "Ihre PIN",
+    "system_preferences": "Systemeinstellungen",
+    "update_pin": "PIN aktualisieren",
+    "new_pin": "Neue PIN",
+    "confirm_pin": "PIN bestätigen",
+    "update_password": "Passwort aktualisieren",
+    "new_password": "Neues Passwort",
+    "confirm_password": "Passwort bestätigen",
+    "errors": {
+      "password_mismatch": "Passwörter stimmen nicht überein",
+      "save_failed": "Passwort konnte nicht gespeichert werden"
+    }
   }
 }

@@ -49,9 +49,20 @@
     "subtitle": "Správa preferencií",
     "user_language": "Jazyk užívateľa",
     "system_language": "Predvolený jazyk systému",
-    "system_language_help": "Môže nastaviť iba admin. Týka sa užívateľov, ktorí si nezvolili vlastný jazyk.",
+    "system_language_help": "Môže nastaviť iba admin. Týka sa užívateľov, ktorí si nezvolili vlastný jazyк.",
     "default": "Predvolené v systéme",
     "profile": "Nastavenia profilu",
-    "pin": "Váš PIN"
+    "pin": "Váš PIN",
+    "system_preferences": "Systémové preferencie",
+    "update_pin": "Aktualizovať PIN",
+    "new_pin": "Nový PIN",
+    "confirm_pin": "Potvrdiť PIN",
+    "update_password": "Aktualizovať heslo",
+    "new_password": "Nové heslo",
+    "confirm_password": "Potvrdiť heslo",
+    "errors": {
+      "password_mismatch": "Heslá sa nezhodujú",
+      "save_failed": "Uloženie hesla zlyhalo"
+    }
   }
 }
