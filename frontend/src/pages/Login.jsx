@@ -25,7 +25,7 @@ function Login() {
 
       if (activeTab === 'manager') {
         foundUser = users.find(u => u.email === email && u.password === password && ['admin', 'manager', 'owner'].includes(u.role));
-        if (foundUser && foundUser.isActive === false) {
+        if (foundUser && foundUser.status === 'inactive') {
           setError('This account is deactivated.');
           setLoading(false);
           return;
@@ -37,7 +37,7 @@ function Login() {
         }
       } else {
         foundUser = users.find(u => u.username === username && u.pin === pin && u.role === 'cleaner');
-        if (foundUser && foundUser.isActive === false) {
+        if (foundUser && foundUser.status === 'inactive') {
           setError('This account is deactivated.');
           setLoading(false);
           return;
