@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+import { fetchUsers } from '../lib/api';
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -8,14 +10,34 @@ export function AuthProvider({ children }) {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('emerald_user', JSON.stringify(userData));
-  };
-
   const logout = () => {
     setUser(null);
     localStorage.removeItem('emerald_user');
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    
+    const verifyUser = async () => {
+      try {
+        const users = await fetchUsers();
+        const foundUser = users.find(u => u.id === user.id);
+        if (!foundUser || foundUser.status === 'inactive') {
+          logout();
+        }
+      } catch (err) {
+        console.error('Failed to verify user status', err);
+      }
+    };
+
+    verifyUser();
+    const interval = setInterval(verifyUser, 15000); // Check every 15 seconds
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem('emerald_user', JSON.stringify(userData));
   };
 
   return (
