@@ -110,7 +110,7 @@ export default function PropertyList() {
                   <span className="text-xs uppercase tracking-wider">Rooms</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-slate-700">{prop.managers}</span>
+                  <span className="font-semibold text-slate-700">{prop.managers ? prop.managers.length : 0}</span>
                   <span className="text-xs uppercase tracking-wider">Managers</span>
                 </div>
               </div>
