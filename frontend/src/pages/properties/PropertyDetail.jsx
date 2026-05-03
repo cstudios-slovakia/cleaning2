@@ -58,8 +58,16 @@ export default function PropertyDetail() {
         const p = properties.find(x => x.id.toString() === id.toString());
         
         if (p) {
-          setPropertyData(p);
-          setEditForm(p);
+          const completePropertyData = {
+            name: 'Unknown Property',
+            scheduleTime: '10:00 AM',
+            theme: '#0ea5e9',
+            coverImage: null,
+            logo: null,
+            ...p
+          };
+          setPropertyData(completePropertyData);
+          setEditForm(completePropertyData);
           setManagers(p.managers || []);
           setEditManagers(p.managers || []);
           setCleaners(p.cleaners || []);
@@ -424,11 +432,13 @@ export default function PropertyDetail() {
                       <div className="flex items-center space-x-3">
                         <input 
                           type="color" 
-                          value={editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}
+                          value={typeof editForm.theme === 'string' && editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}
                           onChange={(e) => setEditForm({ ...editForm, theme: e.target.value })}
                           className="h-8 w-16 cursor-pointer rounded border border-slate-200 p-0 shadow-sm bg-white"
                         />
-                        <span className="text-sm font-medium text-slate-500 uppercase">{editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}</span>
+                        <span className="text-sm font-medium text-slate-500 uppercase">
+                          {typeof editForm.theme === 'string' && editForm.theme.startsWith('#') ? editForm.theme : '#0ea5e9'}
+                        </span>
                       </div>
                     </div>
                   </div>
