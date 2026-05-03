@@ -64,5 +64,14 @@
       "password_mismatch": "Passwörter stimmen nicht überein",
       "save_failed": "Passwort konnte nicht gespeichert werden"
     }
+  },
+  "assignments": {
+    "finish_cleaning": "Reinigung abschließen",
+    "was_cleaned": "wurde gereinigt",
+    "title": "Reinigungsaufgabe",
+    "details": "Aufgabendetails und Status",
+    "scheduled": "Geplant",
+    "completed_by": "Abgeschlossen von",
+    "task_list": "Aufgabenliste"
   }
 }

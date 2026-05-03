@@ -64,5 +64,14 @@
       "password_mismatch": "Passwords do not match",
       "save_failed": "Failed to save password"
     }
+  },
+  "assignments": {
+    "finish_cleaning": "Finish Cleaning",
+    "was_cleaned": "was cleaned",
+    "title": "Cleaning Assignment",
+    "details": "Task details and status",
+    "scheduled": "Scheduled",
+    "completed_by": "Completed by",
+    "task_list": "Task List"
   }
 }

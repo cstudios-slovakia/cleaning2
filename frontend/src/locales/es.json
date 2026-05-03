@@ -64,5 +64,14 @@
       "password_mismatch": "Las contraseñas no coinciden",
       "save_failed": "Error al guardar la contraseña"
     }
+  },
+  "assignments": {
+    "finish_cleaning": "Terminar limpieza",
+    "was_cleaned": "fue limpiado",
+    "title": "Tarea de limpieza",
+    "details": "Detalles y estado de la tarea",
+    "scheduled": "Programado",
+    "completed_by": "Completado por",
+    "task_list": "Lista de tareas"
   }
 }

@@ -3,12 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Circle, Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from '../../contexts/I18nContext';
 import { fetchAssignments, saveAssignment } from '../../lib/api';
 
-export default function AssignmentDetail({ assignmentId: propId, isSlideout = false, theme: propTheme, coverImage: propCoverImage }) {
+export default function AssignmentDetail({ assignmentId: propId, isSlideout = false, theme: propTheme, coverImage: propCoverImage, onFinish }) {
   const { id: routeId } = useParams();
   const id = propId || routeId;
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   const [assignment, setAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     setAssignment(newAssignment);
     try {
       await saveAssignment(newAssignment);
+      if (onFinish) onFinish(assignment.room);
     } catch (e) {
       console.error('Finish failed', e);
     }
@@ -86,8 +89,8 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             <ArrowLeft size={18} className="text-slate-600" />
           </Link>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">Cleaning Assignment</h2>
-            <p className="text-sm text-slate-500">Task details and status.</p>
+            <h2 className="text-2xl font-bold text-slate-800">{t('assignments.title')}</h2>
+            <p className="text-sm text-slate-500">{t('assignments.details')}</p>
           </div>
         </div>
       )}
@@ -117,20 +120,20 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
               className="inline-block px-3 py-1 rounded-full text-sm font-bold border"
               style={{ backgroundColor: `${themeColor}10`, borderColor: `${themeColor}30`, color: themeColor }}
             >
-              Scheduled: {assignment.date} {assignment.time}
+              {t('assignments.scheduled')}: {assignment.date} {assignment.time}
             </div>
             
             {assignment.doneBy && (
               <div className="inline-flex items-center space-x-2 bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-xl text-sm font-medium">
                 <Check size={16} />
-                <span>Completed by <b>{assignment.doneBy}</b> at {assignment.doneAt}</span>
+                <span>{t('assignments.completed_by')} <b>{assignment.doneBy}</b> {assignment.doneAt ? `at ${new Date(assignment.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}</span>
               </div>
             )}
           </div>
         </div>
 
         <div className="space-y-4">
-          <h4 className="font-bold text-slate-800 text-lg">Task List</h4>
+          <h4 className="font-bold text-slate-800 text-lg">{t('assignments.task_list')}</h4>
           <div className="space-y-3">
             {assignment.tasks.map((task) => (
               <button
@@ -174,7 +177,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
               style={{ backgroundColor: themeColor }}
               className="w-full md:w-auto px-8 py-3 rounded-xl font-semibold text-white shadow-sm transition-all hover:opacity-90"
             >
-              Finish Cleaning
+              {t('assignments.finish_cleaning')}
             </button>
           </div>
         </div>

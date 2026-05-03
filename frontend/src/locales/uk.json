@@ -64,5 +64,14 @@
       "password_mismatch": "Паролі не збігаються",
       "save_failed": "Не вдалося зберегти пароль"
     }
+  },
+  "assignments": {
+    "finish_cleaning": "Завершити прибирання",
+    "was_cleaned": "прибрано",
+    "title": "Завдання з прибирання",
+    "details": "Деталі завдання та статус",
+    "scheduled": "Заплановано",
+    "completed_by": "Завершив",
+    "task_list": "Список завдань"
   }
 }

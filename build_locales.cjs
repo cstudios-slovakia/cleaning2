@@ -66,6 +66,15 @@ const baseKeys = {
       password_mismatch: "Passwords do not match",
       save_failed: "Failed to save password"
     }
+  },
+  assignments: {
+    finish_cleaning: "Finish Cleaning",
+    was_cleaned: "was cleaned",
+    title: "Cleaning Assignment",
+    details: "Task details and status",
+    scheduled: "Scheduled",
+    completed_by: "Completed by",
+    task_list: "Task List"
   }
 };
 
@@ -96,6 +105,15 @@ const translations = {
         password_mismatch: "Heslá sa nezhodujú",
         save_failed: "Uloženie hesla zlyhalo"
       }
+    },
+    assignments: {
+      finish_cleaning: "Dokončiť upratovanie",
+      was_cleaned: "bolo upratané",
+      title: "Úloha upratovania",
+      details: "Detaily úlohy a stav",
+      scheduled: "Naplánované",
+      completed_by: "Dokončil",
+      task_list: "Zoznam úloh"
     }
   },
   hu: {
@@ -123,6 +141,15 @@ const translations = {
         password_mismatch: "A jelszavak nem egyeznek",
         save_failed: "A jelszó mentése sikertelen"
       }
+    },
+    assignments: {
+      finish_cleaning: "Takarítás befejezése",
+      was_cleaned: "ki lett takarítva",
+      title: "Takarítási feladat",
+      details: "Feladat részletei és állapota",
+      scheduled: "Ütemezve",
+      completed_by: "Befejezte",
+      task_list: "Feladatlista"
     }
   },
   de: {
@@ -150,6 +177,15 @@ const translations = {
         password_mismatch: "Passwörter stimmen nicht überein",
         save_failed: "Passwort konnte nicht gespeichert werden"
       }
+    },
+    assignments: {
+      finish_cleaning: "Reinigung abschließen",
+      was_cleaned: "wurde gereinigt",
+      title: "Reinigungsaufgabe",
+      details: "Aufgabendetails und Status",
+      scheduled: "Geplant",
+      completed_by: "Abgeschlossen von",
+      task_list: "Aufgabenliste"
     }
   },
   es: {
@@ -177,6 +213,15 @@ const translations = {
         password_mismatch: "Las contraseñas no coinciden",
         save_failed: "Error al guardar la contraseña"
       }
+    },
+    assignments: {
+      finish_cleaning: "Terminar limpieza",
+      was_cleaned: "fue limpiado",
+      title: "Tarea de limpieza",
+      details: "Detalles y estado de la tarea",
+      scheduled: "Programado",
+      completed_by: "Completado por",
+      task_list: "Lista de tareas"
     }
   },
   uk: {
@@ -204,6 +249,15 @@ const translations = {
         password_mismatch: "Паролі не збігаються",
         save_failed: "Не вдалося зберегти пароль"
       }
+    },
+    assignments: {
+      finish_cleaning: "Завершити прибирання",
+      was_cleaned: "прибрано",
+      title: "Завдання з прибирання",
+      details: "Деталі завдання та статус",
+      scheduled: "Заплановано",
+      completed_by: "Завершив",
+      task_list: "Список завдань"
     }
   },
   ru: {
@@ -231,6 +285,15 @@ const translations = {
         password_mismatch: "Пароли не совпадают",
         save_failed: "Не удалось сохранить пароль"
       }
+    },
+    assignments: {
+      finish_cleaning: "Завершить уборку",
+      was_cleaned: "убрано",
+      title: "Задание на уборку",
+      details: "Детали задания и статус",
+      scheduled: "Запланировано",
+      completed_by: "Завершил",
+      task_list: "Список заданий"
     }
   }
 };

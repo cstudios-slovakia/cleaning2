@@ -6,8 +6,10 @@ import Slideout from '../../components/Slideout';
 import AssignmentDetail from './AssignmentDetail';
 import { fetchAssignments, fetchProperties } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from '../../contexts/I18nContext';
 
 export default function AssignmentList() {
+  const { t } = useTranslation();
   const [expandedGroups, setExpandedGroups] = useState({
     overdue: true,
     today: true,
@@ -24,7 +26,15 @@ export default function AssignmentList() {
   const [dbAssignments, setDbAssignments] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loadingProps, setLoadingProps] = useState(true);
+  const [flashMessage, setFlashMessage] = useState('');
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (flashMessage) {
+      const timer = setTimeout(() => setFlashMessage(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [flashMessage]);
 
   useEffect(() => {
     const loadProperties = async () => {
@@ -272,9 +282,21 @@ export default function AssignmentList() {
             isSlideout={true} 
             theme={getPropertyData(selectedAssignment.property).theme}
             coverImage={getPropertyData(selectedAssignment.property).coverImage}
+            onFinish={(roomName) => {
+              setIsSlideoutOpen(false);
+              setFlashMessage(`${roomName} ${t('assignments.was_cleaned')}`);
+              setTimeout(() => setFlashMessage(''), 4000);
+            }}
           />
         )}
       </Slideout>
+
+      {flashMessage && (
+        <div className="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl z-50 flex items-center space-x-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <CheckCircle size={20} />
+          <span className="font-bold">{flashMessage}</span>
+        </div>
+      )}
     </div>
   );
 }

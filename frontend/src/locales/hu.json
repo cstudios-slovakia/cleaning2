@@ -64,5 +64,14 @@
       "password_mismatch": "A jelszavak nem egyeznek",
       "save_failed": "A jelszó mentése sikertelen"
     }
+  },
+  "assignments": {
+    "finish_cleaning": "Takarítás befejezése",
+    "was_cleaned": "ki lett takarítva",
+    "title": "Takarítási feladat",
+    "details": "Feladat részletei és állapota",
+    "scheduled": "Ütemezve",
+    "completed_by": "Befejezte",
+    "task_list": "Feladatlista"
   }
 }

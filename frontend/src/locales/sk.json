@@ -64,5 +64,14 @@
       "password_mismatch": "Heslá sa nezhodujú",
       "save_failed": "Uloženie hesla zlyhalo"
     }
+  },
+  "assignments": {
+    "finish_cleaning": "Dokončiť upratovanie",
+    "was_cleaned": "bolo upratané",
+    "title": "Úloha upratovania",
+    "details": "Detaily úlohy a stav",
+    "scheduled": "Naplánované",
+    "completed_by": "Dokončil",
+    "task_list": "Zoznam úloh"
   }
 }
