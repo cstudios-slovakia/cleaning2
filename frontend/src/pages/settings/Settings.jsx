@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation, LANGUAGES } from '../../contexts/I18nContext';
-import { Globe, User, Save, Shield } from 'lucide-react';
+import { Globe, User, Save, Shield, Key } from 'lucide-react';
+import { saveUser } from '../../lib/api';
 
 export default function Settings() {
   const { user } = useAuth();
@@ -10,12 +11,33 @@ export default function Settings() {
   const [selectedUserLang, setSelectedUserLang] = useState(userLang || '');
   const [selectedSysLang, setSelectedSysLang] = useState(systemLang);
   const [successMsg, setSuccessMsg] = useState('');
+  
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setPasswordError('');
+    if (newPassword || confirmPassword) {
+      if (newPassword !== confirmPassword) {
+        setPasswordError('Passwords do not match');
+        return;
+      }
+      try {
+        // Save user's new password/pin
+        await saveUser({ ...user, password: newPassword });
+      } catch (err) {
+        setPasswordError('Failed to save password');
+        return;
+      }
+    }
+
     changeUserLanguage(selectedUserLang === '' ? null : selectedUserLang);
     if (user?.role === 'admin' || user?.role === 'manager') {
       changeSystemLanguage(selectedSysLang);
     }
+    setNewPassword('');
+    setConfirmPassword('');
     setSuccessMsg(t('common.success'));
     setTimeout(() => setSuccessMsg(''), 3000);
   };
@@ -52,16 +74,67 @@ export default function Settings() {
               </select>
             </div>
             
-            {user?.role === 'cleaner' && (
-              <div>
-                <label className="block text-sm font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.pin')}</label>
-                <input 
-                  type="password"
-                  disabled
-                  value="****"
-                  className="w-full p-3 bg-slate-100 border border-slate-200 rounded-xl font-medium text-slate-500"
-                />
-                <p className="text-xs text-slate-400 mt-2">Contact admin to change your PIN.</p>
+            {user?.role === 'cleaner' ? (
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <h3 className="text-sm font-bold text-slate-800 flex items-center space-x-2">
+                  <Key size={16} />
+                  <span>Update PIN</span>
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">New PIN</label>
+                    <input 
+                      type="password"
+                      maxLength={4}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="****"
+                      className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Confirm PIN</label>
+                    <input 
+                      type="password"
+                      maxLength={4}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="****"
+                      className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                </div>
+                {passwordError && <p className="text-sm text-red-500 font-bold">{passwordError}</p>}
+              </div>
+            ) : (
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <h3 className="text-sm font-bold text-slate-800 flex items-center space-x-2">
+                  <Key size={16} />
+                  <span>Update Password</span>
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">New Password</label>
+                    <input 
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Confirm Password</label>
+                    <input 
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                </div>
+                {passwordError && <p className="text-sm text-red-500 font-bold">{passwordError}</p>}
               </div>
             )}
           </div>
