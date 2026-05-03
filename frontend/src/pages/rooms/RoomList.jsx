@@ -6,6 +6,7 @@ import Modal from '../../components/Modal';
 import Slideout from '../../components/Slideout';
 import RoomDetail from './RoomDetail';
 import { saveAssignment, fetchProperties, fetchRooms, saveRoom, fetchRoomDetails } from '../../lib/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function RoomList() {
   const [groupedRooms, setGroupedRooms] = useState({});
@@ -23,6 +24,7 @@ export default function RoomList() {
 
   const [archivedRoomBackup, setArchivedRoomBackup] = useState(null);
   const [undoCountdown, setUndoCountdown] = useState(0);
+  const { user } = useAuth();
 
   useEffect(() => {
     loadRooms();
@@ -33,8 +35,12 @@ export default function RoomList() {
       const properties = await fetchProperties();
       const rooms = await fetchRooms();
       
+      const filteredProperties = user?.role === 'cleaner' 
+        ? properties.filter(p => p.cleaners?.some(c => c.name === user.name))
+        : properties;
+
       const groups = {};
-      properties.forEach(prop => {
+      filteredProperties.forEach(prop => {
         groups[prop.name] = {
           id: prop.id,
           theme: prop.theme || '#0ea5e9',

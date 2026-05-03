@@ -20,10 +20,10 @@ function App() {
       <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" replace />} />
       
       {/* Explicitly catch index.html caused by server rewrites */}
-      <Route path="/index.html" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/index.html" element={<Navigate to={user?.role === 'cleaner' ? "/assignments" : "/dashboard"} replace />} />
       
       <Route path="/" element={user ? <Layout /> : <Navigate to="/login" replace />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route index element={<Navigate to={user?.role === 'cleaner' ? "/assignments" : "/dashboard"} replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         
         <Route path="properties" element={<PropertyList />} />
@@ -40,7 +40,7 @@ function App() {
       </Route>
 
       {/* Catch-all route for unhandled paths */}
-      <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
+      <Route path="*" element={<Navigate to={user ? (user.role === 'cleaner' ? "/assignments" : "/dashboard") : "/login"} replace />} />
     </Routes>
   );
 }

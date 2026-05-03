@@ -5,6 +5,7 @@ import { cn } from '../../lib/utils';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from './AssignmentDetail';
 import { fetchAssignments, fetchProperties } from '../../lib/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function AssignmentList() {
   const [expandedGroups, setExpandedGroups] = useState({
@@ -23,6 +24,7 @@ export default function AssignmentList() {
   const [dbAssignments, setDbAssignments] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loadingProps, setLoadingProps] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const loadProperties = async () => {
@@ -78,11 +80,17 @@ export default function AssignmentList() {
     return a.date?.includes('Yesterday') || a.time?.includes('Yesterday');
   };
 
+  const filteredAssignments = dbAssignments.filter(a => {
+    if (user?.role !== 'cleaner') return true;
+    const prop = properties.find(p => p.name === a.property);
+    return prop?.cleaners?.some(c => c.name === user.name);
+  });
+
   const assignments = {
-    overdue: dbAssignments.filter(isOverdue),
-    today: dbAssignments.filter(a => a.date === 'Today' && !isOverdue(a)),
-    tomorrow: dbAssignments.filter(a => a.date.includes('Tomorrow')),
-    future: dbAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a))
+    overdue: filteredAssignments.filter(isOverdue),
+    today: filteredAssignments.filter(a => a.date === 'Today' && !isOverdue(a)),
+    tomorrow: filteredAssignments.filter(a => a.date.includes('Tomorrow')),
+    future: filteredAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a))
   };
 
   const GroupHeader = ({ id, title, count, colorClass, icon: Icon }) => (

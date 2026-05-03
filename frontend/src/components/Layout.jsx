@@ -5,7 +5,7 @@ import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import { CONFIG } from '../config';
 
-const NAV_ITEMS = [
+const ALL_NAV_ITEMS = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { name: 'Properties', path: '/properties', icon: Building2 },
   { name: 'Rooms', path: '/rooms', icon: BedDouble },
@@ -23,6 +23,10 @@ export default function Layout() {
     navigate('/login');
   };
 
+  const navItems = user?.role === 'cleaner'
+    ? ALL_NAV_ITEMS.filter(item => ['Rooms', 'Assignments'].includes(item.name))
+    : ALL_NAV_ITEMS;
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
       {/* Desktop Sidebar */}
@@ -34,7 +38,7 @@ export default function Layout() {
         </div>
         
         <nav className="flex-1 flex flex-col items-center py-4 space-y-4">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.path);
             const Icon = item.icon;
             return (
@@ -111,7 +115,7 @@ export default function Layout() {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 pb-safe z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex justify-around items-center px-2 py-3">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.path);
             const Icon = item.icon;
             return (

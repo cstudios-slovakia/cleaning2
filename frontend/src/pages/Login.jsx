@@ -15,10 +15,11 @@ function Login() {
     e.preventDefault();
     if (activeTab === 'manager') {
       login({ email, role: 'admin' }); // default manager/admin role for now
+      navigate('/dashboard');
     } else {
       login({ username, role: 'cleaner' });
+      navigate('/assignments');
     }
-    navigate('/dashboard');
   };
 
   return (
