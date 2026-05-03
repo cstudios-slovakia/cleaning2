@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "dashboard": "Tablero",
+    "properties": "Edificios",
+    "rooms": "Habitaciones",
+    "assignments": "Tareas",
+    "users": "Usuarios",
+    "settings": "Configuraciones",
+    "logout": "Cerrar sesión"
+  },
+  "login": {
+    "title": "Sistema Emerald",
+    "subtitle": "Inicie sesión en su cuenta",
+    "manager_tab": "Gerente / Administrador",
+    "cleaner_tab": "Limpiador",
+    "email": "Dirección de correo electrónico",
+    "password": "Contraseña",
+    "username": "Nombre de usuario",
+    "pin": "PIN",
+    "submit": "Iniciar sesión"
+  },
+  "dashboard": {
+    "property_status": "Matriz de estado",
+    "activity": "Actividad",
+    "timeline": "Línea de tiempo",
+    "pending_today": "Pendiente hoy",
+    "recent_logs": "Registros recientes",
+    "express_clean": "Limpieza exprés",
+    "assign": "Asignar",
+    "no_tasks": "No hay tareas pendientes",
+    "completed": "Completado"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar cambios",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "loading": "Cargando...",
+    "success": "Éxito",
+    "error": "Error",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "yesterday": "Ayer",
+    "overdue": "Atrasado",
+    "future": "Futuro"
+  },
+  "settings": {
+    "title": "Configuraciones",
+    "subtitle": "Administrar sus preferencias",
+    "user_language": "Idioma del usuario",
+    "system_language": "Idioma predeterminado del sistema",
+    "system_language_help": "Solo lo puede establecer el administrador. Se aplica a los usuarios que no han seleccionado un idioma personal.",
+    "default": "Predeterminado del sistema",
+    "profile": "Configuración de perfil",
+    "pin": "Su PIN"
+  }
+}

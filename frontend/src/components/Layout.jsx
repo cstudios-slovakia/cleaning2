@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Building2, BedDouble, ClipboardList, Users, LogOut, Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../contexts/I18nContext';
 import { CONFIG } from '../config';
 
 const ALL_NAV_ITEMS = [
@@ -17,6 +18,7 @@ export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -51,7 +53,7 @@ export default function Layout() {
                     ? "bg-orange-500 text-white shadow-lg shadow-orange-200" 
                     : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
                 )}
-                title={item.name}
+                title={t(`nav.${item.name.toLowerCase()}`)}
               >
                 <Icon size={24} strokeWidth={2} />
                 {isActive && (
@@ -63,16 +65,17 @@ export default function Layout() {
         </nav>
         
         <div className="py-6 flex flex-col items-center space-y-4 border-t border-slate-50">
-          <button 
+          <Link 
+            to="/settings"
             className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
-            title="Settings"
+            title={t('nav.settings')}
           >
             <Settings size={22} />
-          </button>
+          </Link>
           <button 
             onClick={handleLogout}
             className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
-            title="Logout"
+            title={t('nav.logout')}
           >
             <LogOut size={22} />
           </button>
@@ -90,9 +93,9 @@ export default function Layout() {
             <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">v{CONFIG.VERSION}</p>
           </div>
           <div className="flex items-center space-x-6">
-            <button className="text-slate-400 hover:text-slate-600 transition-colors">
+            <Link to="/settings" className="text-slate-400 hover:text-slate-600 transition-colors">
               <Settings size={20} />
-            </button>
+            </Link>
             <div className="flex items-center space-x-3">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-bold text-slate-900 leading-none">{user?.name || 'Manager'}</p>
@@ -130,7 +133,7 @@ export default function Layout() {
                 <div className={cn("p-1.5 rounded-xl transition-all duration-300", isActive && "bg-primary-50")}>
                   <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
-                <span className="text-[10px] font-medium">{item.name}</span>
+                <span className="text-[10px] font-medium">{t(`nav.${item.name.toLowerCase()}`)}</span>
               </Link>
             );
           })}

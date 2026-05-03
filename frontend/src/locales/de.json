@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "properties": "Gebäude",
+    "rooms": "Räume",
+    "assignments": "Aufgaben",
+    "users": "Benutzer",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "login": {
+    "title": "Emerald System",
+    "subtitle": "Melden Sie sich an",
+    "manager_tab": "Manager / Admin",
+    "cleaner_tab": "Reinigungskraft",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "username": "Benutzername",
+    "pin": "PIN",
+    "submit": "Anmelden"
+  },
+  "dashboard": {
+    "property_status": "Immobilien-Statusmatrix",
+    "activity": "Aktivität",
+    "timeline": "Zeitleiste",
+    "pending_today": "Heute ausstehend",
+    "recent_logs": "Aktuelle Protokolle",
+    "express_clean": "Express-Reinigung",
+    "assign": "Zuweisen",
+    "no_tasks": "Keine ausstehenden Aufgaben",
+    "completed": "Abgeschlossen"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Änderungen speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "loading": "Wird geladen...",
+    "success": "Erfolg",
+    "error": "Fehler",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "yesterday": "Gestern",
+    "overdue": "Überfällig",
+    "future": "Zukünftig"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Ihre Einstellungen",
+    "user_language": "Benutzersprache",
+    "system_language": "Standard-Systemsprache",
+    "system_language_help": "Kann nur vom Administrator eingestellt werden. Gilt für Benutzer, die keine persönliche Sprache gewählt haben.",
+    "default": "Systemstandard",
+    "profile": "Profileinstellungen",
+    "pin": "Ihre PIN"
+  }
+}

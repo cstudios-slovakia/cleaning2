@@ -12,6 +12,8 @@ import UserList from './pages/users/UserList';
 import Login from './pages/Login';
 import { useAuth } from './contexts/AuthContext';
 
+import Settings from './pages/settings/Settings';
+
 function App() {
   const { user } = useAuth();
 
@@ -37,6 +39,8 @@ function App() {
         <Route path="assignments/:id" element={<AssignmentDetail />} />
 
         <Route path="users" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <UserList />} />
+
+        <Route path="settings" element={<Settings />} />
       </Route>
 
       {/* Catch-all route for unhandled paths */}

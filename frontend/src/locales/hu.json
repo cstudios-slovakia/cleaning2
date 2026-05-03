@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "dashboard": "Irányítópult",
+    "properties": "Épületek",
+    "rooms": "Szobák",
+    "assignments": "Feladatok",
+    "users": "Felhasználók",
+    "settings": "Beállítások",
+    "logout": "Kijelentkezés"
+  },
+  "login": {
+    "title": "Emerald Rendszer",
+    "subtitle": "Jelentkezzen be a fiókjába",
+    "manager_tab": "Menedzser / Admin",
+    "cleaner_tab": "Takarító",
+    "email": "E-mail cím",
+    "password": "Jelszó",
+    "username": "Felhasználónév",
+    "pin": "PIN kód",
+    "submit": "Bejelentkezés"
+  },
+  "dashboard": {
+    "property_status": "Ingatlan állapot mátrix",
+    "activity": "Aktivitás",
+    "timeline": "Idővonal",
+    "pending_today": "Ma függőben",
+    "recent_logs": "Legutóbbi naplók",
+    "express_clean": "Gyors takarítás",
+    "assign": "Kijelölés",
+    "no_tasks": "Nincs függőben lévő feladat",
+    "completed": "Befejezve"
+  },
+  "common": {
+    "cancel": "Mégse",
+    "save": "Változtatások mentése",
+    "edit": "Szerkesztés",
+    "delete": "Törlés",
+    "loading": "Betöltés...",
+    "success": "Siker",
+    "error": "Hiba",
+    "today": "Ma",
+    "tomorrow": "Holnap",
+    "yesterday": "Tegnap",
+    "overdue": "Késedelmes",
+    "future": "Jövőbeli"
+  },
+  "settings": {
+    "title": "Beállítások",
+    "subtitle": "Preferenciák kezelése",
+    "user_language": "Felhasználó nyelve",
+    "system_language": "Rendszer alapértelmezett nyelve",
+    "system_language_help": "Csak az adminisztrátor állíthatja be. Azokra a felhasználókra vonatkozik, akik nem választottak saját nyelvet.",
+    "default": "Rendszer alapértelmezett",
+    "profile": "Profil beállítások",
+    "pin": "Az Ön PIN kódja"
+  }
+}

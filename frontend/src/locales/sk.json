@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "dashboard": "Nástenka",
+    "properties": "Budovy",
+    "rooms": "Miestnosti",
+    "assignments": "Úlohy",
+    "users": "Užívatelia",
+    "settings": "Nastavenia",
+    "logout": "Odhlásiť sa"
+  },
+  "login": {
+    "title": "Systém Emerald",
+    "subtitle": "Prihláste sa do účtu",
+    "manager_tab": "Manažér / Admin",
+    "cleaner_tab": "Upratovač",
+    "email": "Emailová adresa",
+    "password": "Heslo",
+    "username": "Užívateľské meno",
+    "pin": "PIN",
+    "submit": "Prihlásiť sa"
+  },
+  "dashboard": {
+    "property_status": "Matica stavu budov",
+    "activity": "Aktivita",
+    "timeline": "Časová os",
+    "pending_today": "Dnes čaká",
+    "recent_logs": "Nedávne záznamy",
+    "express_clean": "Rýchle upratovanie",
+    "assign": "Priradiť",
+    "no_tasks": "Žiadne čakajúce úlohy",
+    "completed": "Dokončené"
+  },
+  "common": {
+    "cancel": "Zrušiť",
+    "save": "Uložiť zmeny",
+    "edit": "Upraviť",
+    "delete": "Vymazať",
+    "loading": "Načítavam...",
+    "success": "Úspech",
+    "error": "Chyba",
+    "today": "Dnes",
+    "tomorrow": "Zajtra",
+    "yesterday": "Včera",
+    "overdue": "Po termíne",
+    "future": "Budúce"
+  },
+  "settings": {
+    "title": "Nastavenia",
+    "subtitle": "Správa preferencií",
+    "user_language": "Jazyk užívateľa",
+    "system_language": "Predvolený jazyk systému",
+    "system_language_help": "Môže nastaviť iba admin. Týka sa užívateľov, ktorí si nezvolili vlastný jazyk.",
+    "default": "Predvolené v systéme",
+    "profile": "Nastavenia profilu",
+    "pin": "Váš PIN"
+  }
+}

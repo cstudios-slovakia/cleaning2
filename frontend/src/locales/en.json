@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "properties": "Properties",
+    "rooms": "Rooms",
+    "assignments": "Assignments",
+    "users": "Users",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "Emerald System",
+    "subtitle": "Sign in to your account",
+    "manager_tab": "Manager / Admin",
+    "cleaner_tab": "Cleaner",
+    "email": "Email Address",
+    "password": "Password",
+    "username": "Username",
+    "pin": "PIN",
+    "submit": "Sign In"
+  },
+  "dashboard": {
+    "property_status": "Property Status Matrix",
+    "activity": "Activity",
+    "timeline": "Timeline",
+    "pending_today": "Pending Today",
+    "recent_logs": "Recent Logs",
+    "express_clean": "Express Clean",
+    "assign": "Assign",
+    "no_tasks": "No pending tasks",
+    "completed": "Completed"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "overdue": "Overdue",
+    "future": "Future"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your preferences",
+    "user_language": "User Language",
+    "system_language": "System Default Language",
+    "system_language_help": "Can be set by admin only. This applies to users who haven't selected a personal preference.",
+    "default": "System Default",
+    "profile": "Profile Settings",
+    "pin": "Your PIN"
+  }
+}
