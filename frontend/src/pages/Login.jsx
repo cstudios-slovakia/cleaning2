@@ -38,7 +38,7 @@ function Login() {
           return;
         }
       } else {
-        foundUser = users.find(u => u.username === username && u.pin === pin && u.role === 'cleaner');
+        foundUser = users.find(u => (u.username === username || u.name === username) && (u.username === pin || u.password === pin) && u.role === 'cleaner');
         if (foundUser && foundUser.status === 'inactive') {
           setError('This account is deactivated.');
           setLoading(false);

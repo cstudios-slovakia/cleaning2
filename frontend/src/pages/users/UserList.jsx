@@ -206,7 +206,7 @@ export default function UserList() {
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">
-                  {editUser.role === 'cleaner' ? 'Username' : 'Full Name'}
+                  Full Name
                 </label>
                 <input 
                   type="text" 
@@ -231,15 +231,28 @@ export default function UserList() {
               </div>
 
               {editUser.role === 'cleaner' ? (
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">PIN</label>
-                  <input 
-                    type="number" 
-                    value={editUser.username}
-                    onChange={(e) => setEditUser({...editUser, username: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="e.g. 1234"
-                  />
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">Username</label>
+                    <input 
+                      type="text" 
+                      value={editUser.username}
+                      onChange={(e) => setEditUser({...editUser, username: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="cleaner_login"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">PIN</label>
+                    <input 
+                      type="password" 
+                      value={editUser.password}
+                      onChange={(e) => setEditUser({...editUser, password: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="4 digit PIN"
+                      maxLength={4}
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
