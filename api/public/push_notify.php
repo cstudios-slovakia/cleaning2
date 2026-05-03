@@ -1,0 +1,125 @@
+<?php
+header('Content-Type: application/json');
+require_once __DIR__ . '/../src/Database.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription;
+
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit(0); }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    $action = $input['action'] ?? null;
+    $propertyId = $input['propertyId'] ?? null;
+    
+    if (!$action || !$propertyId) {
+        http_response_code(400);
+        exit(json_encode(['error' => 'Missing data']));
+    }
+
+    try {
+        $pdo = Database::getConnection();
+        
+        $auth = [
+            'VAPID' => [
+                'subject' => 'mailto:admin@emerald.sk',
+                'publicKey' => 'BD49BGird7PQBqcp3k-0qpfdugIvVAh7G8Oiao3U3n-bHgWSK4pIjhEshA9aIBxrPwWAyw4kUns7s9RiFQgeDew',
+                'privateKey' => '7Pivixs6e63bP3FIdabZUizJp3qtNFKfUNFHOYAGPVM',
+            ],
+        ];
+
+        $webPush = new WebPush($auth);
+        
+        // Fetch property details
+        $stmt = $pdo->prepare("SELECT name, cleaners, managers FROM properties WHERE id = ?");
+        $stmt->execute([$propertyId]);
+        $property = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$property) {
+            http_response_code(404);
+            exit(json_encode(['error' => 'Property not found']));
+        }
+        
+        $propertyName = $property['name'];
+        $cleaners = $property['cleaners'] ? json_decode($property['cleaners'], true) : [];
+        $managers = $property['managers'] ? json_decode($property['managers'], true) : [];
+        
+        $targetUserIds = [];
+        $payload = [];
+
+        if ($action === 'flash') {
+            // Send to cleaners
+            foreach ($cleaners as $c) {
+                if (isset($c['id'])) {
+                    $targetUserIds[] = $c['id'];
+                }
+            }
+            $payload = [
+                'title' => 'Flash Cleaning Triggered!',
+                'body' => "Express cleaning has been requested at $propertyName. Please check your assignments.",
+                'url' => '/properties/' . $propertyId
+            ];
+        } elseif ($action === 'overdue') {
+            // Send to managers
+            foreach ($managers as $m) {
+                if (isset($m['id'])) {
+                    $targetUserIds[] = $m['id'];
+                }
+            }
+            $payload = [
+                'title' => 'Cleaning Overdue!',
+                'body' => "A room at $propertyName is overdue for cleaning. Please review.",
+                'url' => '/properties/' . $propertyId
+            ];
+        } else {
+            exit(json_encode(['error' => 'Invalid action']));
+        }
+
+        if (empty($targetUserIds)) {
+            exit(json_encode(['status' => 'success', 'message' => 'No target users found for this property']));
+        }
+        
+        // Prepare target users
+        $inQuery = implode(',', array_fill(0, count($targetUserIds), '?'));
+        
+        $stmt = $pdo->prepare("SELECT user_id, subscription FROM push_subscriptions WHERE user_id IN ($inQuery)");
+        $stmt->execute($targetUserIds);
+        $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $sentCount = 0;
+        foreach ($subscriptions as $subRow) {
+            $subData = json_decode($subRow['subscription'], true);
+            if (!$subData) continue;
+            
+            $subscription = Subscription::create([
+                'endpoint' => $subData['endpoint'],
+                'publicKey' => $subData['keys']['p256dh'],
+                'authToken' => $subData['keys']['auth'],
+            ]);
+
+            $webPush->queueNotification($subscription, json_encode($payload));
+            $sentCount++;
+        }
+        
+        foreach ($webPush->flush() as $report) {
+            $endpoint = $report->getRequest()->getUri()->__toString();
+            if ($report->isSuccess()) {
+                // Success
+            } else {
+                // You could delete invalid subscriptions here
+                // echo "[x] Message failed to sent for subscription {$endpoint}: {$report->getReason()}";
+            }
+        }
+        
+        echo json_encode(['status' => 'success', 'sent' => $sentCount]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}

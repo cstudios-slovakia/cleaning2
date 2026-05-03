@@ -5,6 +5,8 @@ import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
 import { CONFIG } from '../config';
+import PwaInstallPrompt from './PwaInstallPrompt';
+import { usePushNotifications } from '../lib/usePushNotifications';
 
 const ALL_NAV_ITEMS = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -19,6 +21,8 @@ export default function Layout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { t, systemName } = useTranslation();
+
+  usePushNotifications(user);
 
   const handleLogout = () => {
     logout();
@@ -151,6 +155,8 @@ export default function Layout() {
           })}
         </div>
       </nav>
+
+      <PwaInstallPrompt />
     </div>
   );
 }

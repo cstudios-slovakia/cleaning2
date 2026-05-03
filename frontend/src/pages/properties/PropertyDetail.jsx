@@ -264,6 +264,11 @@ export default function PropertyDetail() {
         };
         
         await saveAssignment(newAssignment);
+        
+        // Trigger push notification to assigned cleaners
+        const { sendPushNotification } = await import('../../lib/api');
+        sendPushNotification('flash', id);
+
         setSuccessMessage(`Express cleaning started for ${room.name}`);
         setTimeout(() => setSuccessMessage(''), 3000);
       } catch (err) {

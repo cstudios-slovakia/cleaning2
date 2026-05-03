@@ -96,3 +96,16 @@ export const deleteUser = async (id) => {
     if (!res.ok) throw new Error('Failed to delete user');
     return res.json();
 };
+
+export const sendPushNotification = async (action, propertyId) => {
+    try {
+        const res = await fetch(`${API_BASE_URL}/push_notify.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, propertyId })
+        });
+        return res.json();
+    } catch (e) {
+        console.error('Push error', e);
+    }
+};

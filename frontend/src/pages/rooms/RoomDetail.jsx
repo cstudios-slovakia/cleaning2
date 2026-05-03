@@ -80,6 +80,38 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
     setIsEditing(false);
   };
 
+  const handleExpressCleaning = async () => {
+    const newId = Date.now().toString();
+    const newAssignment = {
+      id: newId,
+      property: roomData.property,
+      room: roomData.name,
+      date: 'Today',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      doneBy: null,
+      doneAt: null,
+      tasks: roomData.tasks.length > 0 
+        ? roomData.tasks.map(t => ({ title: t.text, done: false })) 
+        : [{ title: 'The room is cleaned', done: false }]
+    };
+    
+    try {
+      const { saveAssignment, sendPushNotification } = await import('../../lib/api');
+      await saveAssignment(newAssignment);
+      // We don't have propertyId directly here, but we can try to fetch it or pass it.
+      // For now, if we don't have it, we skip the push, or we find it.
+      // Wait, Room object has property_id! Let's check roomData.property_id
+      if (roomData.property_id) {
+          await sendPushNotification('flash', roomData.property_id);
+      }
+      
+      setSuccessMessage(`Express cleaning started for ${roomData.name}`);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Failed to start express cleaning', err);
+    }
+  };
+
   const handleCancelEdit = () => {
     setEditForm({ ...roomData });
     setIsEditing(false);
@@ -182,7 +214,10 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                 <Edit2 size={16} />
                 <span className="hidden sm:inline">Edit Room</span>
               </button>
-              <button className="flex items-center space-x-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors shadow-sm font-medium">
+              <button 
+                onClick={handleExpressCleaning}
+                className="flex items-center space-x-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors shadow-sm font-medium"
+              >
                 <Zap size={16} />
                 <span className="hidden sm:inline">Express Clean</span>
               </button>
