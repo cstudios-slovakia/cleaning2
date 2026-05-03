@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, ChevronRight, AlertTriangle, Clock } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from './AssignmentDetail';
