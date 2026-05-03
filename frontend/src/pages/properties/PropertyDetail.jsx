@@ -200,7 +200,7 @@ export default function PropertyDetail() {
     setRooms(rooms.filter(r => r.id !== roomId));
   };
 
-  const handleAssignSubmit = async (e) => {
+  const handleAssignCleaning = async (e) => {
     e.preventDefault();
     if (!assignDate || !assignRoomId) return;
 
