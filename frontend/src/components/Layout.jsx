@@ -18,7 +18,7 @@ export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { t } = useTranslation();
+  const { t, systemName } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -26,7 +26,7 @@ export default function Layout() {
   };
 
   useEffect(() => {
-    let pageTitle = 'Emerald';
+    let pageTitle = systemName || 'Emerald Cleaning';
     if (location.pathname.startsWith('/dashboard')) pageTitle = t('nav.dashboard');
     else if (location.pathname.startsWith('/properties')) pageTitle = t('nav.properties');
     else if (location.pathname.startsWith('/rooms')) pageTitle = t('nav.rooms');
@@ -34,8 +34,8 @@ export default function Layout() {
     else if (location.pathname.startsWith('/users')) pageTitle = t('nav.users');
     else if (location.pathname.startsWith('/settings')) pageTitle = t('nav.settings');
 
-    document.title = `${pageTitle} - Emerald Cleaning`;
-  }, [location.pathname, t]);
+    document.title = `${pageTitle} - ${systemName || 'Emerald Cleaning'}`;
+  }, [location.pathname, t, systemName]);
 
   const navItems = user?.role === 'cleaner'
     ? ALL_NAV_ITEMS.filter(item => ['Rooms', 'Assignments'].includes(item.name))

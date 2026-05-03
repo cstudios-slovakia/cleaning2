@@ -6,10 +6,11 @@ import { saveUser } from '../../lib/api';
 
 export default function Settings() {
   const { user } = useAuth();
-  const { t, currentLang, systemLang, userLang, changeUserLanguage, changeSystemLanguage } = useTranslation();
+  const { t, currentLang, systemLang, userLang, changeUserLanguage, changeSystemLanguage, systemName, changeSystemName } = useTranslation();
   
   const [selectedUserLang, setSelectedUserLang] = useState(userLang || '');
   const [selectedSysLang, setSelectedSysLang] = useState(systemLang);
+  const [sysName, setSysName] = useState(systemName || '');
   const [successMsg, setSuccessMsg] = useState('');
   
   const [newPassword, setNewPassword] = useState('');
@@ -35,6 +36,9 @@ export default function Settings() {
     changeUserLanguage(selectedUserLang === '' ? null : selectedUserLang);
     if (user?.role === 'admin' || user?.role === 'manager') {
       changeSystemLanguage(selectedSysLang);
+      if (sysName.trim()) {
+        changeSystemName(sysName.trim());
+      }
     }
     setNewPassword('');
     setConfirmPassword('');
@@ -166,6 +170,21 @@ export default function Settings() {
                   ))}
                 </select>
                 <p className="text-xs text-slate-500 mt-2">{t('settings.system_language_help')}</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-2 uppercase tracking-wider flex items-center space-x-2">
+                  <Shield size={14} className="text-orange-500" />
+                  <span>System Name</span>
+                </label>
+                <input 
+                  type="text"
+                  value={sysName}
+                  onChange={(e) => setSysName(e.target.value)}
+                  placeholder="e.g. Emerald Cleaning"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 font-medium"
+                />
+                <p className="text-xs text-slate-500 mt-2">The global name displayed across the system</p>
               </div>
             </div>
           </div>

@@ -30,6 +30,7 @@ export function I18nProvider({ children }) {
   
   // Try to load system setting and user setting from localStorage
   const [systemLang, setSystemLang] = useState(localStorage.getItem('emerald_sys_lang') || 'en');
+  const [systemName, setSystemName] = useState(localStorage.getItem('emerald_system_name') || 'Emerald Cleaning');
   const [userLang, setUserLang] = useState(localStorage.getItem(`emerald_user_lang_${user?.id}`) || null);
 
   const currentLang = userLang || systemLang;
@@ -62,8 +63,13 @@ export function I18nProvider({ children }) {
     localStorage.setItem('emerald_sys_lang', lang);
   };
 
+  const changeSystemName = (name) => {
+    setSystemName(name);
+    localStorage.setItem('emerald_system_name', name);
+  };
+
   return (
-    <I18nContext.Provider value={{ t, currentLang, systemLang, userLang, changeUserLanguage, changeSystemLanguage }}>
+    <I18nContext.Provider value={{ t, currentLang, systemLang, userLang, changeUserLanguage, changeSystemLanguage, systemName, changeSystemName }}>
       {children}
     </I18nContext.Provider>
   );

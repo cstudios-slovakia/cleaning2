@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../contexts/I18nContext';
 import { useNavigate } from 'react-router-dom';
 import { fetchUsers } from '../lib/api';
 
@@ -12,6 +13,7 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { systemName } = useTranslation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -62,7 +64,7 @@ function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 p-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
         <div className="bg-primary-600 p-8 text-center text-white">
-          <h1 className="text-3xl font-extrabold tracking-tight mb-2">Emerald System</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2">{systemName}</h1>
           <p className="text-primary-100">Sign in to your account</p>
         </div>
         
