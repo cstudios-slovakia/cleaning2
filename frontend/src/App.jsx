@@ -17,18 +17,18 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" replace />} />
+      <Route path="/login" element={!user ? <Login /> : <Navigate to={user?.role === 'cleaner' ? "/assignments" : "/dashboard"} replace />} />
       
       {/* Explicitly catch index.html caused by server rewrites */}
       <Route path="/index.html" element={<Navigate to={user?.role === 'cleaner' ? "/assignments" : "/dashboard"} replace />} />
       
       <Route path="/" element={user ? <Layout /> : <Navigate to="/login" replace />}>
         <Route index element={<Navigate to={user?.role === 'cleaner' ? "/assignments" : "/dashboard"} replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="dashboard" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <Dashboard />} />
         
-        <Route path="properties" element={<PropertyList />} />
-        <Route path="properties/:id" element={<PropertyDetail />} />
-        <Route path="properties/:id/logs" element={<PropertyLogs />} />
+        <Route path="properties" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <PropertyList />} />
+        <Route path="properties/:id" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <PropertyDetail />} />
+        <Route path="properties/:id/logs" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <PropertyLogs />} />
         
         <Route path="rooms" element={<RoomList />} />
         <Route path="rooms/:id" element={<RoomDetail />} />
@@ -36,7 +36,7 @@ function App() {
         <Route path="assignments" element={<AssignmentList />} />
         <Route path="assignments/:id" element={<AssignmentDetail />} />
 
-        <Route path="users" element={<UserList />} />
+        <Route path="users" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <UserList />} />
       </Route>
 
       {/* Catch-all route for unhandled paths */}
