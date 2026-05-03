@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Building2, BedDouble, ClipboardList, Users, LogOut, Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -24,6 +24,18 @@ export default function Layout() {
     logout();
     navigate('/login');
   };
+
+  useEffect(() => {
+    let pageTitle = 'Emerald';
+    if (location.pathname.startsWith('/dashboard')) pageTitle = t('nav.dashboard');
+    else if (location.pathname.startsWith('/properties')) pageTitle = t('nav.properties');
+    else if (location.pathname.startsWith('/rooms')) pageTitle = t('nav.rooms');
+    else if (location.pathname.startsWith('/assignments')) pageTitle = t('nav.assignments');
+    else if (location.pathname.startsWith('/users')) pageTitle = t('nav.users');
+    else if (location.pathname.startsWith('/settings')) pageTitle = t('nav.settings');
+
+    document.title = `${pageTitle} - Emerald Cleaning`;
+  }, [location.pathname, t]);
 
   const navItems = user?.role === 'cleaner'
     ? ALL_NAV_ITEMS.filter(item => ['Rooms', 'Assignments'].includes(item.name))
