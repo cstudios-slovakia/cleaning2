@@ -18,6 +18,12 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt = $pdo->query("SELECT * FROM users ORDER BY created_at DESC");
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $config = require __DIR__ . '/../config.php';
+        if (isset($config['main_admin'])) {
+            array_unshift($users, $config['main_admin']);
+        }
+        
         echo json_encode($users);
         exit;
     }
@@ -41,6 +47,13 @@ try {
         $status = $input['status'] ?? 'active';
         $lastActive = $input['lastActive'] ?? 'Never';
         
+        $config = require __DIR__ . '/../config.php';
+        if (isset($config['main_admin']) && $id === $config['main_admin']['id']) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Cannot modify the main config admin user']);
+            exit;
+        }
+        
         // Check if user exists
         $stmt = $pdo->prepare("SELECT id FROM users WHERE id = ?");
         $stmt->execute([$id]);
@@ -63,6 +76,14 @@ try {
     // DELETE /api/public/users.php?id=xxx
     if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $id = $_GET['id'] ?? null;
+        
+        $config = require __DIR__ . '/../config.php';
+        if (isset($config['main_admin']) && $id === $config['main_admin']['id']) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Cannot delete the main config admin user']);
+            exit;
+        }
+        
         if ($id) {
             $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
             $stmt->execute([$id]);
