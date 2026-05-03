@@ -116,29 +116,39 @@ export default function Settings() {
                   <Key size={16} />
                   <span>{t('settings.update_password')}</span>
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.new_password')}</label>
-                    <input 
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
-                    />
+                {user?.id === 'admin_0' ? (
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <p className="text-sm text-slate-500 font-medium text-center">
+                      The main admin password can only be changed in the system configuration file.
+                    </p>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.confirm_password')}</label>
-                    <input 
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
-                    />
-                  </div>
-                </div>
-                {passwordError && <p className="text-sm text-red-500 font-bold">{passwordError}</p>}
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.new_password')}</label>
+                        <input 
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">{t('settings.confirm_password')}</label>
+                        <input 
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full p-3 bg-white border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-primary-500"
+                        />
+                      </div>
+                    </div>
+                    {passwordError && <p className="text-sm text-red-500 font-bold">{passwordError}</p>}
+                  </>
+                )}
               </div>
             )}
           </div>
