@@ -7,6 +7,7 @@ import { useAssignments } from '../hooks/useAssignments';
 import Slideout from '../components/Slideout';
 import AssignmentDetail from './assignments/AssignmentDetail';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../contexts/I18nContext';
 
 export default function Dashboard() {
   const [properties, setProperties] = useState([]);
@@ -16,6 +17,7 @@ export default function Dashboard() {
   const [slideoutAssignment, setSlideoutAssignment] = useState(null);
   const { assignments } = useAssignments();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const loadData = async () => {
     setLoading(true);
