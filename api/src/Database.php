@@ -5,14 +5,22 @@ class Database {
 
     public static function getConnection() {
         if (self::$pdo === null) {
-            $config = require __DIR__ . '/../config/db.php';
+            $configPath = __DIR__ . '/../config/db.php';
             
-            // Prefer socket connection if provided
-            if (!empty($config['socket'])) {
-                $dsn = "mysql:unix_socket={$config['socket']};dbname={$config['dbname']};charset={$config['charset']}";
-            } else {
-                $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset={$config['charset']}";
+            if (!file_exists($configPath)) {
+                header('Content-Type: application/json', true, 503);
+                die(json_encode([
+                    'status' => 'error', 
+                    'code' => 'NEEDS_SETUP',
+                    'message' => 'Database not configured. Please run setup.'
+                ]));
             }
+
+            $config = require $configPath;
+            // ... (rest of the code)
+            $dsn = !empty($config['socket']) 
+                ? "mysql:unix_socket={$config['socket']};dbname={$config['dbname']};charset={$config['charset']}"
+                : "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset={$config['charset']}";
 
             try {
                 self::$pdo = new PDO($dsn, $config['user'], $config['password'], [
@@ -21,7 +29,7 @@ class Database {
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]);
             } catch (PDOException $e) {
-                // Return generic error for security, or log the actual error
+                header('Content-Type: application/json', true, 500);
                 die(json_encode(['status' => 'error', 'message' => 'Database connection failed.']));
             }
         }

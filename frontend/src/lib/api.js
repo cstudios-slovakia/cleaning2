@@ -41,6 +41,21 @@ export const fetchProperties = async () => {
     return json.data || [];
 };
 
+export const fetchUsers = async () => {
+    const res = await fetch(`${API_BASE_URL}/users.php`);
+    if (!res.ok) {
+        if (res.status === 503) {
+            const data = await res.json();
+            if (data.code === 'NEEDS_SETUP') {
+                window.location.href = '/setup';
+                return [];
+            }
+        }
+        throw new Error('Failed to fetch users');
+    }
+    return res.json();
+};
+
 export const saveProperty = async (property) => {
     const res = await fetch(`${API_BASE_URL}/properties.php`, {
         method: 'POST',
@@ -88,11 +103,7 @@ export const deleteRoom = async (id) => {
     return res.json();
 };
 
-export const fetchUsers = async () => {
-    const res = await fetch(`${API_BASE_URL}/users.php`);
-    if (!res.ok) throw new Error('Failed to fetch users');
-    return res.json();
-};
+
 
 export const saveUser = async (user) => {
     const res = await fetch(`${API_BASE_URL}/users.php`, {

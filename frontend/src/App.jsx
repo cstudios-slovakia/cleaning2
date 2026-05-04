@@ -10,6 +10,7 @@ import AssignmentList from './pages/assignments/AssignmentList';
 import AssignmentDetail from './pages/assignments/AssignmentDetail';
 import UserList from './pages/users/UserList';
 import Login from './pages/Login';
+import Setup from './pages/Setup';
 import { useAuth } from './contexts/AuthContext';
 
 import Settings from './pages/settings/Settings';
@@ -20,6 +21,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={!user ? <Login /> : <Navigate to={user?.role === 'cleaner' ? "/assignments" : "/dashboard"} replace />} />
+      <Route path="/setup" element={<Setup />} />
       
       {/* Explicitly catch index.html caused by server rewrites */}
       <Route path="/index.html" element={<Navigate to={user?.role === 'cleaner' ? "/assignments" : "/dashboard"} replace />} />
