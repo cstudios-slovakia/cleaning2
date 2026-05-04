@@ -154,5 +154,20 @@
     "no_history": "Noch kein Reinigungsverlauf aufgezeichnet.",
     "done_suffix": "Fertig",
     "tasks_checklist": "Aufgaben Checkliste"
+  },
+  "properties": {
+    "title": "Immobilien",
+    "subtitle": "Verwalten Sie Hotels und Standorte.",
+    "add_property": "Neue Immobilie hinzufügen",
+    "new_property": "Neue Immobilie",
+    "property_name": "Name der Immobilie",
+    "property_name_placeholder": "z.B. Grand Hotel",
+    "archive_confirm": "Sind Sie sicher, dass Sie {{name}} archivieren möchten?",
+    "archive_tooltip": "Immobilie archivieren",
+    "logs_tooltip": "Reinigungsprotokolle anzeigen",
+    "manage_property": "Immobilie verwalten",
+    "rooms_count": "Zimmer",
+    "managers_count": "Manager",
+    "create": "Erstellen"
   }
 }

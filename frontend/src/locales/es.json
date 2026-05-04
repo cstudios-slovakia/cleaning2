@@ -154,5 +154,20 @@
     "no_history": "Aún no se ha registrado historial de limpieza.",
     "done_suffix": "Hecho",
     "tasks_checklist": "lista de verificación de tareas"
+  },
+  "properties": {
+    "title": "Propiedades",
+    "subtitle": "Gestionar hoteles y ubicaciones.",
+    "add_property": "Añadir nueva propiedad",
+    "new_property": "Nueva propiedad",
+    "property_name": "Nombre de la propiedad",
+    "property_name_placeholder": "ej. Grand Hotel",
+    "archive_confirm": "¿Está seguro de que desea archivar {{name}}?",
+    "archive_tooltip": "Archivar propiedad",
+    "logs_tooltip": "Ver registros de limpieza",
+    "manage_property": "Gestionar propiedad",
+    "rooms_count": "Habitaciones",
+    "managers_count": "Gerentes",
+    "create": "Crear"
   }
 }

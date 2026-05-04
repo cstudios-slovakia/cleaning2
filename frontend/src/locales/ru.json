@@ -154,5 +154,20 @@
     "no_history": "История уборки пока не записана.",
     "done_suffix": "Готово",
     "tasks_checklist": "чек-лист задач"
+  },
+  "properties": {
+    "title": "Объекты",
+    "subtitle": "Управление отелями и локациями.",
+    "add_property": "Добавить новый объект",
+    "new_property": "Новый объект",
+    "property_name": "Название объекта",
+    "property_name_placeholder": "например, Гранд Отель",
+    "archive_confirm": "Вы уверены, что хотите архивировать {{name}}?",
+    "archive_tooltip": "Архивировать объект",
+    "logs_tooltip": "Просмотр журналов уборки",
+    "manage_property": "Управление объектом",
+    "rooms_count": "Комнаты",
+    "managers_count": "Менеджеры",
+    "create": "Создать"
   }
 }

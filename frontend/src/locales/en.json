@@ -146,5 +146,20 @@
     "no_history": "No cleaning history recorded yet.",
     "done_suffix": "Done",
     "tasks_checklist": "tasks checklist"
+  },
+  "properties": {
+    "title": "Properties",
+    "subtitle": "Manage hotels and locations.",
+    "add_property": "Add New Property",
+    "new_property": "New Property",
+    "property_name": "Property Name",
+    "property_name_placeholder": "e.g. Grand Hotel",
+    "archive_confirm": "Are you sure you want to archive {{name}}?",
+    "archive_tooltip": "Archive Property",
+    "logs_tooltip": "View Cleaning Logs",
+    "manage_property": "Manage Property",
+    "rooms_count": "Rooms",
+    "managers_count": "Managers",
+    "create": "Create"
   }
 }

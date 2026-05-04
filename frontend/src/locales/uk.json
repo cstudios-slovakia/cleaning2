@@ -154,5 +154,20 @@
     "no_history": "Історію прибирання поки не записано.",
     "done_suffix": "Готово",
     "tasks_checklist": "чек-лист завдань"
+  },
+  "properties": {
+    "title": "Об'єкти",
+    "subtitle": "Управління готелями та локаціями.",
+    "add_property": "Додати новий об'єкт",
+    "new_property": "Новий об'єкт",
+    "property_name": "Назва об'єкта",
+    "property_name_placeholder": "наприклад, Гранд Готель",
+    "archive_confirm": "Ви впевнені, що хочете архівувати {{name}}?",
+    "archive_tooltip": "Архівувати об'єкт",
+    "logs_tooltip": "Перегляд журналів прибирання",
+    "manage_property": "Управління об'єктом",
+    "rooms_count": "Кімнати",
+    "managers_count": "Менеджери",
+    "create": "Створити"
   }
 }

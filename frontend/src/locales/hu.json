@@ -154,5 +154,20 @@
     "no_history": "Még nem rögzítettek takarítási előzményt.",
     "done_suffix": "Kész",
     "tasks_checklist": "feladatok ellenőrzőlista"
+  },
+  "properties": {
+    "title": "Ingatlanok",
+    "subtitle": "Szállodák és helyszínek kezelése.",
+    "add_property": "Új ingatlan hozzáadása",
+    "new_property": "Új ingatlan",
+    "property_name": "Ingatlan neve",
+    "property_name_placeholder": "pl. Grand Hotel",
+    "archive_confirm": "Biztosan archiválni szeretné a következőt: {{name}}?",
+    "archive_tooltip": "Ingatlan archiválása",
+    "logs_tooltip": "Takarítási naplók megtekintése",
+    "manage_property": "Ingatlan kezelése",
+    "rooms_count": "Szobák",
+    "managers_count": "Menedzserek",
+    "create": "Létrehozás"
   }
 }

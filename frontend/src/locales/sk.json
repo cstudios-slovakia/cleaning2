@@ -154,5 +154,20 @@
     "no_history": "Zatiaľ nebol zaznamenaný žiadny záznam.",
     "done_suffix": "Hotovo",
     "tasks_checklist": "zoznam úloh"
+  },
+  "properties": {
+    "title": "Nehnuteľnosti",
+    "subtitle": "Správa hotelov a lokalít.",
+    "add_property": "Pridať novú nehnuteľnosť",
+    "new_property": "Nová nehnuteľnosť",
+    "property_name": "Názov nehnuteľnosti",
+    "property_name_placeholder": "napr. Grand Hotel",
+    "archive_confirm": "Naozaj chcete archivovať {{name}}?",
+    "archive_tooltip": "Archivovať nehnuteľnosť",
+    "logs_tooltip": "Zobraziť záznamy o upratovaní",
+    "manage_property": "Spravovať nehnuteľnosť",
+    "rooms_count": "Izby",
+    "managers_count": "Manažéri",
+    "create": "Vytvoriť"
   }
 }
