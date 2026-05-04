@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCcw, FileText, CheckCircle, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cn, parseDateString } from '../lib/utils';
+import { cn, parseDateString, isToday, isYesterday } from '../lib/utils';
 import { fetchProperties, fetchRooms, saveAssignment, fetchRoomDetails } from '../lib/api';
 import { useAssignments } from '../hooks/useAssignments';
 import Slideout from '../components/Slideout';
@@ -47,12 +47,13 @@ export default function Dashboard() {
   };
 
   const getAssignmentStatus = (a) => {
-    if (a.date === 'Today' || a.time?.includes('Today')) {
+    if (!a) return 'ok';
+    if (isToday(a.date)) {
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      const timeMatch = a.time?.match(/(\d{1,2}):(\d{2})/);
+      const timeMatch = String(a.time || '').match(/(\d{1,2}):(\d{2})/);
       if (timeMatch) {
-        const isPM = a.time.toLowerCase().includes('pm');
+        const isPM = String(a.time || '').toLowerCase().includes('pm');
         let hours = parseInt(timeMatch[1]);
         if (isPM && hours !== 12) hours += 12;
         if (!isPM && hours === 12) hours = 0;
@@ -60,7 +61,7 @@ export default function Dashboard() {
         if (scheduledMinutes < currentMinutes) return 'overdue';
       }
       return 'due';
-    } else if (a.date?.includes('Yesterday') || a.time?.includes('Yesterday')) {
+    } else if (isYesterday(a.date)) {
       return 'overdue';
     }
     return 'ok';
@@ -102,7 +103,7 @@ export default function Dashboard() {
     }
   };
 
-  const activeAssignments = assignments.filter(a => !a.doneBy);
+  const activeAssignments = (assignments || []).filter(a => !a.doneBy);
   
   const pendingTodayOrOverdue = activeAssignments.filter(a => {
     const status = getAssignmentStatus(a);
@@ -111,7 +112,7 @@ export default function Dashboard() {
 
   // Compute stats
   const activeAssignmentsCount = activeAssignments.length;
-  const completedAssignments = assignments
+  const completedAssignments = (assignments || [])
     .filter(a => a.doneBy && a.doneAt)
     .sort((a, b) => parseDateString(b.doneAt) - parseDateString(a.doneAt));
 
@@ -147,14 +148,14 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex gap-4 overflow-x-auto p-5 pb-8 items-start flex-1">
-            {properties.map(p => (
+            {(properties || []).map(p => (
               <div key={p.id} className="min-w-[180px] border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white shrink-0">
                 <div className="bg-slate-50 p-3 border-b border-slate-200">
                   <h4 className="font-bold text-slate-800 text-xs text-center truncate">{p.name}</h4>
                 </div>
                 <div className="p-2 space-y-2">
-                  {rooms.filter(r => r.property_id === p.id).map(room => {
-                    const roomAssignments = activeAssignments.filter(a => a.room === room.name && a.property === p.name);
+                  {(rooms || []).filter(r => r.property_id === p.id).map(room => {
+                    const roomAssignments = (assignments || []).filter(a => !a.doneBy && a.room === room.name && a.property === p.name);
                     
                     let status = 'ok';
                     for (const a of roomAssignments) {
@@ -273,8 +274,8 @@ export default function Dashboard() {
                     {completedAssignments.slice(0, 50).map((a, i) => {
                       const isAllDone = !a.tasks || a.tasks.every(t => t.done);
                       const dotColor = a.problemReported ? 'bg-red-500' : (!isAllDone ? 'bg-orange-500' : 'bg-green-500');
-                      const totalTasks = a.tasks ? a.tasks.length : 1;
-                      const doneTasks = a.tasks ? a.tasks.filter(t => t.done).length : (isAllDone ? 1 : 0);
+                      const totalTasks = Math.max(1, (a.tasks || []).length);
+                      const doneTasks = (a.tasks || []).filter(t => t.done).length;
                       const percent = Math.round((doneTasks / totalTasks) * 100);
                       
                       return (

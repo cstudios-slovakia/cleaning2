@@ -42,3 +42,35 @@ export function parseDateString(dateStr) {
   // 4. Fallback to current time if unparseable to prevent crashes
   return new Date(); 
 }
+
+export function isSameDay(d1, d2) {
+  return d1.getFullYear() === d2.getFullYear() &&
+         d1.getMonth() === d2.getMonth() &&
+         d1.getDate() === d2.getDate();
+}
+
+export function isToday(dateStr) {
+  if (!dateStr) return false;
+  if (dateStr === 'Today') return true;
+  const d = parseDateString(dateStr);
+  return isSameDay(d, new Date());
+}
+
+export function isYesterday(dateStr) {
+  if (!dateStr) return false;
+  if (dateStr === 'Yesterday') return true;
+  const d = parseDateString(dateStr);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return isSameDay(d, yesterday);
+}
+
+export function isTomorrow(dateStr) {
+  if (!dateStr) return false;
+  if (dateStr === 'Tomorrow') return true;
+  const d = parseDateString(dateStr);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return isSameDay(d, tomorrow);
+}
+
