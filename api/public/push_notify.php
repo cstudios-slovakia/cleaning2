@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $payload = [
                 'title' => 'Flash Cleaning Triggered!',
                 'body' => "Express cleaning has been requested at $propertyName. Please check your assignments.",
-                'url' => '/sub/clean/properties/' . $propertyId
+                'url' => '/properties/' . $propertyId
             ];
         } elseif ($action === 'overdue' || $action === 'problem') {
             foreach ($managers as $m) {
@@ -79,14 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $payload = [
                     'title' => 'Cleaning Overdue!',
                     'body' => "A room at $propertyName is overdue for cleaning. Please review.",
-                    'url' => '/sub/clean/properties/' . $propertyId
+                    'url' => '/properties/' . $propertyId
                 ];
             } else {
                 $roomName = $input['roomName'] ?? 'a room';
                 $payload = [
                     'title' => 'Problem Reported!',
                     'body' => "A problem was reported in $roomName at $propertyName.",
-                    'url' => '/sub/clean/properties/' . $propertyId . '/logs'
+                    'url' => '/properties/' . $propertyId . '/logs'
                 ];
             }
         } else {
