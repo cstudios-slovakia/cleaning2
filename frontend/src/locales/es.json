@@ -8,6 +8,15 @@
     "settings": "Ajustes",
     "logout": "Cerrar sesión"
   },
+  "loading": {
+    "assignment": "Cargando asignación...",
+    "rooms": "Cargando habitaciones...",
+    "properties": "Cargando propiedades..."
+  },
+  "tooltips": {
+    "close": "Cerrar panel",
+    "cleaning_log": "Registro de limpieza"
+  },
   "login": {
     "title": "Sistema de limpieza",
     "subtitle": "Inicie sesión en su cuenta",
@@ -17,7 +26,16 @@
     "password": "Contraseña",
     "username": "Nombre de usuario",
     "pin": "PIN",
-    "submit": "Iniciar sesión"
+    "submit": "Iniciar sesión",
+    "signing_in": "Iniciando sesión...",
+    "errors": {
+      "deactivated": "Esta cuenta está desactivada.",
+      "invalid_manager": "Correo electrónico o contraseña no válidos.",
+      "invalid_cleaner": "Nombre de usuario o PIN no válidos.",
+      "connection": "No se pudo conectar al servidor."
+    },
+    "pin_help": "PIN de 4 dígitos",
+    "username_placeholder": "limpiador_juan"
   },
   "dashboard": {
     "property_status": "Matriz de estado de propiedad",
@@ -58,19 +76,67 @@
     "confirm_password": "Confirmar contraseña",
     "system_preferences": "Ajustes del sistema",
     "system_language": "Idioma predeterminado del sistema",
-    "system_language_help": "Establecer el idioma predeterminado para todos los usuarios"
+    "system_language_help": "Establecer el idioma predeterminado para todos los usuarios",
+    "errors": {
+      "password_mismatch": "Las contraseñas no coinciden",
+      "save_failed": "Error al guardar la contraseña"
+    },
+    "system_name": "Nombre del sistema",
+    "system_name_help": "El nombre global que se muestra en todo el sistema",
+    "admin_config_only": "La contraseña del administrador principal solo se puede cambiar en el archivo de configuración del sistema."
   },
   "assignments": {
+    "title": "Asignaciones de limpieza",
+    "details": "Rastrear y administrar la finalización de tareas.",
+    "overdue": "Atrasado",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "future": "Futuro",
     "finish_cleaning": "Terminar limpieza",
     "was_cleaned": "La habitación está limpia",
     "scheduled": "Programado",
     "completed_by": "Completado por",
-    "task_list": "Lista de tareas"
+    "task_list": "Lista de tareas",
+    "assignment_title": "Asignación de limpieza",
+    "report_problem": "Informar problema",
+    "upload_images": "Por favor, cargue imágenes para documentar el problema.",
+    "add_image": "Añadir imagen",
+    "uploading": "Subiendo...",
+    "warning_incomplete": "Advertencia: Tiene tareas sin marcar. ¿Está seguro de que desea terminar la limpieza? Se marcará como incompleta (naranja) en los registros.",
+    "confirm_finish": "Confirmar finalización"
   },
   "rooms": {
-    "log_tooltip": "Registro de limpieza",
+    "title": "Habitaciones",
+    "subtitle": "Gestionar unidades de limpieza e intervalos.",
+    "search_placeholder": "Buscar habitaciones...",
+    "manage_property": "Administrar propiedad",
+    "add_room": "Añadir habitación",
+    "room_name": "Nombre de la habitación",
+    "last_cleaned": "Última limpieza",
+    "action": "Acción",
+    "express": "EXPRÉS",
+    "assign": "ASIGNAR",
+    "manage": "ADMINISTRAR",
+    "express_tooltip": "Limpieza exprés (Inmediatamente)",
+    "assign_tooltip": "Asignar fecha de limpieza",
+    "never": "Nunca",
     "enter_name_placeholder": "Nombre de la habitación...",
     "new_room": "Habitación nueva",
-    "no_rooms": "Aún no se han añadido habitaciones a esta propiedad."
+    "no_rooms": "Aún no se han añadido habitaciones a esta propiedad.",
+    "management_title": "Administración: ",
+    "tabs": {
+      "settings": "Ajustes de habitación",
+      "log": "Registro de limpieza"
+    },
+    "next_assignment": "PRÓXIMA ASIGNACIÓN",
+    "not_scheduled": "No programado",
+    "auto_interval": "INTERVALO AUTOMÁTICO (DÍAS)",
+    "disabled": "Desactivado",
+    "task_template": "Plantilla de lista de tareas",
+    "no_template_tasks": "No hay tareas asignadas a esta plantilla de habitación.",
+    "full_log": "Registro de limpieza completo",
+    "no_history": "Aún no se ha registrado historial de limpieza.",
+    "done_suffix": "Hecho",
+    "tasks_checklist": "lista de verificación de tareas"
   }
 }

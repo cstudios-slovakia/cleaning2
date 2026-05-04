@@ -8,6 +8,15 @@
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
+  "loading": {
+    "assignment": "Zuweisung wird geladen...",
+    "rooms": "Zimmer werden geladen...",
+    "properties": "Eigenschaften werden geladen..."
+  },
+  "tooltips": {
+    "close": "Panel schließen",
+    "cleaning_log": "Reinigungsprotokoll"
+  },
   "login": {
     "title": "Reinigungssystem",
     "subtitle": "Melden Sie sich bei Ihrem Konto an",
@@ -17,7 +26,16 @@
     "password": "Passwort",
     "username": "Benutzername",
     "pin": "PIN",
-    "submit": "Anmelden"
+    "submit": "Anmelden",
+    "signing_in": "Anmelden...",
+    "errors": {
+      "deactivated": "Dieses Konto ist deaktiviert.",
+      "invalid_manager": "Ungültige E-Mail oder Passwort.",
+      "invalid_cleaner": "Ungültiger Benutzername oder PIN.",
+      "connection": "Verbindung zum Server fehlgeschlagen."
+    },
+    "pin_help": "4-stellige PIN",
+    "username_placeholder": "reiniger_jan"
   },
   "dashboard": {
     "property_status": "Objektstatus-Matrix",
@@ -58,19 +76,67 @@
     "confirm_password": "Passwort bestätigen",
     "system_preferences": "System-Einstellungen",
     "system_language": "Standard-Systemsprache",
-    "system_language_help": "Legen Sie die Standardsprache für alle Benutzer fest"
+    "system_language_help": "Legen Sie die Standardsprache für alle Benutzer fest",
+    "errors": {
+      "password_mismatch": "Passwörter stimmen nicht überein",
+      "save_failed": "Passwort konnte nicht gespeichert werden"
+    },
+    "system_name": "Systemname",
+    "system_name_help": "Der globale Name, der im gesamten System angezeigt wird",
+    "admin_config_only": "Das Haupt-Administrator-Passwort kann nur in der Systemkonfigurationsdatei geändert werden."
   },
   "assignments": {
+    "title": "Reinigungsaufträge",
+    "details": "Verfolgen und verwalten Sie die Aufgabenerledigung.",
+    "overdue": "Überfällig",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "future": "Zukünftig",
     "finish_cleaning": "Reinigung beenden",
     "was_cleaned": "Das Zimmer ist gereinigt",
     "scheduled": "Geplant",
     "completed_by": "Abgeschlossen von",
-    "task_list": "Aufgabenliste"
+    "task_list": "Aufgabenliste",
+    "assignment_title": "Reinigungsauftrag",
+    "report_problem": "Problem melden",
+    "upload_images": "Bitte laden Sie Bilder hoch, um das Problem zu dokumentieren.",
+    "add_image": "Bild hinzufügen",
+    "uploading": "Wird hochgeladen...",
+    "warning_incomplete": "Warnung: Sie haben noch nicht abgehakte Aufgaben. Sind Sie sicher, dass Sie die Reinigung beenden möchten? Es wird im Protokoll als unvollständig (orange) markiert.",
+    "confirm_finish": "Beenden bestätigen"
   },
   "rooms": {
-    "log_tooltip": "Reinigungsprotokoll",
-    "enter_name_placeholder": "Zimmername...",
+    "title": "Zimmer",
+    "subtitle": "Verwalten Sie Reinigungseinheiten und -intervalle.",
+    "search_placeholder": "Zimmer suchen...",
+    "manage_property": "Eigenschaft verwalten",
+    "add_room": "Zimmer hinzufügen",
+    "room_name": "Zimmername",
+    "last_cleaned": "Zuletzt gereinigt",
+    "action": "Aktion",
+    "express": "EXPRESS",
+    "assign": "ZUWEISEN",
+    "manage": "VERWALTEN",
+    "express_tooltip": "Expressreinigung (Sofort)",
+    "assign_tooltip": "Reinigungsdatum zuweisen",
+    "never": "Nie",
+    "enter_name_placeholder": "Zimmernamen eingeben...",
     "new_room": "Neues Zimmer",
-    "no_rooms": "Bisher wurden für dieses Objekt keine Zimmer hinzugefügt."
+    "no_rooms": "Bisher wurden für dieses Objekt keine Zimmer hinzugefügt.",
+    "management_title": "Verwaltung: ",
+    "tabs": {
+      "settings": "Zimmereinstellungen",
+      "log": "Reinigungsprotokoll"
+    },
+    "next_assignment": "NÄCHSTER AUFTRAG",
+    "not_scheduled": "Nicht geplant",
+    "auto_interval": "AUTO-INTERVALL (TAGE)",
+    "disabled": "Deaktiviert",
+    "task_template": "Aufgabenliste Vorlage",
+    "no_template_tasks": "Dieser Zimmervorlage sind keine Aufgaben zugewiesen.",
+    "full_log": "Vollständiges Reinigungsprotokoll",
+    "no_history": "Noch kein Reinigungsverlauf aufgezeichnet.",
+    "done_suffix": "Fertig",
+    "tasks_checklist": "Aufgaben Checkliste"
   }
 }

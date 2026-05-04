@@ -8,6 +8,15 @@
     "settings": "Beállítások",
     "logout": "Kijelentkezés"
   },
+  "loading": {
+    "assignment": "Feladat betöltése...",
+    "rooms": "Szobák betöltése...",
+    "properties": "Ingatlanok betöltése..."
+  },
+  "tooltips": {
+    "close": "Panel bezárása",
+    "cleaning_log": "Takarítási napló"
+  },
   "login": {
     "title": "Tisztító rendszer",
     "subtitle": "Jelentkezzen be a fiókjába",
@@ -17,7 +26,16 @@
     "password": "Jelszó",
     "username": "Felhasználónév",
     "pin": "PIN",
-    "submit": "Bejelentkezés"
+    "submit": "Bejelentkezés",
+    "signing_in": "Bejelentkezés...",
+    "errors": {
+      "deactivated": "Ez a fiók inaktiválva van.",
+      "invalid_manager": "Érvénytelen email vagy jelszó.",
+      "invalid_cleaner": "Érvénytelen felhasználónév vagy PIN.",
+      "connection": "Nem sikerült csatlakozni a szerverhez."
+    },
+    "pin_help": "4 jegyű PIN",
+    "username_placeholder": "takarito_janos"
   },
   "dashboard": {
     "property_status": "Ingatlan állapot mátrix",
@@ -58,19 +76,67 @@
     "confirm_password": "Jelszó megerősítése",
     "system_preferences": "Rendszer beállítások",
     "system_language": "Rendszer alapértelmezett nyelve",
-    "system_language_help": "Állítsa be az alapértelmezett nyelvet minden felhasználó számára"
+    "system_language_help": "Állítsa be az alapértelmezett nyelvet minden felhasználó számára",
+    "errors": {
+      "password_mismatch": "A jelszavak nem egyeznek",
+      "save_failed": "Nem sikerült menteni a jelszót"
+    },
+    "system_name": "Rendszer neve",
+    "system_name_help": "A rendszerben megjelenő globális név",
+    "admin_config_only": "A fő adminisztrátor jelszava csak a rendszerkonfigurációs fájlban módosítható."
   },
   "assignments": {
+    "title": "Takarítási feladatok",
+    "details": "A feladatok elvégzésének nyomon követése és kezelése.",
+    "overdue": "Lejárt",
+    "today": "Ma",
+    "tomorrow": "Holnap",
+    "future": "Jövőbeli",
     "finish_cleaning": "Takarítás befejezése",
     "was_cleaned": "A szoba kitakarítva",
     "scheduled": "Ütemezve",
     "completed_by": "Befejezte",
-    "task_list": "Feladatlista"
+    "task_list": "Feladatlista",
+    "assignment_title": "Takarítási feladat",
+    "report_problem": "Probléma jelentése",
+    "upload_images": "Kérjük, töltsön fel képeket a probléma dokumentálásához.",
+    "add_image": "Kép hozzáadása",
+    "uploading": "Feltöltés...",
+    "warning_incomplete": "Figyelem: Vannak befejezetlen feladatai. Biztosan be akarja fejezni a takarítást? A naplókban befejezetlenként (narancssárga) lesz megjelölve.",
+    "confirm_finish": "Befejezés megerősítése"
   },
   "rooms": {
-    "log_tooltip": "Takarítási napló",
-    "enter_name_placeholder": "Szoba neve...",
+    "title": "Szobák",
+    "subtitle": "Takarítási egységek és intervallumok kezelése.",
+    "search_placeholder": "Szobák keresése...",
+    "manage_property": "Ingatlan kezelése",
+    "add_room": "Szoba hozzáadása",
+    "room_name": "Szoba neve",
+    "last_cleaned": "Utoljára takarítva",
+    "action": "Művelet",
+    "express": "EXPRESSZ",
+    "assign": "KIOSZTÁS",
+    "manage": "KEZELÉS",
+    "express_tooltip": "Expressz takarítás (Azonnal)",
+    "assign_tooltip": "Takarítási dátum kiosztása",
+    "never": "Soha",
+    "enter_name_placeholder": "Adja meg a szoba nevét...",
     "new_room": "Új szoba",
-    "no_rooms": "Még nincsenek szobák hozzáadva ehhez az ingatlanhoz."
+    "no_rooms": "Még nincsenek szobák hozzáadva ehhez az ingatlanhoz.",
+    "management_title": "Kezelés: ",
+    "tabs": {
+      "settings": "Szoba beállítások",
+      "log": "Takarítási napló"
+    },
+    "next_assignment": "KÖVETKEZŐ FELADAT",
+    "not_scheduled": "Nincs ütemezve",
+    "auto_interval": "AUTÓMATIKUS INTERVALLUM (NAP)",
+    "disabled": "Kikapcsolva",
+    "task_template": "Feladatlista sablon",
+    "no_template_tasks": "Nincsenek feladatok rendelve ehhez a szobasablonhoz.",
+    "full_log": "Teljes takarítási napló",
+    "no_history": "Még nem rögzítettek takarítási előzményt.",
+    "done_suffix": "Kész",
+    "tasks_checklist": "feladatok ellenőrzőlista"
   }
 }

@@ -97,7 +97,13 @@
     "scheduled": "Scheduled",
     "completed_by": "Completed by",
     "task_list": "Task List",
-    "assignment_title": "Cleaning Assignment"
+    "assignment_title": "Cleaning Assignment",
+    "report_problem": "Report Problem",
+    "upload_images": "Please upload images to document the problem.",
+    "add_image": "Add Image",
+    "uploading": "Uploading...",
+    "warning_incomplete": "Warning: You have unchecked tasks. Are you sure you want to finish the cleaning? It will be marked as incomplete (orange) in the logs.",
+    "confirm_finish": "Confirm Finish"
   },
   "rooms": {
     "title": "Rooms",

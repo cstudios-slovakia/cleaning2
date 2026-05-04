@@ -97,7 +97,13 @@
     "scheduled": "Naplánované",
     "completed_by": "Dokončil/a",
     "task_list": "Zoznam úloh",
-    "assignment_title": "Úloha na upratovanie"
+    "assignment_title": "Úloha na upratovanie",
+    "report_problem": "Nahlásiť problém",
+    "upload_images": "Prosím, nahrajte fotky pre zdokumentovanie problému.",
+    "add_image": "Pridať fotku",
+    "uploading": "Nahrávam...",
+    "warning_incomplete": "Upozornenie: Máte neodškrtnuté úlohy. Ste si istý, že chcete dokončiť upratovanie? V záznamoch bude označené ako nedokončené (oranžové).",
+    "confirm_finish": "Potvrdiť dokončenie"
   },
   "rooms": {
     "title": "Izby",

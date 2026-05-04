@@ -265,7 +265,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <AlertTriangle className={assignment.problemReported ? "text-red-500" : "text-slate-400"} size={20} />
-                <span className="font-bold text-slate-800">Report Problem</span>
+                <span className="font-bold text-slate-800">{t('assignments.report_problem')}</span>
               </div>
               <button 
                 onClick={toggleProblem}
@@ -285,7 +285,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
 
             {assignment.problemReported && (
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4 animate-fade-in-up">
-                <p className="text-sm text-slate-600 font-medium">Please upload images to document the problem.</p>
+                <p className="text-sm text-slate-600 font-medium">{t('assignments.upload_images')}</p>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {(assignment.images || []).map((imgPath, idx) => (
@@ -302,11 +302,11 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
                   
                   <label className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 hover:bg-slate-100 flex flex-col items-center justify-center cursor-pointer transition-colors">
                     {uploading ? (
-                      <span className="text-xs font-bold text-slate-500 animate-pulse">Uploading...</span>
+                      <span className="text-xs font-bold text-slate-500 animate-pulse">{t('assignments.uploading')}</span>
                     ) : (
                       <>
                         <Plus className="text-slate-400 mb-1" size={24} />
-                        <span className="text-xs font-bold text-slate-500">Add Image</span>
+                        <span className="text-xs font-bold text-slate-500">{t('assignments.add_image')}</span>
                       </>
                     )}
                     <input 
@@ -336,7 +336,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             <div className="max-w-2xl mx-auto mb-3 flex items-start space-x-2 text-orange-800 bg-orange-100 p-3 rounded-xl animate-fade-in-up">
               <AlertTriangle size={20} className="shrink-0 mt-0.5" />
               <p className="text-sm font-medium">
-                <strong>Warning:</strong> You have unchecked tasks. Are you sure you want to finish the cleaning? It will be marked as incomplete (orange) in the logs.
+                <strong>Warning:</strong> {t('assignments.warning_incomplete')}
               </p>
             </div>
           )}
@@ -357,7 +357,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
                 showWarning && "shadow-orange-200"
               )}
             >
-              {showWarning ? "Confirm Finish" : t('assignments.finish_cleaning')}
+              {showWarning ? t('assignments.confirm_finish') : t('assignments.finish_cleaning')}
             </button>
           </div>
         </div>
