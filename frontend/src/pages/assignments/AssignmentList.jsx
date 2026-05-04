@@ -99,8 +99,8 @@ export default function AssignmentList() {
   const assignments = {
     overdue: filteredAssignments.filter(isOverdue),
     today: filteredAssignments.filter(a => a.date === 'Today' && !isOverdue(a)),
-    tomorrow: filteredAssignments.filter(a => a.date.includes('Tomorrow')),
-    future: filteredAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a))
+    tomorrow: filteredAssignments.filter(a => a.date?.includes('Tomorrow')),
+    future: filteredAssignments.filter(a => a.date !== 'Today' && !a.date?.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a))
   };
 
   const translateLabel = (label) => {
