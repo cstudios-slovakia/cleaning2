@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { API_BASE_URL } from './api';
 
 const VAPID_PUBLIC_KEY = 'BD49BGird7PQBqcp3k-0qpfdugIvVAh7G8Oiao3U3n-bHgWSK4pIjhEshA9aIBxrPwWAyw4kUns7s9RiFQgeDew';
@@ -20,13 +20,37 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 export function usePushNotifications(user) {
-  useEffect(() => {
+  const [permissionGranted, setPermissionGranted] = useState(Notification.permission === 'granted');
+
+  const subscribeUser = useCallback((swReg) => {
+    const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+    swReg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: applicationServerKey
+    })
+    .then(function(subscription) {
+      // Send to backend
+      fetch(`${API_BASE_URL}/push_subscribe.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          subscription: subscription
+        })
+      });
+      setPermissionGranted(true);
+    })
+    .catch(function(err) {
+      console.log('Failed to subscribe the user: ', err);
+    });
+  }, [user]);
+
+  const requestPermission = useCallback(() => {
     if (!user || !user.id) return;
     
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       navigator.serviceWorker.register('/sw.js')
         .then(function(swReg) {
-          // Request permission if not granted
           if (Notification.permission === 'default') {
             Notification.requestPermission().then(permission => {
               if (permission === 'granted') {
@@ -41,27 +65,7 @@ export function usePushNotifications(user) {
           console.error('Service Worker Error', error);
         });
     }
+  }, [user, subscribeUser]);
 
-    function subscribeUser(swReg) {
-      const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-      swReg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: applicationServerKey
-      })
-      .then(function(subscription) {
-        // Send to backend
-        fetch(`${API_BASE_URL}/push_subscribe.php`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_id: user.id,
-            subscription: subscription
-          })
-        });
-      })
-      .catch(function(err) {
-        console.log('Failed to subscribe the user: ', err);
-      });
-    }
-  }, [user]);
+  return { requestPermission, permissionGranted };
 }

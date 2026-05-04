@@ -60,10 +60,22 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
 
   const toggleProblem = async () => {
     if (!canEdit) return;
-    const newAssignment = { ...assignment, problemReported: !assignment.problemReported };
+    const isNowReported = !assignment.problemReported;
+    const newAssignment = { ...assignment, problemReported: isNowReported };
     setAssignment(newAssignment);
     try {
       await saveAssignment(newAssignment);
+      if (isNowReported) {
+        fetch(`${API_BASE_URL}/push_notify.php`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'problem',
+            propertyName: assignment.property,
+            roomName: assignment.room
+          })
+        }).catch(err => console.error('Push notify failed', err));
+      }
     } catch (e) {
       console.error('Save failed', e);
     }

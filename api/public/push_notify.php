@@ -17,8 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $action = $input['action'] ?? null;
     $propertyId = $input['propertyId'] ?? null;
+    $propertyNameInput = $input['propertyName'] ?? null;
     
-    if (!$action || !$propertyId) {
+    if (!$action || (!$propertyId && !$propertyNameInput)) {
         http_response_code(400);
         exit(json_encode(['error' => 'Missing data']));
     }
@@ -37,8 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $webPush = new WebPush($auth);
         
         // Fetch property details
-        $stmt = $pdo->prepare("SELECT name, cleaners, managers FROM properties WHERE id = ?");
-        $stmt->execute([$propertyId]);
+        if ($propertyId) {
+            $stmt = $pdo->prepare("SELECT id, name, cleaners, managers FROM properties WHERE id = ?");
+            $stmt->execute([$propertyId]);
+        } else {
+            $stmt = $pdo->prepare("SELECT id, name, cleaners, managers FROM properties WHERE name = ?");
+            $stmt->execute([$propertyNameInput]);
+        }
         $property = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$property) {
@@ -47,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         $propertyName = $property['name'];
+        $propertyId = $property['id'];
         $cleaners = $property['cleaners'] ? json_decode($property['cleaners'], true) : [];
         $managers = $property['managers'] ? json_decode($property['managers'], true) : [];
         
@@ -76,6 +83,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'title' => 'Cleaning Overdue!',
                 'body' => "A room at $propertyName is overdue for cleaning. Please review.",
                 'url' => '/properties/' . $propertyId
+            ];
+        } elseif ($action === 'problem') {
+            // Send to managers
+            foreach ($managers as $m) {
+                if (isset($m['id'])) {
+                    $targetUserIds[] = $m['id'];
+                }
+            }
+            $roomName = $input['roomName'] ?? 'a room';
+            $payload = [
+                'title' => 'Problem Reported!',
+                'body' => "A problem was reported in $roomName at $propertyName.",
+                'url' => '/properties/' . $propertyId . '/logs'
             ];
         } else {
             exit(json_encode(['error' => 'Invalid action']));

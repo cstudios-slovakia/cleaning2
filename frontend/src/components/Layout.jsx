@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Building2, BedDouble, ClipboardList, Users, LogOut, Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -21,8 +21,15 @@ export default function Layout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { t, systemName } = useTranslation();
+  const [showNotificationBanner, setShowNotificationBanner] = useState(false);
 
-  usePushNotifications(user);
+  const { requestPermission, permissionGranted } = usePushNotifications(user);
+
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      setShowNotificationBanner(true);
+    }
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -126,6 +133,31 @@ export default function Layout() {
 
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
           <div className="max-w-7xl mx-auto">
+            {showNotificationBanner && !permissionGranted && (
+              <div className="mb-6 bg-primary-50 border border-primary-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between shadow-sm animate-fade-in-up">
+                <div className="mb-3 sm:mb-0 text-center sm:text-left">
+                  <h3 className="font-bold text-primary-900">{t('settings.push_notifications', 'Enable Notifications')}</h3>
+                  <p className="text-sm text-primary-700">{t('settings.push_notifications_help', 'Get notified about immediate cleanings and problems.')}</p>
+                </div>
+                <div className="flex space-x-2 w-full sm:w-auto">
+                  <button 
+                    onClick={() => setShowNotificationBanner(false)}
+                    className="flex-1 sm:flex-none px-4 py-2 text-primary-600 font-medium hover:bg-primary-100 rounded-xl transition-colors"
+                  >
+                    {t('common.cancel', 'Later')}
+                  </button>
+                  <button 
+                    onClick={() => {
+                      requestPermission();
+                      setShowNotificationBanner(false);
+                    }}
+                    className="flex-1 sm:flex-none px-4 py-2 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-colors shadow-sm"
+                  >
+                    {t('common.save', 'Enable')}
+                  </button>
+                </div>
+              </div>
+            )}
             <Outlet />
           </div>
         </div>
