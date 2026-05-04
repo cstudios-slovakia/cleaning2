@@ -33,6 +33,13 @@ export function I18nProvider({ children }) {
   const [systemName, setSystemName] = useState(localStorage.getItem('cleaner_system_name') || 'Cleaning System');
   const [userLang, setUserLang] = useState(localStorage.getItem(`cleaner_user_lang_${user?.id}`) || null);
 
+  useEffect(() => {
+    if (user && user.language) {
+      setUserLang(user.language);
+      localStorage.setItem(`cleaner_user_lang_${user.id}`, user.language);
+    }
+  }, [user]);
+
   const currentLang = userLang || systemLang;
 
   const t = (key) => {

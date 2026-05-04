@@ -16,6 +16,10 @@ try {
     
     // GET /api/public/users.php
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        try {
+            $pdo->exec("ALTER TABLE users ADD COLUMN language VARCHAR(10) DEFAULT 'en'");
+        } catch (Exception $e) {}
+        
         $stmt = $pdo->query("SELECT * FROM users ORDER BY created_at DESC");
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -46,6 +50,7 @@ try {
         $role = $input['role'] ?? 'cleaner';
         $status = $input['status'] ?? 'active';
         $lastActive = $input['lastActive'] ?? 'Never';
+        $language = $input['language'] ?? 'en';
         
         $config = require __DIR__ . '/../config.php';
         if (isset($config['main_admin']) && $id === $config['main_admin']['id']) {
@@ -61,12 +66,12 @@ try {
 
         if ($exists) {
             // Update
-            $stmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, email = ?, password = ?, role = ?, status = ?, lastActive = ? WHERE id = ?");
-            $stmt->execute([$name, $username, $email, $password, $role, $status, $lastActive, $id]);
+            $stmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, email = ?, password = ?, role = ?, status = ?, lastActive = ?, language = ? WHERE id = ?");
+            $stmt->execute([$name, $username, $email, $password, $role, $status, $lastActive, $language, $id]);
         } else {
             // Insert
-            $stmt = $pdo->prepare("INSERT INTO users (id, name, username, email, password, role, status, lastActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$id, $name, $username, $email, $password, $role, $status, $lastActive]);
+            $stmt = $pdo->prepare("INSERT INTO users (id, name, username, email, password, role, status, lastActive, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$id, $name, $username, $email, $password, $role, $status, $lastActive, $language]);
         }
 
         echo json_encode(['success' => true, 'id' => $id]);

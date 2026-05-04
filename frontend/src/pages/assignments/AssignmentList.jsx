@@ -76,8 +76,43 @@ export default function AssignmentList() {
     return { theme: '#0ea5e9', coverImage: null };
   };
 
+  const checkDateMatch = (dateStr, targetDate) => {
+    if (!dateStr) return false;
+    const isoString = targetDate.toISOString().split('T')[0];
+    if (dateStr === isoString) return true;
+    
+    const localStr1 = targetDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    if (dateStr === localStr1) return true;
+    
+    const day = targetDate.getDate().toString();
+    const monthShort = targetDate.toLocaleDateString('en-US', { month: 'short' });
+    const monthLong = targetDate.toLocaleDateString('en-US', { month: 'long' });
+    
+    const dayRegex = new RegExp(`\\b${day}\\b`);
+    if (dayRegex.test(dateStr) && (dateStr.includes(monthShort) || dateStr.includes(monthLong))) {
+      return true;
+    }
+    return false;
+  };
+
+  const isToday = (a) => a.date === 'Today' || a.time?.includes('Today') || checkDateMatch(a.date, new Date());
+  
+  const isTomorrow = (a) => {
+    if (a.date?.includes('Tomorrow')) return true;
+    const tmrw = new Date();
+    tmrw.setDate(tmrw.getDate() + 1);
+    return checkDateMatch(a.date, tmrw);
+  };
+  
+  const isYesterday = (a) => {
+    if (a.date?.includes('Yesterday') || a.time?.includes('Yesterday')) return true;
+    const yest = new Date();
+    yest.setDate(yest.getDate() - 1);
+    return checkDateMatch(a.date, yest);
+  };
+
   const isOverdue = (a) => {
-    if (a.date === 'Today' || a.time?.includes('Today')) {
+    if (isToday(a)) {
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       
@@ -87,7 +122,7 @@ export default function AssignmentList() {
         return scheduledMinutes < currentMinutes;
       }
     }
-    return a.date?.includes('Yesterday') || a.time?.includes('Yesterday');
+    return isYesterday(a);
   };
 
   const filteredAssignments = dbAssignments.filter(a => {
@@ -98,9 +133,9 @@ export default function AssignmentList() {
 
   const assignments = {
     overdue: filteredAssignments.filter(isOverdue),
-    today: filteredAssignments.filter(a => a.date === 'Today' && !isOverdue(a)),
-    tomorrow: filteredAssignments.filter(a => a.date?.includes('Tomorrow')),
-    future: filteredAssignments.filter(a => a.date !== 'Today' && !a.date?.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a))
+    today: filteredAssignments.filter(a => isToday(a) && !isOverdue(a)),
+    tomorrow: filteredAssignments.filter(a => isTomorrow(a) && !isOverdue(a)),
+    future: filteredAssignments.filter(a => !isToday(a) && !isTomorrow(a) && !isYesterday(a) && !isOverdue(a))
   };
 
   const translateLabel = (label) => {
@@ -108,6 +143,15 @@ export default function AssignmentList() {
     if (label === 'Today') return t('common.today');
     if (label === 'Tomorrow') return t('common.tomorrow');
     if (label === 'Yesterday') return t('common.yesterday');
+    
+    // Check if it's an ISO date string (YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(label)) {
+      const d = new Date(label);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
+      }
+    }
+    
     return label;
   };
 

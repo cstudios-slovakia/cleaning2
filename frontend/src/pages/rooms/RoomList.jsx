@@ -120,11 +120,8 @@ export default function RoomList() {
     e.preventDefault();
     if (!assignDate) return;
     
-    // Format date string
-    const dateObj = new Date(assignDate);
-    const dateStr = dateObj.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-    
-    createAssignment(selectedRoom, dateStr, '10:00 AM');
+    // Use the raw ISO string from the input (YYYY-MM-DD)
+    createAssignment(selectedRoom, assignDate, '10:00 AM');
     setIsAssignModalOpen(false);
     setAssignDate('');
   };

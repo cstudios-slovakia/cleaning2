@@ -43,7 +43,8 @@ export default function UserList() {
         email: '',
         password: '',
         role: activeTab === 'cleaners' ? 'cleaner' : 'manager',
-        status: 'active'
+        status: 'active',
+        language: 'en'
       });
     }
     setIsModalOpen(true);
@@ -227,6 +228,19 @@ export default function UserList() {
                   <option value="cleaner">Cleaner</option>
                   <option value="manager">Manager</option>
                   <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Language</label>
+                <select 
+                  value={editUser.language || 'en'}
+                  onChange={(e) => setEditUser({...editUser, language: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                >
+                  <option value="en">English</option>
+                  <option value="sk">Slovenčina</option>
+                  <option value="hu">Magyar</option>
                 </select>
               </div>
 

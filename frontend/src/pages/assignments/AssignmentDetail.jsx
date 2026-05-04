@@ -165,6 +165,15 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     if (label === 'Today') return t('common.today');
     if (label === 'Tomorrow') return t('common.tomorrow');
     if (label === 'Yesterday') return t('common.yesterday');
+    
+    // Check if it's an ISO date string (YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(label)) {
+      const d = new Date(label);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' });
+      }
+    }
+    
     return label;
   };
 
@@ -207,7 +216,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
               className="inline-block px-3 py-1 rounded-full text-sm font-bold border"
               style={{ backgroundColor: `${themeColor}10`, borderColor: `${themeColor}30`, color: themeColor }}
             >
-              {t('assignments.scheduled')}: {assignment.date} {assignment.time}
+              {t('assignments.scheduled')}: {translateLabel(assignment.date)} {assignment.time}
             </div>
             
             {assignment.doneBy && (
