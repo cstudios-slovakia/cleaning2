@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn, isToday as isTodayHelper, isYesterday as isYesterdayHelper, isTomorrow as isTomorrowHelper } from '../../lib/utils';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from './AssignmentDetail';
 import { fetchAssignments, fetchProperties } from '../../lib/api';
@@ -95,28 +95,19 @@ export default function AssignmentList() {
     return false;
   };
 
-  const isToday = (a) => a.date === 'Today' || a.time?.includes('Today') || checkDateMatch(a.date, new Date());
+  const isToday = (a) => isTodayHelper(a?.date) || String(a?.time || '').includes('Today');
   
-  const isTomorrow = (a) => {
-    if (a.date?.includes('Tomorrow')) return true;
-    const tmrw = new Date();
-    tmrw.setDate(tmrw.getDate() + 1);
-    return checkDateMatch(a.date, tmrw);
-  };
+  const isTomorrow = (a) => isTomorrowHelper(a?.date) || String(a?.time || '').includes('Tomorrow');
   
-  const isYesterday = (a) => {
-    if (a.date?.includes('Yesterday') || a.time?.includes('Yesterday')) return true;
-    const yest = new Date();
-    yest.setDate(yest.getDate() - 1);
-    return checkDateMatch(a.date, yest);
-  };
+  const isYesterday = (a) => isYesterdayHelper(a?.date) || String(a?.time || '').includes('Yesterday');
 
   const isOverdue = (a) => {
+    if (!a) return false;
     if (isToday(a)) {
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       
-      const timeMatch = a.time?.match(/(\d{1,2}):(\d{2})/);
+      const timeMatch = String(a.time || '').match(/(\d{1,2}):(\d{2})/);
       if (timeMatch) {
         const scheduledMinutes = parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]);
         return scheduledMinutes < currentMinutes;
@@ -125,9 +116,9 @@ export default function AssignmentList() {
     return isYesterday(a);
   };
 
-  const filteredAssignments = dbAssignments.filter(a => {
+  const filteredAssignments = (dbAssignments || []).filter(a => {
     if (user?.role !== 'cleaner') return true;
-    const prop = properties.find(p => p.name === a.property);
+    const prop = (properties || []).find(p => p.name === a.property);
     return prop?.cleaners?.some(c => c.name === user.name);
   });
 

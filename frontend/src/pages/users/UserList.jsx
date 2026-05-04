@@ -28,8 +28,8 @@ export default function UserList() {
     loadUsers();
   }, []);
 
-  const cleaners = users.filter(u => u.role === 'cleaner');
-  const managers = users.filter(u => u.role === 'manager' || u.role === 'admin');
+  const cleaners = (users || []).filter(u => u.role === 'cleaner');
+  const managers = (users || []).filter(u => u.role !== 'cleaner');
   const activeUsers = activeTab === 'cleaners' ? cleaners : managers;
 
   const handleOpenModal = (user = null) => {

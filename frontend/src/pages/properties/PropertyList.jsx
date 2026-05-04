@@ -76,7 +76,7 @@ export default function PropertyList() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {properties.map(prop => (
+        {(properties || []).map(prop => (
           <div key={prop.id} className="card hover:shadow-md transition-shadow group overflow-hidden flex flex-col">
             <div className="h-32 bg-slate-100 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
               {prop.coverImage ? (
