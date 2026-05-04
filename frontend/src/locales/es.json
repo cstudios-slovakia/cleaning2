@@ -46,7 +46,22 @@
     "express_clean": "Limpieza exprés",
     "assign": "Asignar",
     "no_tasks": "No hay tareas pendientes",
-    "completed": "Completado"
+    "completed": "Completado",
+    "title": "Panorama del sistema",
+    "subtitle": "Indicadores clave de rendimiento y estado.",
+    "tasks_matrix": "Matriz de tareas de hoy",
+    "no_rooms": "No hay habitaciones",
+    "pending_today_tab": "Pendiente hoy",
+    "recent_logs_tab": "Registros recientes",
+    "badge_overdue": "Atrasado",
+    "badge_due_today": "Vence hoy",
+    "status": {
+      "ok": "OK",
+      "due": "Vencimiento",
+      "overdue": "Atrasado",
+      "immediate": "Inmediato",
+      "cleaning": "Limpieza"
+    }
   },
   "common": {
     "cancel": "Cancelar",
@@ -60,7 +75,8 @@
     "tomorrow": "Mañana",
     "yesterday": "Ayer",
     "overdue": "Atrasado",
-    "future": "Futuro"
+    "future": "Futuro",
+    "refresh": "Actualizar"
   },
   "settings": {
     "title": "Ajustes",

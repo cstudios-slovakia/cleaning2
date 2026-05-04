@@ -119,15 +119,15 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-4xl font-black text-slate-900 tracking-tighter leading-none mb-2 uppercase">System Landscape</h2>
-          <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Key performance indicators and status.</p>
+          <h2 className="text-4xl font-black text-slate-900 tracking-tighter leading-none mb-2 uppercase">{t('dashboard.title')}</h2>
+          <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.subtitle')}</p>
         </div>
         <button 
           onClick={loadData}
           className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 shadow-sm transition-colors"
         >
           <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
-          <span>Refresh</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
@@ -137,13 +137,13 @@ export default function Dashboard() {
         {/* Today's Tasks Matrix */}
         <div className="card h-full flex flex-col">
           <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-            <h3 className="font-bold text-slate-800 shrink-0">Today's Tasks Matrix</h3>
+            <h3 className="font-bold text-slate-800 shrink-0">{t('dashboard.tasks_matrix')}</h3>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-slate-200"></div><span>OK</span></div>
-              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div><span>Due</span></div>
-              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-orange-500"></div><span>Overdue</span></div>
-              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div><span>Immediate</span></div>
-              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-purple-500"></div><span>Cleaning</span></div>
+              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-slate-200"></div><span>{t('dashboard.status.ok')}</span></div>
+              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div><span>{t('dashboard.status.due')}</span></div>
+              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-orange-500"></div><span>{t('dashboard.status.overdue')}</span></div>
+              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div><span>{t('dashboard.status.immediate')}</span></div>
+              <div className="flex items-center space-x-1.5"><div className="w-2 h-2 rounded-full bg-purple-500"></div><span>{t('dashboard.status.cleaning')}</span></div>
             </div>
           </div>
           <div className="flex gap-4 overflow-x-auto p-5 pb-8 items-start flex-1">
@@ -192,7 +192,7 @@ export default function Dashboard() {
                     );
                   })}
                   {rooms.filter(r => r.property_id === p.id).length === 0 && (
-                    <p className="text-center text-slate-400 text-[10px] py-4 italic font-medium">No rooms</p>
+                    <p className="text-center text-slate-400 text-[10px] py-4 italic font-medium">{t('dashboard.no_rooms')}</p>
                   )}
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function Dashboard() {
                   activeLogsTab === 'today' ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
                 )}
               >
-                Pending Today
+                {t('dashboard.pending_today_tab')}
               </button>
               <button
                 onClick={() => setActiveLogsTab('logs')}
@@ -220,7 +220,7 @@ export default function Dashboard() {
                   activeLogsTab === 'logs' ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
                 )}
               >
-                Recent Logs
+                {t('dashboard.recent_logs_tab')}
               </button>
             </div>
           </div>
@@ -241,9 +241,9 @@ export default function Dashboard() {
                               </p>
                               <div className="flex items-center space-x-2 mt-1.5">
                                 {status === 'overdue' ? (
-                                  <span className="text-[10px] font-bold text-white bg-orange-500 px-2 py-0.5 rounded-md uppercase tracking-wider">Overdue</span>
+                                  <span className="text-[10px] font-bold text-white bg-orange-500 px-2 py-0.5 rounded-md uppercase tracking-wider">{t('dashboard.badge_overdue')}</span>
                                 ) : (
-                                  <span className="text-[10px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-md uppercase tracking-wider">Due Today</span>
+                                  <span className="text-[10px] font-bold text-white bg-blue-500 px-2 py-0.5 rounded-md uppercase tracking-wider">{t('dashboard.badge_due_today')}</span>
                                 )}
                                 <span className="text-xs text-slate-500 font-medium flex items-center">
                                   <div className="w-1 h-1 rounded-full bg-slate-300 mx-1.5"></div>

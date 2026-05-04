@@ -46,7 +46,22 @@
     "express_clean": "Expressz takarítás",
     "assign": "Kiosztás",
     "no_tasks": "Nincsenek várakozó feladatok",
-    "completed": "Befejezve"
+    "completed": "Befejezve",
+    "title": "Rendszer áttekintés",
+    "subtitle": "Kulcsfontosságú teljesítménymutatók és állapot.",
+    "tasks_matrix": "Mai feladat mátrix",
+    "no_rooms": "Nincsenek szobák",
+    "pending_today_tab": "Ma esedékes",
+    "recent_logs_tab": "Legutóbbi naplók",
+    "badge_overdue": "Lejárt",
+    "badge_due_today": "Ma esedékes",
+    "status": {
+      "ok": "OK",
+      "due": "Esedékes",
+      "overdue": "Lejárt",
+      "immediate": "Azonnal",
+      "cleaning": "Takarítás alatt"
+    }
   },
   "common": {
     "cancel": "Mégse",
@@ -60,7 +75,8 @@
     "tomorrow": "Holnap",
     "yesterday": "Tegnap",
     "overdue": "Lejárt",
-    "future": "Jövőbeli"
+    "future": "Jövőbeli",
+    "refresh": "Frissítés"
   },
   "settings": {
     "title": "Beállítások",

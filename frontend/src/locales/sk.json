@@ -46,7 +46,22 @@
     "express_clean": "Rýchle upratovanie",
     "assign": "Priradiť",
     "no_tasks": "Žiadne čakajúce úlohy",
-    "completed": "Dokončené"
+    "completed": "Dokončené",
+    "title": "Prehľad systému",
+    "subtitle": "Kľúčové ukazovatele výkonnosti a stav.",
+    "tasks_matrix": "Dnešná matica úloh",
+    "no_rooms": "Žiadne izby",
+    "pending_today_tab": "Dnes čaká",
+    "recent_logs_tab": "Nedávne záznamy",
+    "badge_overdue": "Po termíne",
+    "badge_due_today": "Dnes čaká",
+    "status": {
+      "ok": "OK",
+      "due": "Čaká",
+      "overdue": "Po termíne",
+      "immediate": "Ihneď",
+      "cleaning": "Upratuje sa"
+    }
   },
   "common": {
     "cancel": "Zrušiť",
@@ -60,7 +75,8 @@
     "tomorrow": "Zajtra",
     "yesterday": "Včera",
     "overdue": "Po termíne",
-    "future": "Budúce"
+    "future": "Budúce",
+    "refresh": "Obnoviť"
   },
   "settings": {
     "title": "Nastavenia",

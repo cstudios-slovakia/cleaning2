@@ -38,15 +38,22 @@
     "username_placeholder": "cleaner_john"
   },
   "dashboard": {
-    "property_status": "Property Status Matrix",
-    "activity": "Activity",
-    "timeline": "Timeline",
-    "pending_today": "Pending Today",
-    "recent_logs": "Recent Logs",
-    "express_clean": "Express Clean",
-    "assign": "Assign",
-    "no_tasks": "No pending tasks",
-    "completed": "Completed"
+    "completed": "Completed",
+    "title": "System Landscape",
+    "subtitle": "Key performance indicators and status.",
+    "tasks_matrix": "Today's Tasks Matrix",
+    "no_rooms": "No rooms",
+    "pending_today_tab": "Pending Today",
+    "recent_logs_tab": "Recent Logs",
+    "badge_overdue": "Overdue",
+    "badge_due_today": "Due Today",
+    "status": {
+      "ok": "OK",
+      "due": "Due",
+      "overdue": "Overdue",
+      "immediate": "Immediate",
+      "cleaning": "Cleaning"
+    }
   },
   "common": {
     "cancel": "Cancel",
@@ -60,7 +67,8 @@
     "tomorrow": "Tomorrow",
     "yesterday": "Yesterday",
     "overdue": "Overdue",
-    "future": "Future"
+    "future": "Future",
+    "refresh": "Refresh"
   },
   "settings": {
     "title": "Settings",

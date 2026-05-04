@@ -46,7 +46,22 @@
     "express_clean": "Експрес-прибирання",
     "assign": "Призначити",
     "no_tasks": "Немає очікуваних завдань",
-    "completed": "Завершено"
+    "completed": "Завершено",
+    "title": "Огляд системи",
+    "subtitle": "Ключові показники ефективності та статус.",
+    "tasks_matrix": "Матриця завдань на сьогодні",
+    "no_rooms": "Немає кімнат",
+    "pending_today_tab": "Очікує сьогодні",
+    "recent_logs_tab": "Останні записи",
+    "badge_overdue": "Прострочено",
+    "badge_due_today": "Сьогодні",
+    "status": {
+      "ok": "ОК",
+      "due": "Очікується",
+      "overdue": "Прострочено",
+      "immediate": "Терміново",
+      "cleaning": "Прибирання"
+    }
   },
   "common": {
     "cancel": "Скасувати",
@@ -60,7 +75,8 @@
     "tomorrow": "Завтра",
     "yesterday": "Вчора",
     "overdue": "Прострочено",
-    "future": "Майбутнє"
+    "future": "Майбутнє",
+    "refresh": "Оновити"
   },
   "settings": {
     "title": "Налаштування",

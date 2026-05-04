@@ -46,7 +46,22 @@
     "express_clean": "Expressreinigung",
     "assign": "Zuweisen",
     "no_tasks": "Keine ausstehenden Aufgaben",
-    "completed": "Abgeschlossen"
+    "completed": "Abgeschlossen",
+    "title": "Systemübersicht",
+    "subtitle": "Wichtige Leistungsindikatoren und Status.",
+    "tasks_matrix": "Heutige Aufgabenmatrix",
+    "no_rooms": "Keine Zimmer",
+    "pending_today_tab": "Heute ausstehend",
+    "recent_logs_tab": "Aktuelle Protokolle",
+    "badge_overdue": "Überfällig",
+    "badge_due_today": "Heute fällig",
+    "status": {
+      "ok": "OK",
+      "due": "Fällig",
+      "overdue": "Überfällig",
+      "immediate": "Sofort",
+      "cleaning": "Reinigung"
+    }
   },
   "common": {
     "cancel": "Abbrechen",
@@ -60,7 +75,8 @@
     "tomorrow": "Morgen",
     "yesterday": "Gestern",
     "overdue": "Überfällig",
-    "future": "Zukünftig"
+    "future": "Zukünftig",
+    "refresh": "Aktualisieren"
   },
   "settings": {
     "title": "Einstellungen",

@@ -46,7 +46,22 @@
     "express_clean": "Экспресс-уборка",
     "assign": "Назначить",
     "no_tasks": "Нет ожидающих задач",
-    "completed": "Завершено"
+    "completed": "Завершено",
+    "title": "Обзор системы",
+    "subtitle": "Ключевые показатели эффективности и статус.",
+    "tasks_matrix": "Матрица задач на сегодня",
+    "no_rooms": "Нет комнат",
+    "pending_today_tab": "Ожидает сегодня",
+    "recent_logs_tab": "Последние записи",
+    "badge_overdue": "Просрочено",
+    "badge_due_today": "Сегодня",
+    "status": {
+      "ok": "ОК",
+      "due": "Ожидается",
+      "overdue": "Просрочено",
+      "immediate": "Срочно",
+      "cleaning": "Уборка"
+    }
   },
   "common": {
     "cancel": "Отмена",
@@ -60,7 +75,8 @@
     "tomorrow": "Завтра",
     "yesterday": "Вчера",
     "overdue": "Просрочено",
-    "future": "Будущее"
+    "future": "Будущее",
+    "refresh": "Обновить"
   },
   "settings": {
     "title": "Настройки",
