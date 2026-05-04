@@ -251,7 +251,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
           </div>
         </div>
 
-        {isSlideout && canEdit && (
+        {canEdit && (
           <div className="space-y-4 pt-6 border-t border-slate-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">

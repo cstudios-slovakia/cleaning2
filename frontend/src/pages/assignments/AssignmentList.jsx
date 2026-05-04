@@ -285,6 +285,9 @@ export default function AssignmentList() {
         {selectedAssignment && (
           <AssignmentDetail 
             assignmentId={selectedAssignment.id} 
+            isSlideout={true}
+            theme={getPropertyData(selectedAssignment.property).theme}
+            coverImage={getPropertyData(selectedAssignment.property).coverImage}
             onClose={() => setIsSlideoutOpen(false)}
             onFlashMessage={(msg) => {
               setFlashMessage(msg);
