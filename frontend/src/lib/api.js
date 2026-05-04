@@ -21,6 +21,19 @@ export const saveAssignment = async (assignment) => {
     return res.json();
 };
 
+export const uploadImage = async (file, roomName) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('roomName', roomName);
+
+    const res = await fetch(`${API_BASE_URL}/upload_image.php`, {
+        method: 'POST',
+        body: formData
+    });
+    if (!res.ok) throw new Error('Failed to upload image');
+    return res.json();
+};
+
 export const fetchProperties = async () => {
     const res = await fetch(`${API_BASE_URL}/properties.php`);
     if (!res.ok) throw new Error('Failed to fetch properties');

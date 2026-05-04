@@ -1,7 +1,7 @@
 {
   "nav": {
-    "dashboard": "Irányítópult",
-    "properties": "Épületek",
+    "dashboard": "Műszerfal",
+    "properties": "Ingatlanok",
     "rooms": "Szobák",
     "assignments": "Feladatok",
     "users": "Felhasználók",
@@ -9,30 +9,30 @@
     "logout": "Kijelentkezés"
   },
   "login": {
-    "title": "Emerald Rendszer",
+    "title": "Tisztító rendszer",
     "subtitle": "Jelentkezzen be a fiókjába",
     "manager_tab": "Menedzser / Admin",
     "cleaner_tab": "Takarító",
-    "email": "E-mail cím",
+    "email": "Email cím",
     "password": "Jelszó",
     "username": "Felhasználónév",
-    "pin": "PIN kód",
+    "pin": "PIN",
     "submit": "Bejelentkezés"
   },
   "dashboard": {
     "property_status": "Ingatlan állapot mátrix",
-    "activity": "Aktivitás",
+    "activity": "Tevékenység",
     "timeline": "Idővonal",
-    "pending_today": "Ma függőben",
+    "pending_today": "Ma esedékes",
     "recent_logs": "Legutóbbi naplók",
-    "express_clean": "Gyors takarítás",
-    "assign": "Kijelölés",
-    "no_tasks": "Nincs függőben lévő feladat",
+    "express_clean": "Expressz takarítás",
+    "assign": "Kiosztás",
+    "no_tasks": "Nincsenek várakozó feladatok",
     "completed": "Befejezve"
   },
   "common": {
     "cancel": "Mégse",
-    "save": "Változtatások mentése",
+    "save": "Módosítások mentése",
     "edit": "Szerkesztés",
     "delete": "Törlés",
     "loading": "Betöltés...",
@@ -41,37 +41,36 @@
     "today": "Ma",
     "tomorrow": "Holnap",
     "yesterday": "Tegnap",
-    "overdue": "Késedelmes",
+    "overdue": "Lejárt",
     "future": "Jövőbeli"
   },
   "settings": {
     "title": "Beállítások",
-    "subtitle": "Preferenciák kezelése",
-    "user_language": "Felhasználó nyelve",
-    "system_language": "Rendszer alapértelmezett nyelve",
-    "system_language_help": "Csak az adminisztrátor állíthatja be. Azokra a felhasználókra vonatkozik, akik nem választottak saját nyelvet.",
-    "default": "Rendszer alapértelmezett",
+    "subtitle": "Kezelje preferenciáit és rendszerbeállításait.",
     "profile": "Profil beállítások",
-    "pin": "Az Ön PIN kódja",
-    "system_preferences": "Rendszerpreferenciák",
+    "user_language": "Felhasználói felület nyelve",
+    "default": "Alapértelmezett",
     "update_pin": "PIN frissítése",
     "new_pin": "Új PIN",
     "confirm_pin": "PIN megerősítése",
     "update_password": "Jelszó frissítése",
     "new_password": "Új jelszó",
     "confirm_password": "Jelszó megerősítése",
-    "errors": {
-      "password_mismatch": "A jelszavak nem egyeznek",
-      "save_failed": "A jelszó mentése sikertelen"
-    }
+    "system_preferences": "Rendszer beállítások",
+    "system_language": "Rendszer alapértelmezett nyelve",
+    "system_language_help": "Állítsa be az alapértelmezett nyelvet minden felhasználó számára"
   },
   "assignments": {
     "finish_cleaning": "Takarítás befejezése",
-    "was_cleaned": "ki lett takarítva",
-    "title": "Takarítási feladat",
-    "details": "Feladat részletei és állapota",
+    "was_cleaned": "A szoba kitakarítva",
     "scheduled": "Ütemezve",
     "completed_by": "Befejezte",
     "task_list": "Feladatlista"
+  },
+  "rooms": {
+    "log_tooltip": "Takarítási napló",
+    "enter_name_placeholder": "Szoba neve...",
+    "new_room": "Új szoba",
+    "no_rooms": "Még nincsenek szobák hozzáadva ehhez az ingatlanhoz."
   }
 }

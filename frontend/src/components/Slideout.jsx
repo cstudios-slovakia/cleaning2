@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from '../contexts/I18nContext';
 
 export default function Slideout({ isOpen, onClose, title, children, width = "max-w-2xl" }) {
+  const { t } = useTranslation();
   const [shouldRender, setRender] = useState(isOpen);
   const [isAnimated, setIsAnimated] = useState(false);
 
@@ -50,7 +51,7 @@ export default function Slideout({ isOpen, onClose, title, children, width = "ma
                   className="rounded-full p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
                   onClick={onClose}
                 >
-                  <span className="sr-only">Close panel</span>
+                  <span className="sr-only">{t('tooltips.close')}</span>
                   <X size={20} />
                 </button>
               </div>

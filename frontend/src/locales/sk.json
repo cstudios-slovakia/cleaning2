@@ -8,8 +8,17 @@
     "settings": "Nastavenia",
     "logout": "Odhlásiť sa"
   },
+  "loading": {
+    "assignment": "Načítavam úlohu...",
+    "rooms": "Načítavam izby...",
+    "properties": "Načítavam budovy..."
+  },
+  "tooltips": {
+    "close": "Zavrieť panel",
+    "cleaning_log": "Záznam upratovania"
+  },
   "login": {
-    "title": "Systém Emerald",
+    "title": "Systém",
     "subtitle": "Prihláste sa do účtu",
     "manager_tab": "Manažér / Admin",
     "cleaner_tab": "Upratovač",
@@ -17,7 +26,16 @@
     "password": "Heslo",
     "username": "Užívateľské meno",
     "pin": "PIN",
-    "submit": "Prihlásiť sa"
+    "submit": "Prihlásiť sa",
+    "signing_in": "Prihlasujem...",
+    "errors": {
+      "deactivated": "Tento účet je deaktivovaný.",
+      "invalid_manager": "Nesprávny email alebo heslo.",
+      "invalid_cleaner": "Nesprávne meno alebo PIN.",
+      "connection": "Nepodarilo sa pripojiť k serveru."
+    },
+    "pin_help": "4-miestny PIN",
+    "username_placeholder": "meno_upratovaca"
   },
   "dashboard": {
     "property_status": "Matica stavu budov",
@@ -46,32 +64,73 @@
   },
   "settings": {
     "title": "Nastavenia",
-    "subtitle": "Správa preferencií",
-    "user_language": "Jazyk užívateľa",
-    "system_language": "Predvolený jazyk systému",
-    "system_language_help": "Môže nastaviť iba admin. Týka sa užívateľov, ktorí si nezvolili vlastný jazyк.",
-    "default": "Predvolené v systéme",
-    "profile": "Nastavenia profilu",
-    "pin": "Váš PIN",
-    "system_preferences": "Systémové preferencie",
+    "subtitle": "Spravujte svoje preferencie a systémové nastavenia.",
+    "profile": "Profilové preferencie",
+    "user_language": "Jazyk užívateľského rozhrania",
+    "default": "Predvolené",
     "update_pin": "Aktualizovať PIN",
     "new_pin": "Nový PIN",
     "confirm_pin": "Potvrdiť PIN",
     "update_password": "Aktualizovať heslo",
     "new_password": "Nové heslo",
     "confirm_password": "Potvrdiť heslo",
+    "system_preferences": "Systémové preferencie",
+    "system_language": "Predvolený jazyk systému",
+    "system_language_help": "Nastavte predvolený jazyk pre všetkých užívateľov",
     "errors": {
       "password_mismatch": "Heslá sa nezhodujú",
       "save_failed": "Uloženie hesla zlyhalo"
-    }
+    },
+    "system_name": "Názov systému",
+    "system_name_help": "Globálny názov zobrazený v celom systéme",
+    "admin_config_only": "Heslo hlavného administrátora je možné zmeniť iba v konfiguračnom súbore systému."
   },
   "assignments": {
+    "title": "Úlohy na upratovanie",
+    "details": "Sledujte a spravujte dokončenie úloh.",
+    "overdue": "Po termíne",
+    "today": "Dnes",
+    "tomorrow": "Zajtra",
+    "future": "Budúce",
     "finish_cleaning": "Dokončiť upratovanie",
-    "was_cleaned": "bolo upratané",
-    "title": "Úloha upratovania",
-    "details": "Detaily úlohy a stav",
+    "was_cleaned": "Izba je uprataná",
     "scheduled": "Naplánované",
-    "completed_by": "Dokončil",
-    "task_list": "Zoznam úloh"
+    "completed_by": "Dokončil/a",
+    "task_list": "Zoznam úloh",
+    "assignment_title": "Úloha na upratovanie"
+  },
+  "rooms": {
+    "title": "Izby",
+    "subtitle": "Správa čistiacich jednotiek a intervalov.",
+    "search_placeholder": "Hľadať izby...",
+    "manage_property": "Spravovať budovu",
+    "add_room": "Pridať izbu",
+    "room_name": "Názov izby",
+    "last_cleaned": "Naposledy upratané",
+    "action": "Akcia",
+    "express": "RÝCHLE",
+    "assign": "PRIRADIŤ",
+    "manage": "SPRAVOVAŤ",
+    "express_tooltip": "Rýchle upratovanie (Ihneď)",
+    "assign_tooltip": "Priradiť dátum upratovania",
+    "never": "Nikdy",
+    "enter_name_placeholder": "Zadajte názov izby...",
+    "new_room": "Nová izba",
+    "no_rooms": "K tejto budove zatiaľ nie sú pridané žiadne izby.",
+    "management_title": "Správa: ",
+    "tabs": {
+      "settings": "Nastavenia izby",
+      "log": "Záznam upratovania"
+    },
+    "next_assignment": "NASLEDUJÚCE UPRATOVANIE",
+    "not_scheduled": "Nenaplánované",
+    "auto_interval": "AUTO INTERVAL (DNI)",
+    "disabled": "Vypnuté",
+    "task_template": "Šablóna zoznamu úloh",
+    "no_template_tasks": "Pre túto izbu nie sú pridané žiadne úlohy.",
+    "full_log": "Kompletný záznam upratovania",
+    "no_history": "Zatiaľ nebol zaznamenaný žiadny záznam.",
+    "done_suffix": "Hotovo",
+    "tasks_checklist": "zoznam úloh"
   }
 }

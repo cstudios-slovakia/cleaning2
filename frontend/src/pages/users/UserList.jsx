@@ -263,7 +263,7 @@ export default function UserList() {
                       value={editUser.email}
                       onChange={(e) => setEditUser({...editUser, email: e.target.value})}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="e.g. name@emerald.sk"
+                      placeholder="e.g. name@cleaner.sk"
                     />
                   </div>
                   <div>

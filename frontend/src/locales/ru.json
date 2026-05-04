@@ -1,7 +1,7 @@
 {
   "nav": {
     "dashboard": "Панель",
-    "properties": "Здания",
+    "properties": "Объекты",
     "rooms": "Комнаты",
     "assignments": "Задания",
     "users": "Пользователи",
@@ -9,7 +9,7 @@
     "logout": "Выйти"
   },
   "login": {
-    "title": "Система Emerald",
+    "title": "Система уборки",
     "subtitle": "Войдите в свой аккаунт",
     "manager_tab": "Менеджер / Админ",
     "cleaner_tab": "Уборщик",
@@ -20,14 +20,14 @@
     "submit": "Войти"
   },
   "dashboard": {
-    "property_status": "Матрица состояния",
+    "property_status": "Матрица статуса объектов",
     "activity": "Активность",
     "timeline": "Хронология",
-    "pending_today": "Ожидается сегодня",
+    "pending_today": "Ожидает сегодня",
     "recent_logs": "Последние записи",
-    "express_clean": "Экспресс уборка",
+    "express_clean": "Экспресс-уборка",
     "assign": "Назначить",
-    "no_tasks": "Нет ожидающих заданий",
+    "no_tasks": "Нет ожидающих задач",
     "completed": "Завершено"
   },
   "common": {
@@ -46,32 +46,31 @@
   },
   "settings": {
     "title": "Настройки",
-    "subtitle": "Управление предпочтениями",
-    "user_language": "Язык пользователя",
-    "system_language": "Системный язык по умолчанию",
-    "system_language_help": "Может быть установлен только администратором. Применяется к пользователям, которые не выбрали личный язык.",
-    "default": "По умолчанию",
+    "subtitle": "Управляйте своими предпочтениями и системными настройками.",
     "profile": "Настройки профиля",
-    "pin": "Ваш ПИН-код",
-    "system_preferences": "Системные настройки",
+    "user_language": "Язык интерфейса",
+    "default": "По умолчанию",
     "update_pin": "Обновить ПИН-код",
     "new_pin": "Новый ПИН-код",
-    "confirm_pin": "Подтвердить ПИН-код",
+    "confirm_pin": "Подтвердите ПИН-код",
     "update_password": "Обновить пароль",
     "new_password": "Новый пароль",
-    "confirm_password": "Подтвердить пароль",
-    "errors": {
-      "password_mismatch": "Пароли не совпадают",
-      "save_failed": "Не удалось сохранить пароль"
-    }
+    "confirm_password": "Подтвердите пароль",
+    "system_preferences": "Системные настройки",
+    "system_language": "Системный язык по умолчанию",
+    "system_language_help": "Установите язык по умолчанию для всех пользователей"
   },
   "assignments": {
     "finish_cleaning": "Завершить уборку",
-    "was_cleaned": "убрано",
-    "title": "Задание на уборку",
-    "details": "Детали задания и статус",
+    "was_cleaned": "Комната убрана",
     "scheduled": "Запланировано",
-    "completed_by": "Завершил",
-    "task_list": "Список заданий"
+    "completed_by": "Завершено",
+    "task_list": "Список задач"
+  },
+  "rooms": {
+    "log_tooltip": "Журнал уборки",
+    "enter_name_placeholder": "Название комнаты...",
+    "new_room": "Новая комната",
+    "no_rooms": "Для этого объекта пока не добавлено ни одной комнаты."
   }
 }

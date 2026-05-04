@@ -30,7 +30,7 @@ export default function Layout() {
   };
 
   useEffect(() => {
-    let pageTitle = systemName || 'Emerald Cleaning';
+    let pageTitle = systemName || 'Cleaning System';
     if (location.pathname.startsWith('/dashboard')) pageTitle = t('nav.dashboard');
     else if (location.pathname.startsWith('/properties')) pageTitle = t('nav.properties');
     else if (location.pathname.startsWith('/rooms')) pageTitle = t('nav.rooms');
@@ -38,7 +38,7 @@ export default function Layout() {
     else if (location.pathname.startsWith('/users')) pageTitle = t('nav.users');
     else if (location.pathname.startsWith('/settings')) pageTitle = t('nav.settings');
 
-    document.title = `${pageTitle} - ${systemName || 'Emerald Cleaning'}`;
+    document.title = `${pageTitle} - ${systemName || 'Cleaning System'}`;
   }, [location.pathname, t, systemName]);
 
   const navItems = user?.role === 'cleaner'
@@ -104,7 +104,7 @@ export default function Layout() {
         <header className="bg-white border-b border-slate-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
           <div>
             <h1 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">
-              {CONFIG.SYSTEM_NAME}
+              {systemName || t('login.title')}
             </h1>
             <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">v{CONFIG.VERSION}</p>
           </div>
@@ -114,8 +114,8 @@ export default function Layout() {
             </Link>
             <div className="flex items-center space-x-3">
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-slate-900 leading-none">{user?.name || 'Manager'}</p>
-                <p className="text-[10px] font-medium text-slate-400 mt-0.5">{user?.role || 'Administrator'}</p>
+                <p className="text-xs font-bold text-slate-900 leading-none">{user?.name || (user?.role === 'cleaner' ? t('login.cleaner_tab') : 'Admin')}</p>
+                <p className="text-[10px] font-medium text-slate-400 mt-0.5">{user?.role ? (user.role === 'cleaner' ? t('login.cleaner_tab') : 'Manager') : 'Administrator'}</p>
               </div>
               <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white font-bold flex items-center justify-center text-sm shadow-lg shadow-slate-200">
                 {user?.name?.charAt(0) || 'E'}

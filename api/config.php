@@ -5,13 +5,13 @@
 
 return [
     'system_name' => 'Cleaner',
-    'version' => '0.7.12',
+    'version' => '0.8.0',
     'support_email' => 'support@cleaner.com',
     'main_admin' => [
         'id' => 'admin_0',
         'name' => 'System Admin',
         'username' => '',
-        'email' => 'admin@emerald.sk',
+        'email' => 'admin@cleaner.sk',
         'password' => 'admin123',
         'role' => 'admin',
         'status' => 'active',

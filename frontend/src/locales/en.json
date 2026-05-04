@@ -8,8 +8,17 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "loading": {
+    "assignment": "Loading assignment...",
+    "rooms": "Loading rooms...",
+    "properties": "Loading properties..."
+  },
+  "tooltips": {
+    "close": "Close panel",
+    "cleaning_log": "Cleaning Log"
+  },
   "login": {
-    "title": "Emerald System",
+    "title": "Cleaning System",
     "subtitle": "Sign in to your account",
     "manager_tab": "Manager / Admin",
     "cleaner_tab": "Cleaner",
@@ -17,7 +26,16 @@
     "password": "Password",
     "username": "Username",
     "pin": "PIN",
-    "submit": "Sign In"
+    "submit": "Sign In",
+    "signing_in": "Signing in...",
+    "errors": {
+      "deactivated": "This account is deactivated.",
+      "invalid_manager": "Invalid email or password.",
+      "invalid_cleaner": "Invalid username or PIN.",
+      "connection": "Failed to connect to the server."
+    },
+    "pin_help": "4 digit PIN",
+    "username_placeholder": "cleaner_john"
   },
   "dashboard": {
     "property_status": "Property Status Matrix",
@@ -46,32 +64,73 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage your preferences",
-    "user_language": "User Language",
-    "system_language": "System Default Language",
-    "system_language_help": "Can be set by admin only. This applies to users who haven't selected a personal preference.",
-    "default": "System Default",
-    "profile": "Profile Settings",
-    "pin": "Your PIN",
-    "system_preferences": "System Preferences",
+    "subtitle": "Manage your preferences and system settings.",
+    "profile": "Profile Preferences",
+    "user_language": "User Interface Language",
+    "default": "Default",
     "update_pin": "Update PIN",
     "new_pin": "New PIN",
     "confirm_pin": "Confirm PIN",
     "update_password": "Update Password",
     "new_password": "New Password",
     "confirm_password": "Confirm Password",
+    "system_preferences": "System Preferences",
+    "system_language": "System Default Language",
+    "system_language_help": "Set the default language for all users",
     "errors": {
       "password_mismatch": "Passwords do not match",
       "save_failed": "Failed to save password"
-    }
+    },
+    "system_name": "System Name",
+    "system_name_help": "The global name displayed across the system",
+    "admin_config_only": "The main admin password can only be changed in the system configuration file."
   },
   "assignments": {
+    "title": "Cleaning Assignments",
+    "details": "Track and manage task completion.",
+    "overdue": "Overdue",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "future": "Future",
     "finish_cleaning": "Finish Cleaning",
-    "was_cleaned": "was cleaned",
-    "title": "Cleaning Assignment",
-    "details": "Task details and status",
+    "was_cleaned": "The room is cleaned",
     "scheduled": "Scheduled",
     "completed_by": "Completed by",
-    "task_list": "Task List"
+    "task_list": "Task List",
+    "assignment_title": "Cleaning Assignment"
+  },
+  "rooms": {
+    "title": "Rooms",
+    "subtitle": "Manage cleaning units and intervals.",
+    "search_placeholder": "Search rooms...",
+    "manage_property": "Manage Property",
+    "add_room": "Add Room",
+    "room_name": "Room Name",
+    "last_cleaned": "Last Cleaned",
+    "action": "Action",
+    "express": "EXPRESS",
+    "assign": "ASSIGN",
+    "manage": "MANAGE",
+    "express_tooltip": "Express Cleaning (Immediately)",
+    "assign_tooltip": "Assign Cleaning Date",
+    "never": "Never",
+    "enter_name_placeholder": "Enter room name...",
+    "new_room": "New Room",
+    "no_rooms": "No rooms added to this property yet.",
+    "management_title": "Management: ",
+    "tabs": {
+      "settings": "Room Settings",
+      "log": "Cleaning Log"
+    },
+    "next_assignment": "NEXT ASSIGNMENT",
+    "not_scheduled": "Not scheduled",
+    "auto_interval": "AUTO INTERVAL (DAYS)",
+    "disabled": "Disabled",
+    "task_template": "Task List Template",
+    "no_template_tasks": "No tasks assigned to this room template.",
+    "full_log": "Full Cleaning Log",
+    "no_history": "No cleaning history recorded yet.",
+    "done_suffix": "Done",
+    "tasks_checklist": "tasks checklist"
   }
 }

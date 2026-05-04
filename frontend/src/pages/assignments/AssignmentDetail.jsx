@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Circle, Check } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Circle, Check, AlertTriangle, Image as ImageIcon, Plus, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from '../../contexts/I18nContext';
-import { fetchAssignments, saveAssignment } from '../../lib/api';
+import { fetchAssignments, saveAssignment, uploadImage, API_BASE_URL } from '../../lib/api';
 
-export default function AssignmentDetail({ assignmentId: propId, isSlideout = false, theme: propTheme, coverImage: propCoverImage, onFinish }) {
+export default function AssignmentDetail({ assignmentId: propId, isSlideout = false, theme: propTheme, coverImage: propCoverImage, onFinish, onFlashMessage }) {
   const { id: routeId } = useParams();
   const id = propId || routeId;
   const { user } = useAuth();
@@ -14,12 +14,13 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
   
   const [assignment, setAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
         const data = await fetchAssignments();
-        const a = data.find(x => x.id.toString() === id.toString());
+        const a = data.find(x => x.id && id && x.id.toString() === id.toString());
         if (a) {
           // Merge to avoid overriding local optimistic state randomly if possible,
           // but for simple real-time, just set it.
@@ -56,6 +57,77 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     }
   };
 
+  const toggleProblem = async () => {
+    if (!canEdit) return;
+    const newAssignment = { ...assignment, problemReported: !assignment.problemReported };
+    setAssignment(newAssignment);
+    try {
+      await saveAssignment(newAssignment);
+    } catch (e) {
+      console.error('Save failed', e);
+    }
+  };
+
+  const resizeImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          const max = 1600;
+          if (width > height && width > max) {
+            height *= max / width;
+            width = max;
+          } else if (height > max) {
+            width *= max / height;
+            height = max;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() })), 'image/jpeg', 0.85);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e) => {
+    if (!e.target.files.length) return;
+    setUploading(true);
+    const newImages = [...(assignment.images || [])];
+    
+    for (const file of e.target.files) {
+      const resized = await resizeImage(file);
+      try {
+         const res = await uploadImage(resized, assignment.room);
+         if (res.status === 'success') {
+            newImages.push(res.path);
+         }
+      } catch (err) {
+         console.error('Failed to upload image', err);
+      }
+    }
+    const newAssignment = { ...assignment, images: newImages };
+    setAssignment(newAssignment);
+    await saveAssignment(newAssignment);
+    setUploading(false);
+  };
+
+  const removeImage = async (index) => {
+    if (!canEdit) return;
+    const newImages = [...(assignment.images || [])];
+    newImages.splice(index, 1);
+    const newAssignment = { ...assignment, images: newImages };
+    setAssignment(newAssignment);
+    await saveAssignment(newAssignment);
+  };
+
   const handleFinish = async () => {
     if (!canEdit) return;
     
@@ -72,14 +144,23 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     try {
       await saveAssignment(newAssignment);
       if (onFinish) onFinish(assignment.room);
+      if (onFlashMessage) onFlashMessage(t('assignments.was_cleaned'));
     } catch (e) {
       console.error('Finish failed', e);
     }
   };
 
-  if (loading || !assignment) return <div className="p-8 text-center text-slate-500">Loading assignment...</div>;
+  if (loading || !assignment) return <div className="p-8 text-center text-slate-500">{t('loading.assignment')}</div>;
 
   const isAllDone = assignment.tasks.every(t => t.done);
+
+  const translateLabel = (label) => {
+    if (!label) return '';
+    if (label === 'Today') return t('common.today');
+    if (label === 'Tomorrow') return t('common.tomorrow');
+    if (label === 'Yesterday') return t('common.yesterday');
+    return label;
+  };
 
   return (
     <div className={cn("space-y-6 max-w-2xl mx-auto pb-24", isSlideout ? "p-0 pb-32" : "p-4 sm:p-6")}>
@@ -163,6 +244,70 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             ))}
           </div>
         </div>
+
+        {isSlideout && canEdit && (
+          <div className="space-y-4 pt-6 border-t border-slate-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className={assignment.problemReported ? "text-red-500" : "text-slate-400"} size={20} />
+                <span className="font-bold text-slate-800">Report Problem</span>
+              </div>
+              <button 
+                onClick={toggleProblem}
+                className={cn(
+                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none",
+                  assignment.problemReported ? "bg-red-500" : "bg-slate-200"
+                )}
+              >
+                <span 
+                  className={cn(
+                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                    assignment.problemReported ? "translate-x-6" : "translate-x-1"
+                  )}
+                />
+              </button>
+            </div>
+
+            {assignment.problemReported && (
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4 animate-fade-in-up">
+                <p className="text-sm text-slate-600 font-medium">Please upload images to document the problem.</p>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {(assignment.images || []).map((imgPath, idx) => (
+                    <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-slate-200">
+                      <img src={`${API_BASE_URL.replace('/api/public', '')}/api/public/${imgPath}`} alt="Problem" className="w-full h-full object-cover" />
+                      <button 
+                        onClick={() => removeImage(idx)}
+                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  <label className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 hover:bg-slate-100 flex flex-col items-center justify-center cursor-pointer transition-colors">
+                    {uploading ? (
+                      <span className="text-xs font-bold text-slate-500 animate-pulse">Uploading...</span>
+                    ) : (
+                      <>
+                        <Plus className="text-slate-400 mb-1" size={24} />
+                        <span className="text-xs font-bold text-slate-500">Add Image</span>
+                      </>
+                    )}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      multiple
+                      className="hidden" 
+                      onChange={handleImageUpload} 
+                      disabled={uploading}
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Fixed bottom bar for the finish button */}

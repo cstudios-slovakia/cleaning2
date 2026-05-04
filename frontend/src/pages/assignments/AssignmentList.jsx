@@ -71,7 +71,7 @@ export default function AssignmentList() {
     if (prop) return prop;
     
     // Fallback defaults
-    if (propertyName === 'Emerald Grand') return { theme: '#0ea5e9', coverImage: null };
+    if (propertyName === 'Grand Hotel') return { theme: '#0ea5e9', coverImage: null };
     if (propertyName === 'City Center Suite') return { theme: '#10b981', coverImage: null };
     return { theme: '#0ea5e9', coverImage: null };
   };
@@ -103,6 +103,14 @@ export default function AssignmentList() {
     future: filteredAssignments.filter(a => a.date !== 'Today' && !a.date.includes('Tomorrow') && a.date !== 'Yesterday' && !isOverdue(a))
   };
 
+  const translateLabel = (label) => {
+    if (!label) return '';
+    if (label === 'Today') return t('common.today');
+    if (label === 'Tomorrow') return t('common.tomorrow');
+    if (label === 'Yesterday') return t('common.yesterday');
+    return label;
+  };
+
   const GroupHeader = ({ id, title, count, colorClass, icon: Icon }) => (
     <button 
       onClick={() => toggleGroup(id)}
@@ -123,14 +131,14 @@ export default function AssignmentList() {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800">Cleaning Assignments</h2>
-          <p className="text-sm text-slate-500 mt-1">Track and manage task completion.</p>
+          <h2 className="text-2xl font-bold text-slate-800">{t('assignments.title')}</h2>
+          <p className="text-sm text-slate-500 mt-1">{t('assignments.details')}</p>
         </div>
       </div>
 
       <div className="card">
         {/* Overdue */}
-        <GroupHeader id="overdue" title="Overdue" count={assignments.overdue.length} colorClass="bg-orange-500" icon={AlertTriangle} />
+        <GroupHeader id="overdue" title={t('assignments.overdue')} count={assignments.overdue.length} colorClass="bg-orange-500" icon={AlertTriangle} />
         {expandedGroups.overdue && (
           <div className="bg-orange-50/50 divide-y divide-slate-100">
             {assignments.overdue.map(a => (
@@ -156,7 +164,7 @@ export default function AssignmentList() {
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">{a.time}</p>
+                    <p className="text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-lg">{translateLabel(a.time)}</p>
                   </div>
                 </div>
               </button>
@@ -165,14 +173,14 @@ export default function AssignmentList() {
         )}
 
         {/* Today */}
-        <GroupHeader id="today" title="Today" count={assignments.today.length} colorClass="bg-blue-500" icon={Clock} />
+        <GroupHeader id="today" title={t('assignments.today')} count={assignments.today.length} colorClass="bg-blue-600" icon={Clock} />
         {expandedGroups.today && (
-          <div className="bg-blue-50/50 divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100">
             {assignments.today.map(a => (
               <button 
                 key={a.id} 
                 onClick={() => { setSelectedAssignment(a); setIsSlideoutOpen(true); }}
-                className="w-full text-left block p-4 pl-12 hover:bg-blue-50 transition-colors"
+                className="w-full text-left block p-4 pl-12 hover:bg-slate-50 transition-colors"
               >
                 <div className="flex justify-between items-center">
                   <div className="flex flex-col items-start space-y-1">
@@ -191,7 +199,7 @@ export default function AssignmentList() {
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-lg">{a.time}</p>
+                    <p className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-lg">{translateLabel(a.time)}</p>
                   </div>
                 </div>
               </button>
@@ -200,7 +208,7 @@ export default function AssignmentList() {
         )}
 
         {/* Tomorrow */}
-        <GroupHeader id="tomorrow" title="Tomorrow" count={assignments.tomorrow.length} colorClass="bg-slate-400" icon={Clock} />
+        <GroupHeader id="tomorrow" title={t('assignments.tomorrow')} count={assignments.tomorrow.length} colorClass="bg-slate-500" icon={Clock} />
         {expandedGroups.tomorrow && (
           <div className="divide-y divide-slate-100">
             {assignments.tomorrow.map(a => (
@@ -225,9 +233,7 @@ export default function AssignmentList() {
                       {a.property}
                     </span>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-slate-600">{a.time}</p>
-                  </div>
+                  <span className="text-sm font-medium text-slate-500">{translateLabel(a.time)}</span>
                 </div>
               </button>
             ))}
@@ -235,7 +241,7 @@ export default function AssignmentList() {
         )}
 
         {/* Future */}
-        <GroupHeader id="future" title="Future" count={assignments.future.length} colorClass="bg-slate-300" icon={Clock} />
+        <GroupHeader id="future" title={t('assignments.future')} count={assignments.future.length} colorClass="bg-slate-400" icon={CheckCircle} />
         {expandedGroups.future && (
           <div className="divide-y divide-slate-100">
             {assignments.future.map(a => (
@@ -260,8 +266,9 @@ export default function AssignmentList() {
                       {a.property}
                     </span>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-slate-600">{a.time}</p>
+                  <div className="flex flex-col items-end">
+                    <span className="text-sm font-medium text-slate-500">{translateLabel(a.date)}</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">{translateLabel(a.time)}</span>
                   </div>
                 </div>
               </button>
@@ -272,29 +279,27 @@ export default function AssignmentList() {
 
       <Slideout 
         isOpen={isSlideoutOpen} 
-        onClose={() => setIsSlideoutOpen(false)} 
-        title="Cleaning Assignment"
-        width="max-w-2xl"
+        onClose={() => setIsSlideoutOpen(false)}
+        title={selectedAssignment?.room}
       >
         {selectedAssignment && (
           <AssignmentDetail 
             assignmentId={selectedAssignment.id} 
-            isSlideout={true} 
-            theme={getPropertyData(selectedAssignment.property).theme}
-            coverImage={getPropertyData(selectedAssignment.property).coverImage}
-            onFinish={(roomName) => {
+            onClose={() => setIsSlideoutOpen(false)}
+            onFlashMessage={(msg) => {
+              setFlashMessage(msg);
               setIsSlideoutOpen(false);
-              setFlashMessage(`${roomName} ${t('assignments.was_cleaned')}`);
-              setTimeout(() => setFlashMessage(''), 4000);
             }}
           />
         )}
       </Slideout>
 
       {flashMessage && (
-        <div className="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl z-50 flex items-center space-x-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <CheckCircle size={20} />
-          <span className="font-bold">{flashMessage}</span>
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up">
+          <div className="bg-slate-800 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 border border-slate-700">
+            <CheckCircle className="text-green-400" size={20} />
+            <span className="font-bold">{flashMessage}</span>
+          </div>
         </div>
       )}
     </div>

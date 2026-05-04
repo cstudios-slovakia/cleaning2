@@ -22,7 +22,7 @@ export default function PropertyDetail() {
   const [successMessage, setSuccessMessage] = useState('');
   
   const isAssignmentDone = (id) => {
-    const saved = localStorage.getItem(`emerald_assignment_${id}`);
+    const saved = localStorage.getItem(`cleaner_assignment_${id}`);
     if (saved) {
       const parsed = JSON.parse(saved);
       return !!parsed.doneBy;
@@ -188,11 +188,11 @@ export default function PropertyDetail() {
     const newRoom = { ...room, id: Date.now(), name: `${room.name} (Copy)` };
     setRooms([...rooms, newRoom]);
     // Also clone the room details if they exist
-    const savedRoomDetails = localStorage.getItem(`emerald_room_${room.id}`);
+    const savedRoomDetails = localStorage.getItem(`cleaner_room_${room.id}`);
     if (savedRoomDetails) {
       const clonedDetails = JSON.parse(savedRoomDetails);
       clonedDetails.name = newRoom.name;
-      localStorage.setItem(`emerald_room_${newRoom.id}`, JSON.stringify(clonedDetails));
+      localStorage.setItem(`cleaner_room_${newRoom.id}`, JSON.stringify(clonedDetails));
     }
   };
 
@@ -830,8 +830,8 @@ export default function PropertyDetail() {
               <div key={i} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-200 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
                   {log.type === 'start' && <Clock size={16} className="text-blue-500" />}
-                  {log.type === 'check' && <CheckCircle size={16} className="text-emerald-500" />}
-                  {log.type === 'complete' && <CheckCircle size={16} className="text-emerald-500" />}
+                  {log.type === 'check' && <CheckCircle size={16} className="text-green-500" />}
+                  {log.type === 'complete' && <CheckCircle size={16} className="text-green-500" />}
                   {log.type === 'system' && <Settings size={16} className="text-slate-500" />}
                   {log.type === 'login' && <Users size={16} className="text-purple-500" />}
                   {log.type === 'alert' && <AlertTriangle size={16} className="text-orange-500" />}

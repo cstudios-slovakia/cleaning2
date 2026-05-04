@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUsers } from '../lib/api';
 
 function Login() {
+  const { t, systemName } = useTranslation();
   const [activeTab, setActiveTab] = useState('manager'); // 'manager' or 'cleaner'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +14,6 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const { systemName } = useTranslation();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -28,24 +28,24 @@ function Login() {
       if (activeTab === 'manager') {
         foundUser = users.find(u => u.email === email && u.password === password && ['admin', 'manager', 'owner'].includes(u.role));
         if (foundUser && foundUser.status === 'inactive') {
-          setError('This account is deactivated.');
+          setError(t('login.errors.deactivated'));
           setLoading(false);
           return;
         }
         if (!foundUser) {
-          setError('Invalid email or password.');
+          setError(t('login.errors.invalid_manager'));
           setLoading(false);
           return;
         }
       } else {
         foundUser = users.find(u => (u.username === username || u.name === username) && (u.username === pin || u.password === pin) && u.role === 'cleaner');
         if (foundUser && foundUser.status === 'inactive') {
-          setError('This account is deactivated.');
+          setError(t('login.errors.deactivated'));
           setLoading(false);
           return;
         }
         if (!foundUser) {
-          setError('Invalid username or PIN.');
+          setError(t('login.errors.invalid_cleaner'));
           setLoading(false);
           return;
         }
@@ -54,7 +54,7 @@ function Login() {
       login({ ...foundUser, name: foundUser.name || foundUser.username || foundUser.email });
       navigate(activeTab === 'manager' ? '/dashboard' : '/assignments');
     } catch (err) {
-      setError('Failed to connect to the server.');
+      setError(t('login.errors.connection'));
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ function Login() {
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
         <div className="bg-primary-600 p-8 text-center text-white">
           <h1 className="text-3xl font-extrabold tracking-tight mb-2">{systemName}</h1>
-          <p className="text-primary-100">Sign in to your account</p>
+          <p className="text-primary-100">{t('login.subtitle')}</p>
         </div>
         
         <div className="p-8">
@@ -78,7 +78,7 @@ function Login() {
               }`}
               onClick={() => setActiveTab('manager')}
             >
-              Manager / Admin
+              {t('login.manager_tab')}
             </button>
             <button
               className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
@@ -88,7 +88,7 @@ function Login() {
               }`}
               onClick={() => setActiveTab('cleaner')}
             >
-              Cleaner
+              {t('login.cleaner_tab')}
             </button>
           </div>
 
@@ -102,7 +102,7 @@ function Login() {
             {activeTab === 'manager' ? (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('login.email')}</label>
                   <input
                     type="email"
                     required
@@ -113,7 +113,7 @@ function Login() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('login.password')}</label>
                   <input
                     type="password"
                     required
@@ -127,24 +127,24 @@ function Login() {
             ) : (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Username</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('login.username')}</label>
                   <input
                     type="text"
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                    placeholder="cleaner_john"
+                    placeholder={t('login.username_placeholder')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">PIN</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('login.pin')}</label>
                   <input
                     type="password"
                     required
                     maxLength={4}
                     pattern="\d{4}"
-                    title="4 digit PIN"
+                    title={t('login.pin_help')}
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all tracking-[1em] font-mono text-center"
@@ -159,7 +159,7 @@ function Login() {
                 disabled={loading}
                 className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-primary-600/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0"
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? t('login.signing_in') : t('login.submit')}
               </button>
           </form>
         </div>

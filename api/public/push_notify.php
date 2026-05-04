@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $auth = [
             'VAPID' => [
-                'subject' => 'mailto:admin@emerald.sk',
+                'subject' => 'mailto:admin@cleaner.sk',
                 'publicKey' => 'BD49BGird7PQBqcp3k-0qpfdugIvVAh7G8Oiao3U3n-bHgWSK4pIjhEshA9aIBxrPwWAyw4kUns7s9RiFQgeDew',
                 'privateKey' => '7Pivixs6e63bP3FIdabZUizJp3qtNFKfUNFHOYAGPVM',
             ],

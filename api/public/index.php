@@ -15,7 +15,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 echo json_encode([
     'status' => 'success',
-    'message' => 'Emerald Cleaning API is running',
+    'message' => 'Cleaning API is running',
     'endpoint' => $requestUri,
     'method' => $method
 ]);

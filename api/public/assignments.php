@@ -40,9 +40,15 @@ if ($method === 'GET') {
         ];
     }
 
-    // Attach tasks to assignments
+    // Attach tasks and decode images to assignments
     foreach ($assignments as &$assignment) {
         $assignment['tasks'] = $tasksByAssignment[$assignment['id']] ?? [];
+        $assignment['problemReported'] = (bool)$assignment['problemReported'];
+        if (!empty($assignment['images'])) {
+            $assignment['images'] = json_decode($assignment['images'], true);
+        } else {
+            $assignment['images'] = [];
+        }
     }
 
     echo json_encode(['status' => 'success', 'data' => $assignments]);
@@ -64,23 +70,27 @@ if ($method === 'GET') {
     $doneBy = $input['doneBy'] ?? null;
     $doneAt = $input['doneAt'] ?? null;
     $tasks = $input['tasks'] ?? [];
+    $problemReported = !empty($input['problemReported']) ? 1 : 0;
+    $images = isset($input['images']) && is_array($input['images']) ? json_encode($input['images']) : null;
 
     $pdo->beginTransaction();
 
     try {
         // Upsert assignment
         $stmt = $pdo->prepare("
-            INSERT INTO assignments (id, property, room, date, time, doneBy, doneAt)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO assignments (id, property, room, date, time, doneBy, doneAt, problemReported, images)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 property = VALUES(property),
                 room = VALUES(room),
                 date = VALUES(date),
                 time = VALUES(time),
                 doneBy = VALUES(doneBy),
-                doneAt = VALUES(doneAt)
+                doneAt = VALUES(doneAt),
+                problemReported = VALUES(problemReported),
+                images = VALUES(images)
         ");
-        $stmt->execute([$id, $property, $room, $date, $time, $doneBy, $doneAt]);
+        $stmt->execute([$id, $property, $room, $date, $time, $doneBy, $doneAt, $problemReported, $images]);
 
         // For simplicity with tasks: delete existing and re-insert
         // Since tasks might have their own IDs in React, we need to handle them carefully.

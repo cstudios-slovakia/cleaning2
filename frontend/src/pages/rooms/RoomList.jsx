@@ -7,8 +7,10 @@ import Slideout from '../../components/Slideout';
 import RoomDetail from './RoomDetail';
 import { saveAssignment, fetchProperties, fetchRooms, saveRoom, fetchRoomDetails } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from '../../contexts/I18nContext';
 
 export default function RoomList() {
+  const { t } = useTranslation();
   const [groupedRooms, setGroupedRooms] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -48,7 +50,7 @@ export default function RoomList() {
             ...r,
             property: prop.name,
             propertyId: prop.id,
-            lastCleaned: r.lastCleaned || 'Never'
+            lastCleaned: (r.lastCleaned === 'Never' || !r.lastCleaned) ? t('rooms.never') : r.lastCleaned
           }))
         };
       });
@@ -94,7 +96,7 @@ export default function RoomList() {
         doneAt: null,
         tasks: tasks.length > 0
           ? tasks.map(t => ({ title: t.title, done: false }))
-          : [{ title: 'The room is cleaned', done: false }]
+          : [{ title: t('assignments.was_cleaned'), done: false }]
       };
 
       await saveAssignment(newAssignment);
@@ -134,7 +136,7 @@ export default function RoomList() {
       id: Date.now().toString(),
       property_id: propertyId,
       name: newRoomName.trim(),
-      lastCleaned: 'Never',
+      lastCleaned: t('rooms.never'),
       intervalDays: 0,
       tasks: []
     };
@@ -243,20 +245,24 @@ export default function RoomList() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800">Rooms</h2>
-          <p className="text-sm text-slate-500 mt-1">Manage cleaning units and intervals.</p>
-        </div>
-        <div className="flex items-center">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search rooms..." 
-              className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full sm:w-64"
-            />
+        <div className="flex items-center space-x-4">
+          <div className="p-3 bg-white text-primary-600 rounded-2xl shadow-sm border border-slate-100">
+            <BedDouble size={24} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{t('rooms.title')}</h1>
+            <p className="text-slate-500 font-medium mt-1">{t('rooms.subtitle')}</p>
           </div>
         </div>
+      </div>
+
+      <div className="relative group max-w-md">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-primary-500" size={18} />
+        <input 
+          type="text" 
+          placeholder={t('rooms.search_placeholder')}
+          className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all shadow-sm font-medium"
+        />
       </div>
 
       {totalProperties === 0 ? (
@@ -288,15 +294,15 @@ export default function RoomList() {
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Link 
-                    to={`/properties/${group.id}`} 
-                    className={cn("flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm border",
-                      parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
-                      ? "bg-white text-slate-800 border-slate-200 hover:bg-slate-50" : "bg-white/10 text-white border-white/20 hover:bg-white/20")}
-                  >
-                    <Building2 size={14} />
-                    <span>Manage Property</span>
-                  </Link>
+                  {user?.role !== 'cleaner' && (
+                    <Link 
+                      to={`/properties`}
+                      className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 font-bold text-xs uppercase tracking-wider px-3 py-1.5 bg-primary-50 rounded-lg transition-colors"
+                    >
+                      <Building2 size={14} />
+                      <span>{t('rooms.manage_property')}</span>
+                    </Link>
+                  )}
                   <button 
                     onClick={() => {
                       setAddingToPropertyId(group.id);
@@ -307,22 +313,22 @@ export default function RoomList() {
                       ? "bg-primary-600 text-white border-primary-700 hover:bg-primary-700" : "bg-white text-slate-900 border-white hover:bg-slate-50")}
                   >
                     <Plus size={14} />
-                    <span>Add Room</span>
+                    <span>{t('rooms.add_room')}</span>
                   </button>
                 </div>
               </div>
               {group.rooms.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 text-sm">
-                  No rooms added to this property yet.
+                  {t('rooms.no_rooms')}
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead className="bg-white border-b border-slate-100">
                       <tr>
-                        <th className="p-4 font-semibold text-slate-600 text-sm">Room Name</th>
-                        <th className="p-4 font-semibold text-slate-600 text-sm">Last Cleaned</th>
-                        <th className="p-4 font-semibold text-slate-600 text-sm text-right">Action</th>
+                        <th className="p-4 font-semibold text-slate-600 text-sm">{t('rooms.room_name')}</th>
+                        <th className="p-4 font-semibold text-slate-600 text-sm">{t('rooms.last_cleaned')}</th>
+                        <th className="p-4 font-semibold text-slate-600 text-sm text-right">{t('rooms.action')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -336,7 +342,7 @@ export default function RoomList() {
                               <input 
                                 autoFocus
                                 type="text"
-                                placeholder="Enter room name..."
+                                placeholder={t('rooms.enter_name_placeholder')}
                                 className="bg-white border border-primary-200 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 w-full max-w-xs transition-all"
                                 value={newRoomName}
                                 onChange={(e) => setNewRoomName(e.target.value)}
@@ -347,7 +353,7 @@ export default function RoomList() {
                               />
                             </div>
                           </td>
-                          <td className="p-4 text-slate-400 text-xs italic font-medium uppercase tracking-wider">New Room</td>
+                          <td className="p-4 text-slate-400 text-xs italic font-medium uppercase tracking-wider">{t('rooms.new_room')}</td>
                           <td className="p-4 text-right">
                             <div className="flex items-center justify-end space-x-2">
                               <button 
@@ -385,18 +391,18 @@ export default function RoomList() {
                                 <button 
                                   onClick={() => handleExpressCleaning(room)}
                                   className="flex items-center space-x-1 text-orange-600 hover:text-orange-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-orange-50 rounded hover:bg-orange-100 transition-colors border border-orange-100"
-                                  title="Express Cleaning (Immediately)"
+                                  title={t('rooms.express_tooltip')}
                                 >
                                   <Zap size={10} />
-                                  <span>Express</span>
+                                  <span>{t('rooms.express')}</span>
                                 </button>
                                 <button 
                                   onClick={() => handleOpenAssignModal(room)}
                                   className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 rounded hover:bg-blue-100 transition-colors border border-blue-100"
-                                  title="Assign Cleaning Date"
+                                  title={t('rooms.assign_tooltip')}
                                 >
                                   <Calendar size={10} />
-                                  <span>Assign</span>
+                                  <span>{t('rooms.assign')}</span>
                                 </button>
                               </div>
                             </div>
@@ -406,16 +412,17 @@ export default function RoomList() {
                               <button 
                                 onClick={() => handleOpenRoomSlideout(room, 'log')}
                                 className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
-                                title="Cleaning Log"
+                                title={t('tooltips.cleaning_log')}
                               >
                                 <History size={12} />
-                                <span className="hidden sm:inline">Log</span>
+                                <span className="hidden sm:inline">{t('rooms.tabs.log')}</span>
                               </button>
                               <button 
                                 onClick={() => handleOpenRoomSlideout(room, 'settings')}
-                                className="text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100"
+                                className="flex items-center space-x-1 text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100 shadow-sm"
                               >
-                                Manage
+                                <Settings size={12} />
+                                <span className="hidden sm:inline">{t('rooms.manage')}</span>
                               </button>
                               <button 
                                 onClick={() => handleCloneRoom(group.id, room)}

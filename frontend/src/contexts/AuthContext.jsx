@@ -6,13 +6,13 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('emerald_user');
+    const savedUser = localStorage.getItem('cleaner_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('emerald_user');
+    localStorage.removeItem('cleaner_user');
   };
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('emerald_user', JSON.stringify(userData));
+    localStorage.setItem('cleaner_user', JSON.stringify(userData));
   };
 
   return (

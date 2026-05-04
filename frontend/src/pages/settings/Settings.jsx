@@ -60,7 +60,7 @@ export default function Settings() {
             <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
               <User size={20} />
             </div>
-            <h2 className="text-lg font-bold text-slate-800">{t('settings.profile')}</h2>
+            <h2 className="text-lg font-bold text-slate-800">{t('settings.profile')} ({user?.role})</h2>
           </div>
 
           <div className="space-y-5">
@@ -119,7 +119,7 @@ export default function Settings() {
                 {user?.id === 'admin_0' ? (
                   <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <p className="text-sm text-slate-500 font-medium text-center">
-                      The main admin password can only be changed in the system configuration file.
+                      {t('settings.admin_config_only')}
                     </p>
                   </div>
                 ) : (
@@ -185,16 +185,16 @@ export default function Settings() {
               <div>
                 <label className="block text-sm font-bold text-slate-600 mb-2 uppercase tracking-wider flex items-center space-x-2">
                   <Shield size={14} className="text-orange-500" />
-                  <span>System Name</span>
+                  <span>{t('settings.system_name')}</span>
                 </label>
                 <input 
                   type="text"
                   value={sysName}
                   onChange={(e) => setSysName(e.target.value)}
-                  placeholder="e.g. Emerald Cleaning"
+                  placeholder={t('settings.system_name')}
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 font-medium"
                 />
-                <p className="text-xs text-slate-500 mt-2">The global name displayed across the system</p>
+                <p className="text-xs text-slate-500 mt-2">{t('settings.system_name_help')}</p>
               </div>
             </div>
           </div>

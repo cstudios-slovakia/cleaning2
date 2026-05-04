@@ -5,8 +5,10 @@ import Slideout from '../../components/Slideout';
 import AssignmentDetail from '../assignments/AssignmentDetail';
 import { fetchRoomDetails, saveRoom } from '../../lib/api';
 import { useAssignments } from '../../hooks/useAssignments';
+import { useTranslation } from '../../contexts/I18nContext';
 
 export default function RoomDetail({ roomId, isSlideout, propertyName, roomName, initialTab = 'settings' }) {
+  const { t } = useTranslation();
   const { id: paramId } = useParams();
   const id = roomId || paramId;
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -15,7 +17,7 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
   
   const [roomData, setRoomData] = useState({
     name: roomName || 'Room 101',
-    property: propertyName || 'Emerald Grand',
+    property: propertyName || 'Grand Hotel',
     intervalDays: 0,
     tasks: []
   });
@@ -92,7 +94,7 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
       doneAt: null,
       tasks: roomData.tasks.length > 0 
         ? roomData.tasks.map(t => ({ title: t.text, done: false })) 
-        : [{ title: 'The room is cleaned', done: false }]
+        : [{ title: t('assignments.was_cleaned'), done: false }]
     };
     
     try {
@@ -170,7 +172,7 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
           )}
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">{roomData.property}</span>
+              <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">{t('rooms.management_title')}{roomData.property}</span>
             </div>
             {isEditing ? (
               <input 
@@ -192,14 +194,14 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                 className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
               >
                 <X size={16} />
-                <span className="hidden sm:inline">Cancel</span>
+                <span className="hidden sm:inline">{t('common.cancel')}</span>
               </button>
               <button 
                 onClick={handleUpdateRoom}
                 className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
               >
                 <Save size={16} />
-                <span className="hidden sm:inline">Save Changes</span>
+                <span className="hidden sm:inline">{t('common.save')}</span>
               </button>
             </>
           ) : (
@@ -212,14 +214,14 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                 className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors shadow-sm font-medium"
               >
                 <Edit2 size={16} />
-                <span className="hidden sm:inline">Edit Room</span>
+                <span className="hidden sm:inline">{t('common.edit')}</span>
               </button>
               <button 
                 onClick={handleExpressCleaning}
                 className="flex items-center space-x-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-100 transition-colors shadow-sm font-medium"
               >
                 <Zap size={16} />
-                <span className="hidden sm:inline">Express Clean</span>
+                <span className="hidden sm:inline">{t('dashboard.express_clean')}</span>
               </button>
             </>
           )}
@@ -231,13 +233,13 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
           onClick={() => setActiveTab('settings')}
           className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'settings' ? 'border-primary-500 text-primary-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
         >
-          Room Settings
+          {t('rooms.tabs.settings')}
         </button>
         <button 
           onClick={() => setActiveTab('log')}
           className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'log' ? 'border-primary-500 text-primary-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
         >
-          Cleaning Log
+          {t('rooms.tabs.log')}
         </button>
       </div>
 
@@ -246,42 +248,27 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
           <div className="lg:col-span-3 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="card p-5 bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0">
-                <p className="text-slate-400 font-semibold text-xs tracking-wider uppercase mb-1">Next Assignment</p>
+                <p className="text-slate-400 font-semibold text-xs tracking-wider uppercase mb-1">{t('rooms.next_assignment')}</p>
                 <div className="flex items-center space-x-2 mt-2">
-                  {roomData.intervalDays > 0 ? (
-                    <>
-                      <Clock size={20} className="text-orange-400"/> 
-                      <span className="font-bold text-xl">Today, 14:00</span>
-                    </>
-                  ) : (
-                    <span className="font-bold text-lg text-slate-400">Not scheduled</span>
-                  )}
+                  <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                  <span className="font-bold text-lg">{t('rooms.not_scheduled')}</span>
                 </div>
               </div>
-              <div className="card p-5 flex flex-col justify-center">
-                <p className="text-slate-500 font-semibold text-xs tracking-wider uppercase mb-1">Auto Interval (Days)</p>
-                {isEditing ? (
-                  <div className="flex items-center space-x-2 mt-1">
-                    <input 
-                      type="number" 
-                      min="0"
-                      value={editForm.intervalDays}
-                      onChange={(e) => setEditForm({ ...editForm, intervalDays: parseInt(e.target.value) || 0 })}
-                      className="w-20 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 font-bold text-lg text-slate-800"
-                    />
-                    <span className="text-slate-500 font-medium">days (0 to disable)</span>
-                  </div>
-                ) : (
-                  <p className="font-bold text-xl text-slate-800">
-                    {roomData.intervalDays > 0 ? `Every ${roomData.intervalDays} days` : 'Disabled'}
-                  </p>
-                )}
+              <div className="card p-5 bg-white border border-slate-100">
+                <p className="text-slate-400 font-semibold text-xs tracking-wider uppercase mb-1">{t('rooms.auto_interval')}</p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Clock className="text-slate-300" size={20} />
+                  <span className="font-bold text-lg text-slate-400">{t('rooms.disabled')}</span>
+                </div>
               </div>
             </div>
 
             <div className="card overflow-hidden">
               <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <h3 className="font-bold text-slate-800">Task List Template</h3>
+                <h3 className="font-bold text-slate-800 flex items-center space-x-2">
+                  <History size={18} className="text-slate-400" />
+                  <span>{t('rooms.task_template')}</span>
+                </h3>
                 {isEditing && (
                   <button onClick={handleAddTask} className="flex items-center space-x-1 text-xs font-bold text-primary-600 hover:text-primary-700 bg-primary-50 px-2 py-1.5 rounded-lg transition-colors">
                     <Plus size={14} />
@@ -322,14 +309,18 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                   </ul>
                 ) : (
                   <ul className="space-y-3">
-                    {roomData.tasks.map((task) => (
-                      <li key={task.id} className="flex items-center space-x-3 p-3 bg-white border border-slate-200 rounded-xl">
-                        <CheckCircle2 size={18} className="text-slate-300" />
-                        <span className="font-medium text-slate-700">{task.text}</span>
-                      </li>
-                    ))}
-                    {roomData.tasks.length === 0 && (
-                      <li className="text-slate-500 text-sm italic">No tasks assigned to this room template.</li>
+                    {roomData.tasks.length === 0 ? (
+                      <div className="text-center py-10 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                        <ClipboardList className="mx-auto text-slate-200 mb-2" size={40} />
+                        <p className="text-sm text-slate-500 font-medium">{t('rooms.no_template_tasks')}</p>
+                      </div>
+                    ) : (
+                      roomData.tasks.map((task) => (
+                        <li key={task.id} className="flex items-center space-x-3 p-3 bg-white border border-slate-200 rounded-xl">
+                          <CheckCircle2 size={18} className="text-slate-300" />
+                          <span className="font-medium text-slate-700">{task.text}</span>
+                        </li>
+                      ))
                     )}
                   </ul>
                 )}
@@ -341,12 +332,12 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
         <div className="card">
           <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center space-x-2">
             <History size={18} className="text-slate-400" />
-            <h3 className="font-bold text-slate-800">Full Cleaning Log</h3>
+            <h3 className="font-bold text-slate-800">{t('rooms.full_log')}</h3>
           </div>
           <div className="p-5">
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:h-full before:w-0.5 before:bg-slate-100">
               {completedAssignments.length === 0 ? (
-                <p className="text-slate-500 italic text-sm pl-8">No cleaning history recorded yet.</p>
+                <p className="text-slate-500 italic text-sm pl-8">{t('rooms.no_history')}</p>
               ) : (
                 completedAssignments.map(a => {
                   const completedTasks = a.tasks ? a.tasks.filter(t => t.done).length : 0;
@@ -362,7 +353,10 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                         setIsAssignmentSlideoutOpen(true);
                       }}
                     >
-                      <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-white bg-green-500 text-white shadow-sm z-10 shrink-0 mt-1 group-hover:scale-110 transition-transform"></div>
+                      <div className={cn(
+                        "flex items-center justify-center w-5 h-5 rounded-full border-2 border-white text-white shadow-sm z-10 shrink-0 mt-1 group-hover:scale-110 transition-transform",
+                        a.problemReported ? "bg-red-500" : (percentage < 100 ? "bg-orange-500" : "bg-green-500")
+                      )}></div>
                       <div className="flex-1 -mt-1">
                         <div className="flex justify-between items-start">
                           <div>
@@ -371,11 +365,11 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                           </div>
                           <div className="text-right">
                             <span className="text-xs font-bold text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded-lg shadow-sm">
-                              {percentage}% Done
+                              {percentage}% {t('rooms.done_suffix')}
                             </span>
                           </div>
                         </div>
-                        <p className="text-xs text-slate-400 mt-2">{totalTasks} tasks checklist</p>
+                        <p className="text-xs text-slate-400 mt-2">{totalTasks} {t('rooms.tasks_checklist')}</p>
                       </div>
                     </div>
                   );
@@ -389,7 +383,7 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
       <Slideout 
         isOpen={isAssignmentSlideoutOpen} 
         onClose={() => setIsAssignmentSlideoutOpen(false)}
-        title="Assignment Details"
+        title={t('assignments.title')}
       >
         {selectedLogId && (
           <AssignmentDetail 

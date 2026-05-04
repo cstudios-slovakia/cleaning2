@@ -272,7 +272,13 @@ export default function Dashboard() {
                         {i !== Math.min(completedAssignments.length, 50) - 1 && (
                           <div className="absolute left-2 top-6 bottom-[-24px] w-0.5 bg-slate-100"></div>
                         )}
-                        <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-white bg-blue-500 shadow-sm"></div>
+                        {(() => {
+                          const isAllDone = !a.tasks || a.tasks.every(t => t.done);
+                          const dotColor = a.problemReported ? 'bg-red-500' : (!isAllDone ? 'bg-orange-500' : 'bg-green-500');
+                          return (
+                            <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-white ${dotColor} shadow-sm`}></div>
+                          );
+                        })()}
                         
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                           <div>

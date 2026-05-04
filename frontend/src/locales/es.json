@@ -1,28 +1,28 @@
 {
   "nav": {
     "dashboard": "Tablero",
-    "properties": "Edificios",
+    "properties": "Propiedades",
     "rooms": "Habitaciones",
-    "assignments": "Tareas",
+    "assignments": "Asignaciones",
     "users": "Usuarios",
-    "settings": "Configuraciones",
+    "settings": "Ajustes",
     "logout": "Cerrar sesión"
   },
   "login": {
-    "title": "Sistema Emerald",
+    "title": "Sistema de limpieza",
     "subtitle": "Inicie sesión en su cuenta",
-    "manager_tab": "Gerente / Administrador",
+    "manager_tab": "Gerente / Admin",
     "cleaner_tab": "Limpiador",
-    "email": "Dirección de correo electrónico",
+    "email": "Correo electrónico",
     "password": "Contraseña",
     "username": "Nombre de usuario",
     "pin": "PIN",
     "submit": "Iniciar sesión"
   },
   "dashboard": {
-    "property_status": "Matriz de estado",
+    "property_status": "Matriz de estado de propiedad",
     "activity": "Actividad",
-    "timeline": "Línea de tiempo",
+    "timeline": "Cronología",
     "pending_today": "Pendiente hoy",
     "recent_logs": "Registros recientes",
     "express_clean": "Limpieza exprés",
@@ -45,33 +45,32 @@
     "future": "Futuro"
   },
   "settings": {
-    "title": "Configuraciones",
-    "subtitle": "Administrar sus preferencias",
-    "user_language": "Idioma del usuario",
-    "system_language": "Idioma predeterminado del sistema",
-    "system_language_help": "Solo lo puede establecer el administrador. Se aplica a los usuarios que no han seleccionado un idioma personal.",
-    "default": "Predeterminado del sistema",
-    "profile": "Configuración de perfil",
-    "pin": "Su PIN",
-    "system_preferences": "Preferencias del sistema",
+    "title": "Ajustes",
+    "subtitle": "Administre sus preferencias y ajustes del sistema.",
+    "profile": "Preferencias de perfil",
+    "user_language": "Idioma de la interfaz",
+    "default": "Predeterminado",
     "update_pin": "Actualizar PIN",
-    "new_pin": "Nuevo PIN",
+    "new_pin": "PIN nuevo",
     "confirm_pin": "Confirmar PIN",
     "update_password": "Actualizar contraseña",
-    "new_password": "Nueva contraseña",
+    "new_password": "Contraseña nueva",
     "confirm_password": "Confirmar contraseña",
-    "errors": {
-      "password_mismatch": "Las contraseñas no coinciden",
-      "save_failed": "Error al guardar la contraseña"
-    }
+    "system_preferences": "Ajustes del sistema",
+    "system_language": "Idioma predeterminado del sistema",
+    "system_language_help": "Establecer el idioma predeterminado para todos los usuarios"
   },
   "assignments": {
     "finish_cleaning": "Terminar limpieza",
-    "was_cleaned": "fue limpiado",
-    "title": "Tarea de limpieza",
-    "details": "Detalles y estado de la tarea",
+    "was_cleaned": "La habitación está limpia",
     "scheduled": "Programado",
     "completed_by": "Completado por",
     "task_list": "Lista de tareas"
+  },
+  "rooms": {
+    "log_tooltip": "Registro de limpieza",
+    "enter_name_placeholder": "Nombre de la habitación...",
+    "new_room": "Habitación nueva",
+    "no_rooms": "Aún no se han añadido habitaciones a esta propiedad."
   }
 }

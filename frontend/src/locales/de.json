@@ -1,18 +1,18 @@
 {
   "nav": {
     "dashboard": "Dashboard",
-    "properties": "Gebäude",
-    "rooms": "Räume",
-    "assignments": "Aufgaben",
+    "properties": "Liegenschaften",
+    "rooms": "Zimmer",
+    "assignments": "Zuweisungen",
     "users": "Benutzer",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
   "login": {
-    "title": "Emerald System",
-    "subtitle": "Melden Sie sich an",
+    "title": "Reinigungssystem",
+    "subtitle": "Melden Sie sich bei Ihrem Konto an",
     "manager_tab": "Manager / Admin",
-    "cleaner_tab": "Reinigungskraft",
+    "cleaner_tab": "Reiniger",
     "email": "E-Mail-Adresse",
     "password": "Passwort",
     "username": "Benutzername",
@@ -20,12 +20,12 @@
     "submit": "Anmelden"
   },
   "dashboard": {
-    "property_status": "Immobilien-Statusmatrix",
+    "property_status": "Objektstatus-Matrix",
     "activity": "Aktivität",
-    "timeline": "Zeitleiste",
+    "timeline": "Zeitachse",
     "pending_today": "Heute ausstehend",
     "recent_logs": "Aktuelle Protokolle",
-    "express_clean": "Express-Reinigung",
+    "express_clean": "Expressreinigung",
     "assign": "Zuweisen",
     "no_tasks": "Keine ausstehenden Aufgaben",
     "completed": "Abgeschlossen"
@@ -35,7 +35,7 @@
     "save": "Änderungen speichern",
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "loading": "Wird geladen...",
+    "loading": "Laden...",
     "success": "Erfolg",
     "error": "Fehler",
     "today": "Heute",
@@ -46,32 +46,31 @@
   },
   "settings": {
     "title": "Einstellungen",
-    "subtitle": "Verwalten Sie Ihre Einstellungen",
-    "user_language": "Benutzersprache",
-    "system_language": "Standard-Systemsprache",
-    "system_language_help": "Kann nur vom Administrator eingestellt werden. Gilt für Benutzer, die keine persönliche Sprache gewählt haben.",
-    "default": "Systemstandard",
-    "profile": "Profileinstellungen",
-    "pin": "Ihre PIN",
-    "system_preferences": "Systemeinstellungen",
+    "subtitle": "Verwalten Sie Ihre Präferenzen und Systemeinstellungen.",
+    "profile": "Profil-Einstellungen",
+    "user_language": "Sprache der Benutzeroberfläche",
+    "default": "Standard",
     "update_pin": "PIN aktualisieren",
     "new_pin": "Neue PIN",
     "confirm_pin": "PIN bestätigen",
     "update_password": "Passwort aktualisieren",
     "new_password": "Neues Passwort",
     "confirm_password": "Passwort bestätigen",
-    "errors": {
-      "password_mismatch": "Passwörter stimmen nicht überein",
-      "save_failed": "Passwort konnte nicht gespeichert werden"
-    }
+    "system_preferences": "System-Einstellungen",
+    "system_language": "Standard-Systemsprache",
+    "system_language_help": "Legen Sie die Standardsprache für alle Benutzer fest"
   },
   "assignments": {
-    "finish_cleaning": "Reinigung abschließen",
-    "was_cleaned": "wurde gereinigt",
-    "title": "Reinigungsaufgabe",
-    "details": "Aufgabendetails und Status",
+    "finish_cleaning": "Reinigung beenden",
+    "was_cleaned": "Das Zimmer ist gereinigt",
     "scheduled": "Geplant",
     "completed_by": "Abgeschlossen von",
     "task_list": "Aufgabenliste"
+  },
+  "rooms": {
+    "log_tooltip": "Reinigungsprotokoll",
+    "enter_name_placeholder": "Zimmername...",
+    "new_room": "Neues Zimmer",
+    "no_rooms": "Bisher wurden für dieses Objekt keine Zimmer hinzugefügt."
   }
 }

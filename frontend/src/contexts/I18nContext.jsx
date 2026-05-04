@@ -29,9 +29,9 @@ export function I18nProvider({ children }) {
   const { user } = useAuth();
   
   // Try to load system setting and user setting from localStorage
-  const [systemLang, setSystemLang] = useState(localStorage.getItem('emerald_sys_lang') || 'en');
-  const [systemName, setSystemName] = useState(localStorage.getItem('emerald_system_name') || 'Emerald Cleaning');
-  const [userLang, setUserLang] = useState(localStorage.getItem(`emerald_user_lang_${user?.id}`) || null);
+  const [systemLang, setSystemLang] = useState(localStorage.getItem('cleaner_sys_lang') || 'en');
+  const [systemName, setSystemName] = useState(localStorage.getItem('cleaner_system_name') || 'Cleaning System');
+  const [userLang, setUserLang] = useState(localStorage.getItem(`cleaner_user_lang_${user?.id}`) || null);
 
   const currentLang = userLang || systemLang;
 
@@ -51,21 +51,21 @@ export function I18nProvider({ children }) {
     setUserLang(lang);
     if (user?.id) {
       if (lang) {
-        localStorage.setItem(`emerald_user_lang_${user.id}`, lang);
+        localStorage.setItem(`cleaner_user_lang_${user.id}`, lang);
       } else {
-        localStorage.removeItem(`emerald_user_lang_${user.id}`);
+        localStorage.removeItem(`cleaner_user_lang_${user.id}`);
       }
     }
   };
 
   const changeSystemLanguage = (lang) => {
     setSystemLang(lang);
-    localStorage.setItem('emerald_sys_lang', lang);
+    localStorage.setItem('cleaner_sys_lang', lang);
   };
 
   const changeSystemName = (name) => {
     setSystemName(name);
-    localStorage.setItem('emerald_system_name', name);
+    localStorage.setItem('cleaner_system_name', name);
   };
 
   return (
