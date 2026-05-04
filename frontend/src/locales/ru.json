@@ -76,7 +76,10 @@
     "yesterday": "Вчера",
     "overdue": "Просрочено",
     "future": "Будущее",
-    "refresh": "Обновить"
+    "refresh": "Обновить",
+    "warning": "Внимание",
+    "at": "в",
+    "by": "От"
   },
   "settings": {
     "title": "Настройки",
@@ -153,7 +156,23 @@
     "full_log": "Полный журнал уборки",
     "no_history": "История уборки пока не записана.",
     "done_suffix": "Готово",
-    "tasks_checklist": "чек-лист задач"
+    "tasks_checklist": "чек-лист задач",
+    "loading": "Загрузка комнат...",
+    "cleaning_assigned": "Уборка назначена для {{room}}",
+    "room_added": "Комната \"{{room}}\" успешно добавлена!",
+    "room_cloned": "Комната \"{{room}}\" успешно клонирована!",
+    "room_restored": "Комната \"{{room}}\" восстановлена!",
+    "no_properties": "Объекты не найдены",
+    "create_property_first": "Сначала создайте объект, чтобы управлять его комнатами.",
+    "go_to_properties": "Перейти к объектам",
+    "save_room": "Сохранить комнату",
+    "clone_room": "Клонировать комнату",
+    "archive_room": "Архивировать комнату",
+    "room_archived": "Комната архивирована",
+    "undo": "ОТМЕНИТЬ",
+    "target_date": "Целевая дата",
+    "confirm_assignment": "Подтвердить назначение",
+    "assign_cleaning_title": "Назначить уборку: {{room}}"
   },
   "properties": {
     "title": "Объекты",
@@ -169,5 +188,41 @@
     "rooms_count": "Комнаты",
     "managers_count": "Менеджеры",
     "create": "Создать"
+  },
+  "logs": {
+    "title": "Журналы объекта",
+    "history": "История уборки",
+    "history_with_name": "История уборки: {{name}}",
+    "no_logs": "Журналы уборки для этого объекта не найдены.",
+    "completed_cleaning": "завершил уборку",
+    "room_cleaning_completed": "уборка {{room}} завершена",
+    "by_user": "Пользователем {{user}}"
+  },
+  "users": {
+    "title": "Управление пользователями",
+    "subtitle": "Управление персоналом, ролями и статусами.",
+    "add_user": "Добавить пользователя",
+    "edit_user": "Изменить пользователя",
+    "save_user": "Сохранить пользователя",
+    "cleaners_tab": "Уборщики",
+    "managers_tab": "Менеджеры и админы",
+    "loading": "Загрузка пользователей...",
+    "no_users": "Пользователи не найдены.",
+    "name_identifiers": "Имя / Идентификаторы",
+    "status_role": "Статус / Роль",
+    "actions": "Действия",
+    "pin_label": "PIN: {{pin}}",
+    "last_seen": "Последний раз в сети: {{at}}",
+    "full_name": "Полное имя",
+    "role": "Роль",
+    "language": "Язык",
+    "username": "Имя пользователя",
+    "pin": "PIN",
+    "email": "Email",
+    "password": "Пароль",
+    "status": "Статус",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "delete_confirm": "Вы уверены, что хотите удалить этого пользователя?"
   }
 }

@@ -100,7 +100,7 @@ export default function RoomList() {
       };
 
       await saveAssignment(newAssignment);
-      setSuccessMessage(`Cleaning assigned for ${room.name}`);
+      setSuccessMessage(t('rooms.cleaning_assigned', { room: room.name }));
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (e) {
       console.error('Failed to create assignment', e);
@@ -143,7 +143,7 @@ export default function RoomList() {
       setNewRoomName('');
       setAddingToPropertyId(null);
       await loadRooms();
-      setSuccessMessage(`Room "${newRoom.name}" added successfully!`);
+      setSuccessMessage(t('rooms.room_added', { room: newRoom.name }));
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (e) {
       console.error('Failed to save room', e);
@@ -167,7 +167,7 @@ export default function RoomList() {
 
       await saveRoom(clonedRoom);
       await loadRooms();
-      setSuccessMessage(`Room "${clonedRoom.name}" cloned successfully!`);
+      setSuccessMessage(t('rooms.room_cloned', { room: clonedRoom.name }));
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (e) {
       console.error('Failed to clone room', e);
@@ -213,7 +213,7 @@ export default function RoomList() {
       setArchivedRoomBackup(null);
       setUndoCountdown(0);
       await loadRooms();
-      setSuccessMessage(`Room "${room.name}" restored!`);
+      setSuccessMessage(t('rooms.room_restored', { room: room.name }));
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (e) {
       console.error('Failed to restore room', e);
@@ -235,7 +235,7 @@ export default function RoomList() {
     }
   }, [undoCountdown]);
 
-  if (loading) return <div className="p-8 text-center text-slate-500">Loading rooms...</div>;
+  if (loading) return <div className="p-8 text-center text-slate-500">{t('rooms.loading')}</div>;
 
   const totalProperties = Object.keys(groupedRooms).length;
 
@@ -267,10 +267,10 @@ export default function RoomList() {
           <div className="p-4 bg-slate-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
             <Building2 className="text-slate-400" size={32} />
           </div>
-          <h3 className="text-lg font-bold text-slate-800 mb-2">No properties found</h3>
-          <p className="text-slate-500 mb-6">Create a property first to manage its rooms.</p>
+          <h3 className="text-lg font-bold text-slate-800 mb-2">{t('rooms.no_properties')}</h3>
+          <p className="text-slate-500 mb-6">{t('rooms.create_property_first')}</p>
           <Link to="/properties" className="inline-flex items-center space-x-2 bg-primary-600 text-white px-6 py-3 rounded-xl hover:bg-primary-700 shadow-sm font-medium transition-colors">
-            Go to Properties
+            {t('rooms.go_to_properties')}
           </Link>
         </div>
       ) : (
@@ -356,14 +356,14 @@ export default function RoomList() {
                               <button 
                                 onClick={() => handleSaveRoom(group.id)}
                                 className="p-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all shadow-sm active:scale-95"
-                                title="Save Room"
+                                title={t('rooms.save_room')}
                               >
                                 <Save size={16} />
                               </button>
                               <button 
                                 onClick={handleCancelAdd}
                                 className="p-1.5 bg-white text-slate-500 rounded-lg hover:bg-slate-50 transition-all shadow-sm border border-slate-200 active:scale-95"
-                                title="Cancel"
+                                title={t('common.cancel')}
                               >
                                 <X size={16} />
                               </button>
@@ -424,14 +424,14 @@ export default function RoomList() {
                               <button 
                                 onClick={() => handleCloneRoom(group.id, room)}
                                 className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                                title="Clone Room"
+                                title={t('rooms.clone_room')}
                               >
                                 <Copy size={16} />
                               </button>
                               <button 
                                 onClick={() => handleArchiveRoom(group.id, room)}
                                 className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                title="Archive Room"
+                                title={t('rooms.archive_room')}
                               >
                                 <Archive size={16} />
                               </button>
@@ -457,7 +457,7 @@ export default function RoomList() {
                 <Archive size={18} className="text-slate-400" />
               </div>
               <div>
-                <p className="text-sm font-bold">Room archived</p>
+                <p className="text-sm font-bold">{t('rooms.room_archived')}</p>
                 <p className="text-xs text-slate-400 font-medium">{archivedRoomBackup.room.name}</p>
               </div>
             </div>
@@ -466,7 +466,7 @@ export default function RoomList() {
               className="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-xl transition-all font-bold text-xs active:scale-95 shadow-lg shadow-primary-900/20"
             >
               <RotateCcw size={14} />
-              <span>UNDO</span>
+              <span>{t('rooms.undo')}</span>
             </button>
           </div>
           <div className="h-1.5 bg-slate-800 w-full">
@@ -490,11 +490,11 @@ export default function RoomList() {
       <Modal 
         isOpen={isAssignModalOpen} 
         onClose={() => setIsAssignModalOpen(false)} 
-        title={`Assign Cleaning: ${selectedRoom?.name}`}
+        title={t('rooms.assign_cleaning_title', { room: selectedRoom?.name })}
       >
         <form onSubmit={handleAssignCleaning} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Target Date</label>
+            <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">{t('rooms.target_date')}</label>
             <input 
               type="date" 
               required
@@ -511,13 +511,13 @@ export default function RoomList() {
               onClick={() => setIsAssignModalOpen(false)}
               className="px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 rounded-xl transition-colors"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button 
               type="submit"
               className="px-8 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 shadow-lg shadow-primary-200 transition-all active:scale-95"
             >
-              Confirm Assignment
+              {t('rooms.confirm_assignment')}
             </button>
           </div>
         </form>
@@ -527,7 +527,7 @@ export default function RoomList() {
       <Slideout 
         isOpen={isRoomSlideoutOpen} 
         onClose={() => setIsRoomSlideoutOpen(false)}
-        title={roomForSlideout ? `Management: ${roomForSlideout.name}` : "Room Management"}
+        title={roomForSlideout ? t('rooms.management_title') + roomForSlideout.name : t('rooms.title')}
       >
         {roomForSlideout && (
           <RoomDetail 

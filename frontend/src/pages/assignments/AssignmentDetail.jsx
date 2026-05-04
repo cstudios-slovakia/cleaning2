@@ -222,7 +222,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             {assignment.doneBy && (
               <div className="inline-flex items-center space-x-2 bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-xl text-sm font-medium">
                 <Check size={16} />
-                <span>{t('assignments.completed_by')} <b>{assignment.doneBy}</b> {assignment.doneAt ? `at ${new Date(assignment.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}</span>
+                <span>{t('assignments.completed_by')} <b>{assignment.doneBy}</b> {assignment.doneAt ? `${t('common.at')} ${new Date(assignment.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}</span>
               </div>
             )}
           </div>
@@ -336,7 +336,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             <div className="max-w-2xl mx-auto mb-3 flex items-start space-x-2 text-orange-800 bg-orange-100 p-3 rounded-xl animate-fade-in-up">
               <AlertTriangle size={20} className="shrink-0 mt-0.5" />
               <p className="text-sm font-medium">
-                <strong>Warning:</strong> {t('assignments.warning_incomplete')}
+                <strong>{t('common.warning')}:</strong> {t('assignments.warning_incomplete')}
               </p>
             </div>
           )}

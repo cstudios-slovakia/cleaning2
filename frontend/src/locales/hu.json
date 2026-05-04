@@ -76,7 +76,10 @@
     "yesterday": "Tegnap",
     "overdue": "Lejárt",
     "future": "Jövőbeli",
-    "refresh": "Frissítés"
+    "refresh": "Frissítés",
+    "warning": "Figyelem",
+    "at": "-kor",
+    "by": "Által"
   },
   "settings": {
     "title": "Beállítások",
@@ -153,7 +156,23 @@
     "full_log": "Teljes takarítási napló",
     "no_history": "Még nem rögzítettek takarítási előzményt.",
     "done_suffix": "Kész",
-    "tasks_checklist": "feladatok ellenőrzőlista"
+    "tasks_checklist": "feladatok ellenőrzőlista",
+    "loading": "Szobák betöltése...",
+    "cleaning_assigned": "Takarítás hozzárendelve: {{room}}",
+    "room_added": "\"{{room}}\" szoba sikeresen hozzáadva!",
+    "room_cloned": "\"{{room}}\" szoba sikeresen klónozva!",
+    "room_restored": "\"{{room}}\" szoba visszaállítva!",
+    "no_properties": "Nem találhatók ingatlanok",
+    "create_property_first": "Előbb hozzon létre egy ingatlant a szobák kezeléséhez.",
+    "go_to_properties": "Ugrás az ingatlanokhoz",
+    "save_room": "Szoba mentése",
+    "clone_room": "Szoba klónozása",
+    "archive_room": "Szoba archiválása",
+    "room_archived": "Szoba archiválva",
+    "undo": "VISSZAVONÁS",
+    "target_date": "Cél dátum",
+    "confirm_assignment": "Hozzárendelés megerősítése",
+    "assign_cleaning_title": "Takarítás hozzárendelése: {{room}}"
   },
   "properties": {
     "title": "Ingatlanok",
@@ -169,5 +188,41 @@
     "rooms_count": "Szobák",
     "managers_count": "Menedzserek",
     "create": "Létrehozás"
+  },
+  "logs": {
+    "title": "Ingatlan naplók",
+    "history": "Takarítási előzmények",
+    "history_with_name": "Takarítási előzmények: {{name}}",
+    "no_logs": "Nem találhatók takarítási naplók ehhez az ingatlanhoz.",
+    "completed_cleaning": "befejezte a takarítást",
+    "room_cleaning_completed": "{{room}} takarítása befejezve",
+    "by_user": "{{user}} által"
+  },
+  "users": {
+    "title": "Felhasználókezelés",
+    "subtitle": "Személyzet, szerepkörök és állapotok kezelése.",
+    "add_user": "Felhasználó hozzáadása",
+    "edit_user": "Felhasználó szerkesztése",
+    "save_user": "Felhasználó mentése",
+    "cleaners_tab": "Takarítók",
+    "managers_tab": "Menedzserek és adminok",
+    "loading": "Felhasználók betöltése...",
+    "no_users": "Nem találhatók felhasználók.",
+    "name_identifiers": "Név / Azonosítók",
+    "status_role": "Állapot / Szerepkör",
+    "actions": "Műveletek",
+    "pin_label": "PIN: {{pin}}",
+    "last_seen": "Utoljára látva: {{at}}",
+    "full_name": "Teljes név",
+    "role": "Szerepkör",
+    "language": "Nyelv",
+    "username": "Felhasználónév",
+    "pin": "PIN",
+    "email": "Email",
+    "password": "Jelszó",
+    "status": "Állapot",
+    "active": "Aktív",
+    "inactive": "Inaktív",
+    "delete_confirm": "Biztosan törölni szeretné ezt a felhasználót?"
   }
 }

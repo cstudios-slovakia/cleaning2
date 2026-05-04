@@ -76,7 +76,10 @@
     "yesterday": "Včera",
     "overdue": "Po termíne",
     "future": "Budúce",
-    "refresh": "Obnoviť"
+    "refresh": "Obnoviť",
+    "warning": "Upozornenie",
+    "at": "o",
+    "by": "Od"
   },
   "settings": {
     "title": "Nastavenia",
@@ -153,7 +156,23 @@
     "full_log": "Kompletný záznam upratovania",
     "no_history": "Zatiaľ nebol zaznamenaný žiadny záznam.",
     "done_suffix": "Hotovo",
-    "tasks_checklist": "zoznam úloh"
+    "tasks_checklist": "zoznam úloh",
+    "loading": "Načítavam izby...",
+    "cleaning_assigned": "Upratovanie priradené pre {{room}}",
+    "room_added": "Izba \"{{room}}\" bola úspešne pridaná!",
+    "room_cloned": "Izba \"{{room}}\" bola úspešne naklonovaná!",
+    "room_restored": "Izba \"{{room}}\" bola obnovená!",
+    "no_properties": "Nenašli sa žiadne nehnuteľnosti",
+    "create_property_first": "Najprv vytvorte nehnuteľnosť, aby ste mohli spravovať jej izby.",
+    "go_to_properties": "Prejsť na nehnuteľnosti",
+    "save_room": "Uložiť izbu",
+    "clone_room": "Klonovať izbu",
+    "archive_room": "Archivovať izbu",
+    "room_archived": "Izba archivovaná",
+    "undo": "SPÄŤ",
+    "target_date": "Cieľový dátum",
+    "confirm_assignment": "Potvrdiť priradenie",
+    "assign_cleaning_title": "Priradiť upratovanie: {{room}}"
   },
   "properties": {
     "title": "Nehnuteľnosti",
@@ -169,5 +188,41 @@
     "rooms_count": "Izby",
     "managers_count": "Manažéri",
     "create": "Vytvoriť"
+  },
+  "logs": {
+    "title": "Záznamy nehnuteľnosti",
+    "history": "História upratovania",
+    "history_with_name": "História upratovania: {{name}}",
+    "no_logs": "Pre túto nehnuteľnosť sa nenašli žiadne záznamy o upratovaní.",
+    "completed_cleaning": "dokončil upratovanie",
+    "room_cleaning_completed": "upratovanie izby {{room}} dokončené",
+    "by_user": "Používateľom {{user}}"
+  },
+  "users": {
+    "title": "Správa používateľov",
+    "subtitle": "Správa personálu, rolí a stavov.",
+    "add_user": "Pridať používateľa",
+    "edit_user": "Upraviť používateľa",
+    "save_user": "Uložiť používateľa",
+    "cleaners_tab": "Upratovači",
+    "managers_tab": "Manažéri a admini",
+    "loading": "Načítavam používateľov...",
+    "no_users": "Nenašli sa žiadni používatelia.",
+    "name_identifiers": "Meno / Identifikátory",
+    "status_role": "Stav / Rola",
+    "actions": "Akcie",
+    "pin_label": "PIN: {{pin}}",
+    "last_seen": "Naposledy videný: {{at}}",
+    "full_name": "Celé meno",
+    "role": "Rola",
+    "language": "Jazyk",
+    "username": "Prihlasovacie meno",
+    "pin": "PIN",
+    "email": "Email",
+    "password": "Heslo",
+    "status": "Stav",
+    "active": "Aktívny",
+    "inactive": "Neaktívny",
+    "delete_confirm": "Naozaj chcete vymazať tohto používateľa?"
   }
 }

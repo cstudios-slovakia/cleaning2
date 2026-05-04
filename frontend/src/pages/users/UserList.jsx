@@ -3,11 +3,13 @@ import { UserPlus, Edit2, ShieldAlert, Trash2, X, Save } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { fetchUsers, saveUser, deleteUser } from '../../lib/api';
 import Modal from '../../components/Modal';
+import { useTranslation } from '../../contexts/I18nContext';
 
 export default function UserList() {
   const [activeTab, setActiveTab] = useState('cleaners');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
@@ -58,7 +60,7 @@ export default function UserList() {
       await saveUser({
         ...editUser,
         id: editUser.id || Date.now().toString(),
-        lastActive: editUser.lastActive || 'Never'
+        lastActive: editUser.lastActive || t('rooms.never')
       });
       setIsModalOpen(false);
       loadUsers();
@@ -68,7 +70,7 @@ export default function UserList() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    if (!window.confirm(t('users.delete_confirm'))) return;
     try {
       await deleteUser(id);
       loadUsers();
@@ -81,15 +83,15 @@ export default function UserList() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800">User Management</h2>
-          <p className="text-sm text-slate-500 mt-1">Manage personnel, roles and statuses.</p>
+          <h2 className="text-2xl font-bold text-slate-800">{t('users.title')}</h2>
+          <p className="text-sm text-slate-500 mt-1">{t('users.subtitle')}</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
           className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 shadow-sm font-medium transition-colors"
         >
           <UserPlus size={18} />
-          <span className="hidden sm:inline">Add User</span>
+          <span className="hidden sm:inline">{t('users.add_user')}</span>
         </button>
       </div>
 
@@ -102,7 +104,7 @@ export default function UserList() {
             activeTab === 'cleaners' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
           )}
         >
-          Cleaners
+          {t('users.cleaners_tab')}
         </button>
         <button
           onClick={() => setActiveTab('managers')}
@@ -111,23 +113,23 @@ export default function UserList() {
             activeTab === 'managers' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
           )}
         >
-          Managers & Admins
+          {t('users.managers_tab')}
         </button>
       </div>
 
       <div className="card">
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="p-8 text-center text-slate-500">Loading users...</div>
+            <div className="p-8 text-center text-slate-500">{t('users.loading')}</div>
           ) : activeUsers.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">No users found.</div>
+            <div className="p-8 text-center text-slate-500">{t('users.no_users')}</div>
           ) : (
             <table className="w-full text-left">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="p-4 font-semibold text-slate-600 text-sm">Name / Identifiers</th>
-                  <th className="p-4 font-semibold text-slate-600 text-sm">Status / Role</th>
-                  <th className="p-4 font-semibold text-slate-600 text-sm text-right">Actions</th>
+                  <th className="p-4 font-semibold text-slate-600 text-sm">{t('users.name_identifiers')}</th>
+                  <th className="p-4 font-semibold text-slate-600 text-sm">{t('users.status_role')}</th>
+                  <th className="p-4 font-semibold text-slate-600 text-sm text-right">{t('users.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -141,7 +143,7 @@ export default function UserList() {
                         <div>
                           <p className="font-bold text-slate-800">{user.name}</p>
                           <p className="text-sm text-slate-500">
-                            {user.role === 'cleaner' ? `PIN: ${user.username || '?'}` : user.email}
+                            {user.role === 'cleaner' ? t('users.pin_label', { pin: user.username || '?' }) : user.email}
                           </p>
                         </div>
                       </div>
@@ -153,9 +155,9 @@ export default function UserList() {
                             "inline-flex w-fit px-2 py-0.5 rounded-md text-xs font-bold border",
                             user.status === 'active' ? "bg-green-50 text-green-700 border-green-200" : "bg-slate-100 text-slate-600 border-slate-200"
                           )}>
-                            {user.status}
+                            {user.status === 'active' ? t('users.active') : t('users.inactive')}
                           </span>
-                          <span className="text-xs text-slate-400">Last seen: {user.lastActive}</span>
+                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: user.lastActive })}</span>
                         </div>
                       ) : (
                         <div className="flex items-center space-x-1">
@@ -164,7 +166,7 @@ export default function UserList() {
                             "font-medium text-sm capitalize px-2 py-0.5 rounded-md border",
                             user.role === 'admin' ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-slate-50 text-slate-700 border-slate-200"
                           )}>
-                            {user.role}
+                            {user.role === 'admin' ? 'Admin' : 'Manager'}
                           </span>
                         </div>
                       )}
@@ -198,7 +200,7 @@ export default function UserList() {
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-slate-800">
-                {editUser.id ? 'Edit User' : 'Add User'}
+                {editUser.id ? t('users.edit_user') : t('users.add_user')}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
@@ -207,7 +209,7 @@ export default function UserList() {
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">
-                  Full Name
+                  {t('users.full_name')}
                 </label>
                 <input 
                   type="text" 
@@ -219,20 +221,20 @@ export default function UserList() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Role</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.role')}</label>
                 <select 
                   value={editUser.role}
                   onChange={(e) => setEditUser({...editUser, role: e.target.value})}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="cleaner">Cleaner</option>
-                  <option value="manager">Manager</option>
+                  <option value="cleaner">{t('users.cleaners_tab').slice(0, -1)}</option>
+                  <option value="manager">{t('users.managers_tab').split(' ')[0]}</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Language</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.language')}</label>
                 <select 
                   value={editUser.language || 'en'}
                   onChange={(e) => setEditUser({...editUser, language: e.target.value})}
@@ -247,7 +249,7 @@ export default function UserList() {
               {editUser.role === 'cleaner' ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Username</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.username')}</label>
                     <input 
                       type="text" 
                       value={editUser.username}
@@ -257,13 +259,13 @@ export default function UserList() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">PIN</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.pin')}</label>
                     <input 
                       type="password" 
                       value={editUser.password}
                       onChange={(e) => setEditUser({...editUser, password: e.target.value})}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="4 digit PIN"
+                      placeholder={t('login.pin_help')}
                       maxLength={4}
                     />
                   </div>
@@ -271,7 +273,7 @@ export default function UserList() {
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.email')}</label>
                     <input 
                       type="email" 
                       value={editUser.email}
@@ -281,7 +283,7 @@ export default function UserList() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.password')}</label>
                     <input 
                       type="password" 
                       value={editUser.password || ''}
@@ -294,14 +296,14 @@ export default function UserList() {
               )}
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Status</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.status')}</label>
                 <select 
                   value={editUser.status}
                   onChange={(e) => setEditUser({...editUser, status: e.target.value})}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="active">{t('users.active')}</option>
+                  <option value="inactive">{t('users.inactive')}</option>
                 </select>
               </div>
 
@@ -311,14 +313,14 @@ export default function UserList() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-medium transition-colors"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button 
                   type="submit"
                   className="flex items-center space-x-2 bg-primary-600 text-white px-6 py-2 rounded-xl hover:bg-primary-700 font-medium transition-colors shadow-sm"
                 >
                   <Save size={18} />
-                  <span>Save User</span>
+                  <span>{t('users.save_user')}</span>
                 </button>
               </div>
             </form>

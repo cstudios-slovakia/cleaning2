@@ -76,7 +76,10 @@
     "yesterday": "Gestern",
     "overdue": "Überfällig",
     "future": "Zukünftig",
-    "refresh": "Aktualisieren"
+    "refresh": "Aktualisieren",
+    "warning": "Warnung",
+    "at": "um",
+    "by": "Von"
   },
   "settings": {
     "title": "Einstellungen",
@@ -153,7 +156,23 @@
     "full_log": "Vollständiges Reinigungsprotokoll",
     "no_history": "Noch kein Reinigungsverlauf aufgezeichnet.",
     "done_suffix": "Fertig",
-    "tasks_checklist": "Aufgaben Checkliste"
+    "tasks_checklist": "Aufgaben Checkliste",
+    "loading": "Zimmer werden geladen...",
+    "cleaning_assigned": "Reinigung für {{room}} zugewiesen",
+    "room_added": "Zimmer \"{{room}}\" erfolgreich hinzugefügt!",
+    "room_cloned": "Zimmer \"{{room}}\" erfolgreich geklont!",
+    "room_restored": "Zimmer \"{{room}}\" wiederhergestellt!",
+    "no_properties": "Keine Immobilien gefunden",
+    "create_property_first": "Erstellen Sie zuerst eine Immobilie, um deren Zimmer zu verwalten.",
+    "go_to_properties": "Zu den Immobilien",
+    "save_room": "Zimmer speichern",
+    "clone_room": "Zimmer klonen",
+    "archive_room": "Zimmer archivieren",
+    "room_archived": "Zimmer archiviert",
+    "undo": "RÜCKGÄNGIG",
+    "target_date": "Zieldatum",
+    "confirm_assignment": "Zuweisung bestätigen",
+    "assign_cleaning_title": "Reinigung zuweisen: {{room}}"
   },
   "properties": {
     "title": "Immobilien",
@@ -169,5 +188,41 @@
     "rooms_count": "Zimmer",
     "managers_count": "Manager",
     "create": "Erstellen"
+  },
+  "logs": {
+    "title": "Immobilienprotokolle",
+    "history": "Reinigungshistorie",
+    "history_with_name": "Reinigungshistorie: {{name}}",
+    "no_logs": "Keine Reinigungsprotokolle für diese Immobilie gefunden.",
+    "completed_cleaning": "hat die Reinigung abgeschlossen",
+    "room_cleaning_completed": "{{room}} Reinigung abgeschlossen",
+    "by_user": "Von {{user}}"
+  },
+  "users": {
+    "title": "Benutzerverwaltung",
+    "subtitle": "Verwalten Sie Personal, Rollen und Status.",
+    "add_user": "Benutzer hinzufügen",
+    "edit_user": "Benutzer bearbeiten",
+    "save_user": "Benutzer speichern",
+    "cleaners_tab": "Reinigungskräfte",
+    "managers_tab": "Manager & Admins",
+    "loading": "Benutzer werden geladen...",
+    "no_users": "Keine Benutzer gefunden.",
+    "name_identifiers": "Name / Identifikatoren",
+    "status_role": "Status / Rolle",
+    "actions": "Aktionen",
+    "pin_label": "PIN: {{pin}}",
+    "last_seen": "Zuletzt gesehen: {{at}}",
+    "full_name": "Vollständiger Name",
+    "role": "Rolle",
+    "language": "Sprache",
+    "username": "Benutzername",
+    "pin": "PIN",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "status": "Status",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "delete_confirm": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?"
   }
 }

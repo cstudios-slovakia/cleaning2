@@ -68,7 +68,10 @@
     "yesterday": "Yesterday",
     "overdue": "Overdue",
     "future": "Future",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "warning": "Warning",
+    "at": "at",
+    "by": "By"
   },
   "settings": {
     "title": "Settings",
@@ -145,7 +148,23 @@
     "full_log": "Full Cleaning Log",
     "no_history": "No cleaning history recorded yet.",
     "done_suffix": "Done",
-    "tasks_checklist": "tasks checklist"
+    "tasks_checklist": "tasks checklist",
+    "loading": "Loading rooms...",
+    "cleaning_assigned": "Cleaning assigned for {{room}}",
+    "room_added": "Room \"{{room}}\" added successfully!",
+    "room_cloned": "Room \"{{room}}\" cloned successfully!",
+    "room_restored": "Room \"{{room}}\" restored!",
+    "no_properties": "No properties found",
+    "create_property_first": "Create a property first to manage its rooms.",
+    "go_to_properties": "Go to Properties",
+    "save_room": "Save Room",
+    "clone_room": "Clone Room",
+    "archive_room": "Archive Room",
+    "room_archived": "Room archived",
+    "undo": "UNDO",
+    "target_date": "Target Date",
+    "confirm_assignment": "Confirm Assignment",
+    "assign_cleaning_title": "Assign Cleaning: {{room}}"
   },
   "properties": {
     "title": "Properties",
@@ -161,5 +180,41 @@
     "rooms_count": "Rooms",
     "managers_count": "Managers",
     "create": "Create"
+  },
+  "logs": {
+    "title": "Property Logs",
+    "history": "Cleaning History",
+    "history_with_name": "Cleaning History: {{name}}",
+    "no_logs": "No cleaning logs found for this property.",
+    "completed_cleaning": "completed cleaning",
+    "room_cleaning_completed": "{{room}} cleaning completed",
+    "by_user": "By {{user}}"
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage personnel, roles and statuses.",
+    "add_user": "Add User",
+    "edit_user": "Edit User",
+    "save_user": "Save User",
+    "cleaners_tab": "Cleaners",
+    "managers_tab": "Managers & Admins",
+    "loading": "Loading users...",
+    "no_users": "No users found.",
+    "name_identifiers": "Name / Identifiers",
+    "status_role": "Status / Role",
+    "actions": "Actions",
+    "pin_label": "PIN: {{pin}}",
+    "last_seen": "Last seen: {{at}}",
+    "full_name": "Full Name",
+    "role": "Role",
+    "language": "Language",
+    "username": "Username",
+    "pin": "PIN",
+    "email": "Email",
+    "password": "Password",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "delete_confirm": "Are you sure you want to delete this user?"
   }
 }

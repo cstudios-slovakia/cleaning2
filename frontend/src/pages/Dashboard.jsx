@@ -298,7 +298,7 @@ export default function Dashboard() {
                             </p>
                             <div className="flex justify-between items-center mt-0.5">
                               <p className="text-xs text-slate-500">
-                                <span className="font-semibold text-slate-700">{a.doneBy}</span> completed cleaning
+                                <span className="font-semibold text-slate-700">{a.doneBy}</span> {t('logs.completed_cleaning')}
                               </p>
                               <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-100 px-2 py-1 rounded-md">
                                 {parseDateString(a.doneAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}{' '}

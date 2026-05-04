@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar as CalendarIcon, Clock, CheckCircle, Users, Settings, AlertTriangle, History } from 'lucide-react';
 import { useAssignments } from '../../hooks/useAssignments';
+import { useTranslation } from '../../contexts/I18nContext';
 
 export default function PropertyLogs() {
   const { id } = useParams();
   const [property, setProperty] = useState({ id, name: 'Loading...', theme: '#0ea5e9' });
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadProp = async () => {
@@ -39,7 +41,7 @@ export default function PropertyLogs() {
           id: a.id,
           date: a.doneAt ? a.doneAt.split(',')[0] : '',
           time: a.doneAt && a.doneAt.includes(',') ? a.doneAt.split(',')[1].trim() : '',
-          action: `${a.room} cleaning completed`,
+          action: t('logs.room_cleaning_completed', { room: a.room }),
           user: a.doneBy,
           type: 'complete'
         });
@@ -59,7 +61,7 @@ export default function PropertyLogs() {
             <ArrowLeft size={18} className="text-slate-600" />
           </Link>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800 uppercase tracking-tighter">Property Logs</h2>
+            <h2 className="text-2xl font-bold text-slate-800 uppercase tracking-tighter">{t('logs.title')}</h2>
             <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{property.name}</p>
           </div>
         </div>
@@ -78,14 +80,14 @@ export default function PropertyLogs() {
       <div className="card p-6">
         <h3 className="font-bold text-slate-800 mb-6 flex items-center space-x-2 border-b border-slate-100 pb-4">
           <History size={18} className="text-slate-400" />
-          <span>Cleaning History: {property.name}</span>
+          <span>{t('logs.history_with_name', { name: property.name })}</span>
         </h3>
         
         <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
           {logs.length === 0 ? (
             <div className="text-center py-12">
               <History size={48} className="mx-auto text-slate-200 mb-4" />
-              <p className="text-slate-500 font-medium">No cleaning logs found for this property.</p>
+              <p className="text-slate-500 font-medium">{t('logs.no_logs')}</p>
             </div>
           ) : (
             logs.map((log) => (
@@ -105,7 +107,7 @@ export default function PropertyLogs() {
                     {log.date} {log.time}
                   </span>
                 </div>
-                <p className="text-sm text-slate-600">By {log.user}</p>
+                <p className="text-sm text-slate-600">{t('logs.by_user', { user: log.user })}</p>
               </div>
             </div>
             ))

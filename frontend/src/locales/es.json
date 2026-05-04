@@ -76,7 +76,10 @@
     "yesterday": "Ayer",
     "overdue": "Atrasado",
     "future": "Futuro",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "warning": "Advertencia",
+    "at": "a las",
+    "by": "Por"
   },
   "settings": {
     "title": "Ajustes",
@@ -153,7 +156,23 @@
     "full_log": "Registro de limpieza completo",
     "no_history": "Aún no se ha registrado historial de limpieza.",
     "done_suffix": "Hecho",
-    "tasks_checklist": "lista de verificación de tareas"
+    "tasks_checklist": "lista de verificación de tareas",
+    "loading": "Cargando habitaciones...",
+    "cleaning_assigned": "Limpieza asignada para {{room}}",
+    "room_added": "¡Habitación \"{{room}}\" añadida con éxito!",
+    "room_cloned": "¡Habitación \"{{room}}\" clonada con éxito!",
+    "room_restored": "¡Habitación \"{{room}}\" restaurada!",
+    "no_properties": "No se encontraron propiedades",
+    "create_property_first": "Cree una propiedad primero para gestionar sus habitaciones.",
+    "go_to_properties": "Ir a Propiedades",
+    "save_room": "Guardar habitación",
+    "clone_room": "Clonar habitación",
+    "archive_room": "Archivar habitación",
+    "room_archived": "Habitación archivada",
+    "undo": "DESHACER",
+    "target_date": "Fecha objetivo",
+    "confirm_assignment": "Confirmar asignación",
+    "assign_cleaning_title": "Asignar limpieza: {{room}}"
   },
   "properties": {
     "title": "Propiedades",
@@ -169,5 +188,41 @@
     "rooms_count": "Habitaciones",
     "managers_count": "Gerentes",
     "create": "Crear"
+  },
+  "logs": {
+    "title": "Registros de propiedad",
+    "history": "Historial de limpieza",
+    "history_with_name": "Historial de limpieza: {{name}}",
+    "no_logs": "No se encontraron registros de limpieza para esta propiedad.",
+    "completed_cleaning": "completó la limpieza",
+    "room_cleaning_completed": "limpieza de {{room}} completada",
+    "by_user": "Por {{user}}"
+  },
+  "users": {
+    "title": "Gestión de usuarios",
+    "subtitle": "Gestionar personal, roles y estados.",
+    "add_user": "Añadir usuario",
+    "edit_user": "Editar usuario",
+    "save_user": "Guardar usuario",
+    "cleaners_tab": "Limpiadores",
+    "managers_tab": "Gerentes y administradores",
+    "loading": "Cargando usuarios...",
+    "no_users": "No se encontraron usuarios.",
+    "name_identifiers": "Nombre / Identificadores",
+    "status_role": "Estado / Rol",
+    "actions": "Acciones",
+    "pin_label": "PIN: {{pin}}",
+    "last_seen": "Visto por última vez: {{at}}",
+    "full_name": "Nombre completo",
+    "role": "Rol",
+    "language": "Idioma",
+    "username": "Nombre de usuario",
+    "pin": "PIN",
+    "email": "Email",
+    "password": "Contraseña",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "delete_confirm": "¿Está seguro de que desea eliminar a este usuario?"
   }
 }
