@@ -1,4 +1,4 @@
 export const CONFIG = {
   SYSTEM_NAME: 'Cleaner',
-  VERSION: '1.0.0',
+  VERSION: '1.0.1',
 };

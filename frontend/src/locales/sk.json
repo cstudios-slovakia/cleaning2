@@ -102,7 +102,11 @@
     },
     "system_name": "Názov systému",
     "system_name_help": "Globálny názov zobrazený v celom systéme",
-    "admin_config_only": "Heslo hlavného administrátora je možné zmeniť iba v konfiguračnom súbore systému."
+    "admin_config_only": "Heslo hlavného administrátora je možné zmeniť iba v konfiguračnom súbore systému.",
+    "push_notifications": "Povoliť upozornenia",
+    "push_notifications_help": "Dostávajte upozornenia o okamžitých upratovaniach a problémoch.",
+    "push_notifications_later": "Neskôr",
+    "push_notifications_enable": "Povoliť"
   },
   "assignments": {
     "title": "Úlohy na upratovanie",

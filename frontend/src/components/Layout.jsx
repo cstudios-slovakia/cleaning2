@@ -151,7 +151,7 @@ export default function Layout() {
                     onClick={() => setShowNotificationBanner(false)}
                     className="flex-1 sm:flex-none px-4 py-2 text-primary-600 font-medium hover:bg-primary-100 rounded-xl transition-colors"
                   >
-                    {t('common.cancel', 'Later')}
+                    {t('settings.push_notifications_later', 'Later')}
                   </button>
                   <button 
                     onClick={() => {
@@ -160,7 +160,7 @@ export default function Layout() {
                     }}
                     className="flex-1 sm:flex-none px-4 py-2 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-colors shadow-sm"
                   >
-                    {t('common.save', 'Enable')}
+                    {t('settings.push_notifications_enable', 'Enable')}
                   </button>
                 </div>
               </div>

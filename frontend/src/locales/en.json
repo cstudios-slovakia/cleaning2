@@ -94,7 +94,11 @@
     },
     "system_name": "System Name",
     "system_name_help": "The global name displayed across the system",
-    "admin_config_only": "The main admin password can only be changed in the system configuration file."
+    "admin_config_only": "The main admin password can only be changed in the system configuration file.",
+    "push_notifications": "Enable Notifications",
+    "push_notifications_help": "Get notified about immediate cleanings and problems.",
+    "push_notifications_later": "Later",
+    "push_notifications_enable": "Enable"
   },
   "assignments": {
     "title": "Cleaning Assignments",
