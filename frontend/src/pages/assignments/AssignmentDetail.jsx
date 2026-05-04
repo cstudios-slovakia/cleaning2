@@ -15,6 +15,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
   const [assignment, setAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -128,8 +129,15 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     await saveAssignment(newAssignment);
   };
 
+  const isAllDone = assignment?.tasks?.every(t => t.done);
+
   const handleFinish = async () => {
     if (!canEdit) return;
+    
+    if (!isAllDone && !assignment.problemReported && !showWarning) {
+      setShowWarning(true);
+      return;
+    }
     
     const now = new Date();
     const doneAt = now.toISOString();
@@ -151,8 +159,6 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
   };
 
   if (loading || !assignment) return <div className="p-8 text-center text-slate-500">{t('loading.assignment')}</div>;
-
-  const isAllDone = assignment.tasks.every(t => t.done);
 
   const translateLabel = (label) => {
     if (!label) return '';
@@ -313,16 +319,36 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
       {/* Fixed bottom bar for the finish button */}
       {canEdit && !assignment.doneBy && (
         <div className={cn(
-          "fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50",
-          !isSlideout && "md:left-20 lg:left-64"
+          "fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50 transition-all",
+          !isSlideout && "md:left-20 lg:left-64",
+          showWarning && "bg-orange-50/95 border-orange-200"
         )}>
-          <div className="max-w-2xl mx-auto flex justify-end">
+          {showWarning && (
+            <div className="max-w-2xl mx-auto mb-3 flex items-start space-x-2 text-orange-800 bg-orange-100 p-3 rounded-xl animate-fade-in-up">
+              <AlertTriangle size={20} className="shrink-0 mt-0.5" />
+              <p className="text-sm font-medium">
+                <strong>Warning:</strong> You have unchecked tasks. Are you sure you want to finish the cleaning? It will be marked as incomplete (orange) in the logs.
+              </p>
+            </div>
+          )}
+          <div className="max-w-2xl mx-auto flex justify-end space-x-3">
+            {showWarning && (
+              <button 
+                onClick={() => setShowWarning(false)}
+                className="px-6 py-3 rounded-xl font-bold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all"
+              >
+                {t('common.cancel')}
+              </button>
+            )}
             <button 
               onClick={handleFinish}
-              style={{ backgroundColor: themeColor }}
-              className="w-full md:w-auto px-8 py-3 rounded-xl font-semibold text-white shadow-sm transition-all hover:opacity-90"
+              style={{ backgroundColor: showWarning ? '#ea580c' : themeColor }}
+              className={cn(
+                "w-full md:w-auto px-8 py-3 rounded-xl font-bold text-white shadow-sm transition-all hover:opacity-90",
+                showWarning && "shadow-orange-200"
+              )}
             >
-              {t('assignments.finish_cleaning')}
+              {showWarning ? "Confirm Finish" : t('assignments.finish_cleaning')}
             </button>
           </div>
         </div>

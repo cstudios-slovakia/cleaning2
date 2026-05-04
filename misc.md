@@ -24,8 +24,8 @@ test url: [clean.cstudios.ninja](http://clean.cstudios.ninja)
 root url on the shell: /cstudios.ninja/sub/clean
 
 shell:
-ssh [uid167681@shell.r5.websupport.sk](mailto:uid167681@shell.r5.websupport.sk) -p29607
-pass: 9a83a85f5d
+ssh uid167681@shell.r5.websupport.sk -p29607
+pass: e37437acd7
 
 github
 https://github.com/cstudios-slovakia/cleaning2.git
