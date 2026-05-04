@@ -115,10 +115,17 @@ export default function Layout() {
             </h1>
             <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">v{CONFIG.VERSION}</p>
           </div>
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 sm:space-x-6">
             <Link to="/settings" className="text-slate-400 hover:text-slate-600 transition-colors">
               <Settings size={20} />
             </Link>
+            <button 
+              onClick={handleLogout}
+              className="md:hidden text-slate-400 hover:text-red-500 transition-colors"
+              title={t('nav.logout')}
+            >
+              <LogOut size={20} />
+            </button>
             <div className="flex items-center space-x-3">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-bold text-slate-900 leading-none">{user?.name || (user?.role === 'cleaner' ? t('login.cleaner_tab') : 'Admin')}</p>
