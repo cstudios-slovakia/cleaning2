@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { cn, parseDateString } from '../lib/utils';
 import { fetchProperties, fetchRooms, saveAssignment, fetchRoomDetails } from '../lib/api';
 import { useAssignments } from '../hooks/useAssignments';
+import Slideout from '../components/Slideout';
+import AssignmentDetail from './assignments/AssignmentDetail';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
@@ -11,6 +13,7 @@ export default function Dashboard() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeLogsTab, setActiveLogsTab] = useState('today'); // 'today' or 'logs'
+  const [slideoutAssignment, setSlideoutAssignment] = useState(null);
   const { assignments } = useAssignments();
   const { user } = useAuth();
 
@@ -267,35 +270,55 @@ export default function Dashboard() {
               <div className="h-full">
                 {completedAssignments.length > 0 ? (
                   <div className="px-6 py-6 space-y-6">
-                    {completedAssignments.slice(0, 50).map((a, i) => (
-                      <div key={a.id} className="relative pl-6">
+                    {completedAssignments.slice(0, 50).map((a, i) => {
+                      const isAllDone = !a.tasks || a.tasks.every(t => t.done);
+                      const dotColor = a.problemReported ? 'bg-red-500' : (!isAllDone ? 'bg-orange-500' : 'bg-green-500');
+                      const totalTasks = a.tasks ? a.tasks.length : 1;
+                      const doneTasks = a.tasks ? a.tasks.filter(t => t.done).length : (isAllDone ? 1 : 0);
+                      const percent = Math.round((doneTasks / totalTasks) * 100);
+                      
+                      return (
+                      <button 
+                        key={a.id} 
+                        className="relative pl-6 block w-full text-left group hover:bg-slate-50 p-2 -ml-2 rounded-xl transition-colors"
+                        onClick={() => setSlideoutAssignment(a)}
+                      >
                         {i !== Math.min(completedAssignments.length, 50) - 1 && (
-                          <div className="absolute left-2 top-6 bottom-[-24px] w-0.5 bg-slate-100"></div>
+                          <div className="absolute left-4 top-8 bottom-[-16px] w-0.5 bg-slate-100"></div>
                         )}
-                        {(() => {
-                          const isAllDone = !a.tasks || a.tasks.every(t => t.done);
-                          const dotColor = a.problemReported ? 'bg-red-500' : (!isAllDone ? 'bg-orange-500' : 'bg-green-500');
-                          return (
-                            <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-4 border-white ${dotColor} shadow-sm`}></div>
-                          );
-                        })()}
+                        <div className={`absolute left-2.5 top-3.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 border-white ${dotColor} shadow-sm z-10`}></div>
                         
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                          <div>
-                            <p className="font-bold text-slate-800 text-sm">
+                          <div className="w-full">
+                            <p className={cn("font-bold text-sm", a.problemReported ? "text-red-600" : "text-slate-800")}>
                               {a.room} <span className="text-slate-400 font-medium text-[10px] ml-1 uppercase tracking-wider">({a.property})</span>
                             </p>
-                            <p className="text-xs text-slate-500 mt-0.5">
-                              <span className="font-semibold text-slate-700">{a.doneBy}</span> completed cleaning
-                            </p>
+                            <div className="flex justify-between items-center mt-0.5">
+                              <p className="text-xs text-slate-500">
+                                <span className="font-semibold text-slate-700">{a.doneBy}</span> completed cleaning
+                              </p>
+                              <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-100 px-2 py-1 rounded-md">
+                                {parseDateString(a.doneAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}{' '}
+                                {parseDateString(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            
+                            {/* Percentual Bar */}
+                            <div className="mt-2.5 flex items-center space-x-3 w-full">
+                              <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div 
+                                  className={cn("h-full rounded-full transition-all duration-500", 
+                                    a.problemReported ? "bg-red-500" : (percent === 100 ? "bg-green-500" : "bg-orange-500")
+                                  )}
+                                  style={{ width: `${percent}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-[9px] font-extrabold text-slate-400 w-8 text-right">{percent}%</span>
+                            </div>
                           </div>
-                          <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-50 px-2 py-1 rounded-md">
-                            {parseDateString(a.doneAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}{' '}
-                            {parseDateString(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
                         </div>
-                      </div>
-                    ))}
+                      </button>
+                    )})}
                   </div>
                 ) : (
                   <div className="p-12 text-center flex flex-col items-center justify-center h-full opacity-60">
@@ -308,6 +331,21 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      {slideoutAssignment && (
+        <Slideout
+          isOpen={!!slideoutAssignment}
+          onClose={() => setSlideoutAssignment(null)}
+          title={slideoutAssignment.room}
+        >
+          <AssignmentDetail
+            assignmentId={slideoutAssignment.id}
+            isSlideout={true}
+            theme={properties.find(p => p.name === slideoutAssignment.property)?.theme || '#0ea5e9'}
+            coverImage={properties.find(p => p.name === slideoutAssignment.property)?.coverImage}
+            onClose={() => setSlideoutAssignment(null)}
+          />
+        </Slideout>
+      )}
     </div>
   );
 }
