@@ -49,7 +49,7 @@ export function usePushNotifications(user) {
     if (!user || !user.id) return;
     
     if ('serviceWorker' in navigator && 'PushManager' in window) {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('sw.js')
         .then(function(swReg) {
           if (Notification.permission === 'default') {
             Notification.requestPermission().then(permission => {

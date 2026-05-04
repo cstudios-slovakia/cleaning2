@@ -60,54 +60,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $targetUserIds = [];
         $payload = [];
 
+        $targetNames = [];
         if ($action === 'flash') {
-            // Send to cleaners
             foreach ($cleaners as $c) {
-                if (isset($c['id'])) {
-                    $targetUserIds[] = $c['id'];
-                }
+                if (!empty($c['name'])) $targetNames[] = $c['name'];
             }
             $payload = [
                 'title' => 'Flash Cleaning Triggered!',
                 'body' => "Express cleaning has been requested at $propertyName. Please check your assignments.",
-                'url' => '/properties/' . $propertyId
+                'url' => '/sub/clean/properties/' . $propertyId
             ];
-        } elseif ($action === 'overdue') {
-            // Send to managers
+        } elseif ($action === 'overdue' || $action === 'problem') {
             foreach ($managers as $m) {
-                if (isset($m['id'])) {
-                    $targetUserIds[] = $m['id'];
-                }
+                if (!empty($m['name'])) $targetNames[] = $m['name'];
             }
-            $payload = [
-                'title' => 'Cleaning Overdue!',
-                'body' => "A room at $propertyName is overdue for cleaning. Please review.",
-                'url' => '/properties/' . $propertyId
-            ];
-        } elseif ($action === 'problem') {
-            // Send to managers
-            foreach ($managers as $m) {
-                if (isset($m['id'])) {
-                    $targetUserIds[] = $m['id'];
-                }
+            
+            if ($action === 'overdue') {
+                $payload = [
+                    'title' => 'Cleaning Overdue!',
+                    'body' => "A room at $propertyName is overdue for cleaning. Please review.",
+                    'url' => '/sub/clean/properties/' . $propertyId
+                ];
+            } else {
+                $roomName = $input['roomName'] ?? 'a room';
+                $payload = [
+                    'title' => 'Problem Reported!',
+                    'body' => "A problem was reported in $roomName at $propertyName.",
+                    'url' => '/sub/clean/properties/' . $propertyId . '/logs'
+                ];
             }
-            $roomName = $input['roomName'] ?? 'a room';
-            $payload = [
-                'title' => 'Problem Reported!',
-                'body' => "A problem was reported in $roomName at $propertyName.",
-                'url' => '/properties/' . $propertyId . '/logs'
-            ];
         } else {
             exit(json_encode(['error' => 'Invalid action']));
         }
 
-        if (empty($targetUserIds)) {
-            exit(json_encode(['status' => 'success', 'message' => 'No target users found for this property']));
+        if (empty($targetNames)) {
+            exit(json_encode(['status' => 'success', 'message' => 'No target names found for this property']));
         }
         
-        // Prepare target users
-        $inQuery = implode(',', array_fill(0, count($targetUserIds), '?'));
+        // Find user IDs by names
+        $namePlaceholders = implode(',', array_fill(0, count($targetNames), '?'));
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE name IN ($namePlaceholders)");
+        $stmt->execute($targetNames);
+        $targetUserIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($targetUserIds)) {
+            exit(json_encode(['status' => 'success', 'message' => 'No target users found in database']));
+        }
         
+        // Fetch subscriptions
+        $inQuery = implode(',', array_fill(0, count($targetUserIds), '?'));
         $stmt = $pdo->prepare("SELECT user_id, subscription FROM push_subscriptions WHERE user_id IN ($inQuery)");
         $stmt->execute($targetUserIds);
         $subscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
