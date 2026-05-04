@@ -117,9 +117,19 @@ export default function AssignmentList() {
   };
 
   const filteredAssignments = (dbAssignments || []).filter(a => {
-    if (user?.role !== 'cleaner') return true;
+    if (user?.role === 'admin' || user?.role === 'owner') return true;
     const prop = (properties || []).find(p => p.name === a.property);
-    return prop?.cleaners?.some(c => c.name === user.name);
+    if (!prop) return false;
+    
+    if (user?.role === 'cleaner') {
+      return prop?.cleaners?.some(c => c.name === user.name);
+    }
+    
+    if (user?.role === 'manager') {
+      return prop?.managers?.some(m => m.name === user.name);
+    }
+    
+    return true;
   });
 
   const assignments = {

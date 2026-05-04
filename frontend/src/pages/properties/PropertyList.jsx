@@ -4,6 +4,7 @@ import { Plus, Archive, Building2, History } from 'lucide-react';
 import Modal from '../../components/Modal';
 import { fetchProperties, saveProperty, deleteProperty } from '../../lib/api';
 import { useTranslation } from '../../contexts/I18nContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function PropertyList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,6 +12,7 @@ export default function PropertyList() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   useEffect(() => {
     loadProperties();
@@ -19,7 +21,12 @@ export default function PropertyList() {
   const loadProperties = async () => {
     try {
       const data = await fetchProperties();
-      setProperties(data);
+      
+      const filteredProperties = user?.role === 'manager'
+        ? data.filter(p => p.managers?.some(m => m.name === user.name))
+        : data;
+        
+      setProperties(filteredProperties);
     } catch (e) {
       console.error('Failed to load properties', e);
     } finally {
@@ -68,13 +75,15 @@ export default function PropertyList() {
           <h2 className="text-2xl font-bold text-slate-800">{t('properties.title')}</h2>
           <p className="text-sm text-slate-500 mt-1">{t('properties.subtitle')}</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
-        >
-          <Plus size={18} />
-          <span>{t('properties.new_property')}</span>
-        </button>
+        {(user?.role === 'admin' || user?.role === 'owner') && (
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
+          >
+            <Plus size={18} />
+            <span>{t('properties.new_property')}</span>
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -93,16 +102,18 @@ export default function PropertyList() {
                 </div>
               )}
               
-              <button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleDelete(prop);
-                }}
-                className="absolute top-3 right-3 p-1.5 bg-white rounded-lg shadow-sm text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all z-10"
-                title={t('properties.archive_tooltip')}
-              >
-                <Archive size={16} />
-              </button>
+              {(user?.role === 'admin' || user?.role === 'owner') && (
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDelete(prop);
+                  }}
+                  className="absolute top-3 right-3 p-1.5 bg-white rounded-lg shadow-sm text-slate-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all z-10"
+                  title={t('properties.archive_tooltip')}
+                >
+                  <Archive size={16} />
+                </button>
+              )}
             </div>
             <div className="p-5">
               <h3 className="font-bold text-lg text-slate-800">{prop.name}</h3>

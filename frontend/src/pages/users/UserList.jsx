@@ -4,12 +4,14 @@ import { cn } from '../../lib/utils';
 import { fetchUsers, saveUser, deleteUser } from '../../lib/api';
 import Modal from '../../components/Modal';
 import { useTranslation } from '../../contexts/I18nContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function UserList() {
   const [activeTab, setActiveTab] = useState('cleaners');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
@@ -96,26 +98,28 @@ export default function UserList() {
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 bg-slate-200/50 p-1 rounded-xl w-fit">
-        <button
-          onClick={() => setActiveTab('cleaners')}
-          className={cn(
-            "px-6 py-2 rounded-lg text-sm font-semibold transition-all",
-            activeTab === 'cleaners' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
-          )}
-        >
-          {t('users.cleaners_tab')}
-        </button>
-        <button
-          onClick={() => setActiveTab('managers')}
-          className={cn(
-            "px-6 py-2 rounded-lg text-sm font-semibold transition-all",
-            activeTab === 'managers' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
-          )}
-        >
-          {t('users.managers_tab')}
-        </button>
-      </div>
+      {(user?.role === 'admin' || user?.role === 'owner') && (
+        <div className="flex space-x-2 bg-slate-200/50 p-1 rounded-xl w-fit">
+          <button
+            onClick={() => setActiveTab('cleaners')}
+            className={cn(
+              "px-6 py-2 rounded-lg text-sm font-semibold transition-all",
+              activeTab === 'cleaners' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            )}
+          >
+            {t('users.cleaners_tab')}
+          </button>
+          <button
+            onClick={() => setActiveTab('managers')}
+            className={cn(
+              "px-6 py-2 rounded-lg text-sm font-semibold transition-all",
+              activeTab === 'managers' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"
+            )}
+          >
+            {t('users.managers_tab')}
+          </button>
+        </div>
+      )}
 
       <div className="card">
         <div className="overflow-x-auto">
@@ -226,10 +230,15 @@ export default function UserList() {
                   value={editUser.role}
                   onChange={(e) => setEditUser({...editUser, role: e.target.value})}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  disabled={user?.role === 'manager'}
                 >
                   <option value="cleaner">{t('users.cleaners_tab').slice(0, -1)}</option>
-                  <option value="manager">{t('users.managers_tab').split(' ')[0]}</option>
-                  <option value="admin">Admin</option>
+                  {(user?.role === 'admin' || user?.role === 'owner') && (
+                    <>
+                      <option value="manager">{t('users.managers_tab').split(' ')[0]}</option>
+                      <option value="admin">Admin</option>
+                    </>
+                  )}
                 </select>
               </div>
 

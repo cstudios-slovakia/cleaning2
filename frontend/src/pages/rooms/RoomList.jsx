@@ -37,9 +37,12 @@ export default function RoomList() {
       const properties = await fetchProperties();
       const rooms = await fetchRooms();
       
-      const filteredProperties = user?.role === 'cleaner' 
-        ? properties.filter(p => p.cleaners?.some(c => c.name === user.name))
-        : properties;
+      let filteredProperties = properties;
+      if (user?.role === 'cleaner') {
+        filteredProperties = properties.filter(p => p.cleaners?.some(c => c.name === user.name));
+      } else if (user?.role === 'manager') {
+        filteredProperties = properties.filter(p => p.managers?.some(m => m.name === user.name));
+      }
 
       const groups = {};
       filteredProperties.forEach(prop => {

@@ -24,7 +24,12 @@ export default function Dashboard() {
     try {
       const p = await fetchProperties();
       const r = await fetchRooms();
-      setProperties(p);
+      
+      const filteredProperties = user?.role === 'manager'
+        ? p.filter(prop => prop.managers?.some(m => m.name === user.name))
+        : p;
+        
+      setProperties(filteredProperties);
       setRooms(r);
     } catch (e) {
       console.error('Failed to load dashboard data', e);
