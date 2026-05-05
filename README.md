@@ -1,0 +1,109 @@
+# Emerald Cleaning PWA
+
+A premium Progressive Web Application (PWA) designed for managing cleaning properties, rooms, and assignments with a focus on real-time task tracking and personnel management.
+
+## 🚀 Quick Start (Production Deployment)
+
+The easiest way to install the system on a live server is via Composer. This will download the latest stable version and the pre-built frontend.
+
+```bash
+composer create-project cstudios-slovakia/cleaner your-directory-name
+```
+
+After installation, navigate to the URL (e.g., `https://your-site.com/setup`) to complete the database configuration and create your admin account.
+
+---
+
+## 🛠 Manual Installation & Development
+
+If you want to contribute to development or set up the project manually, follow these steps.
+
+### Prerequisites
+
+- **PHP 8.1+** (with PDO MySQL extension)
+- **MySQL/MariaDB**
+- **Composer**
+- **Node.js & NPM** (for frontend development)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/cstudios-slovakia/cleaning2.git
+cd cleaning2
+```
+
+### 2. Backend Setup
+Install PHP dependencies:
+```bash
+composer install
+```
+
+### 3. Frontend Setup
+Navigate to the frontend directory, install dependencies, and build the project:
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+```
+The build process will output files to `frontend/dist`. To serve the application, copy these files to the project root:
+```bash
+cp -r frontend/dist/* .
+```
+
+### 4. Database Configuration
+1. Create a new MySQL database.
+2. Run the setup wizard by visiting `https://your-site.com/setup`.
+3. Alternatively, you can manually create `api/config/db.php`:
+   ```php
+   <?php
+   return [
+       'host' => 'localhost',
+       'port' => '3306',
+       'dbname' => 'your_db_name',
+       'user' => 'your_user',
+       'password' => 'your_password',
+       'charset' => 'utf8mb4'
+   ];
+   ```
+
+### 5. Running Migrations
+The system uses a custom migration script to keep the database schema up to date. After setup, or after pulling new updates, visit:
+`https://your-site.com/api/public/migrate.php`
+
+---
+
+## 📁 Project Structure
+
+- `/api`: PHP Backend (Source and Endpoints)
+  - `/api/public`: Entry points for API requests
+  - `/api/src`: Core business logic and database classes
+  - `/api/config`: Database and environment configuration
+- `/frontend`: React SPA (Source)
+  - `/frontend/src`: React components, hooks, and logic
+- `/assets`: Built CSS/JS assets (for production)
+- `.htaccess`: URL rewriting for SPA routing
+
+---
+
+## 🔧 Server Configuration
+
+### Apache (.htaccess)
+The project includes a `.htaccess` file for URL rewriting. Ensure that `mod_rewrite` is enabled on your server so that the SPA routing works correctly.
+
+### Permissions
+Ensure the following directories are writable by the web server user:
+- `/api/config` (for the setup wizard)
+
+---
+
+## 📱 PWA Features
+
+This application is a Progressive Web App. To install it on your device:
+1. Open the app in a mobile browser (Chrome for Android, Safari for iOS).
+2. Use the "Add to Home Screen" option.
+3. The app name and branding can be customized in the **System Settings** within the application.
+
+---
+
+## ⚖️ License
+© 2026 Cstudios Slovakia. All rights reserved.
