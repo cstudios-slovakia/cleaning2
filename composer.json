@@ -22,9 +22,7 @@
     },
     "scripts": {
         "post-create-project-cmd": [
-            "cd frontend && npm install && npm run build",
-            "cp -r frontend/dist/* .",
-            "echo \"Build complete. Frontend files moved to root.\""
+            "echo \"Installation complete. The pre-compiled frontend is ready.\""
         ]
     }
 }

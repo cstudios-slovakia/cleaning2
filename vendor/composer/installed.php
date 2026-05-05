@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
-        'name' => 'cstudios/emerald-cleaner',
+        'name' => 'cstudios-slovakia/cleaner',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '50b7965cff2e8f90482d95632e859eee74b2a187',
+        'reference' => '92e2463072a81ca6826d6931db5af22f5423d438',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -19,10 +19,10 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'cstudios/emerald-cleaner' => array(
+        'cstudios-slovakia/cleaner' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '50b7965cff2e8f90482d95632e859eee74b2a187',
+            'reference' => '92e2463072a81ca6826d6931db5af22f5423d438',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
