@@ -1,4 +1,4 @@
-# Emerald Cleaning PWA
+# Cleaning System PWA
 
 A premium Progressive Web Application (PWA) designed for managing cleaning properties, rooms, and assignments with a focus on real-time task tracking and personnel management.
 
