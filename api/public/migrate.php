@@ -68,7 +68,6 @@ try {
     ksort($migrations);
     foreach ($migrations as $version => $migration) {
         if (!in_array($version, $appliedVersions)) {
-            $pdo->beginTransaction();
             try {
                 foreach ($migration['queries'] as $query) {
                     $pdo->exec($query);
@@ -77,12 +76,8 @@ try {
                 $stmt = $pdo->prepare("INSERT INTO migrations (version, description) VALUES (?, ?)");
                 $stmt->execute([$version, $migration['description']]);
                 
-                $pdo->commit();
                 $appliedCount++;
             } catch (Exception $e) {
-                if ($pdo->inTransaction()) {
-                    $pdo->rollBack();
-                }
                 throw new Exception("Migration version {$version} failed: " . $e->getMessage());
             }
         }
