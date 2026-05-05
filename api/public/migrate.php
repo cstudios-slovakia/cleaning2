@@ -32,7 +32,7 @@ try {
                 // No queries needed, just marks that migrations are active
                 "SELECT 1;"
             ]
-        ]
+        ],
         2 => [
             'description' => 'Add visual customization and schedule columns to properties table',
             'queries' => [
