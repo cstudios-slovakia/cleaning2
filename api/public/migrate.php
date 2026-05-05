@@ -30,7 +30,7 @@ try {
             'description' => 'Initial migration setup (dummy to mark migration table creation)',
             'queries' => [
                 // No queries needed, just marks that migrations are active
-                "SELECT 1;"
+                "SET @dummy = 1;"
             ]
         ],
         2 => [
