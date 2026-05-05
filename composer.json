@@ -13,6 +13,8 @@
         "php": ">=8.0",
         "minishlink/web-push": "^10.0"
     },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
