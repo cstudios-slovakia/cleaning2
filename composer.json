@@ -1,0 +1,26 @@
+{
+    "name": "cstudios/emerald-cleaner",
+    "description": "Emerald Cleaning System - PWA for cleaning management",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cstudios Software",
+            "email": "hello@cstudios.sk"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "minishlink/web-push": "^10.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "scripts": {
+        "post-create-project-cmd": [
+            "echo \"Emerald Cleaning System installed. Please run 'npm install' and 'npm run build' in the frontend directory, then access the app to run the setup wizard.\""
+        ]
+    }
+}
