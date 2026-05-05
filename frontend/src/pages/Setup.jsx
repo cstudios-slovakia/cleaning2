@@ -12,9 +12,11 @@ import {
   ChevronRight,
   Loader2
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../lib/api';
 
 const Setup = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -82,7 +84,7 @@ const Setup = () => {
       if (data.status === 'success') {
         setSuccess('Installation successful! Redirecting...');
         setTimeout(() => {
-          window.location.href = '/login';
+          navigate('/login');
         }, 2000);
       } else {
         setError(data.message || 'Installation failed');
