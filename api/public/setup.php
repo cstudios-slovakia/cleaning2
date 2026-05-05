@@ -102,6 +102,16 @@ if ($action === 'install') {
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
+            "CREATE TABLE IF NOT EXISTS `assignment_tasks` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `assignment_id` varchar(50) NOT NULL,
+                `title` varchar(255) NOT NULL,
+                `done` tinyint(1) DEFAULT 0,
+                `position` int(11) DEFAULT 0,
+                PRIMARY KEY (`id`),
+                KEY `assignment_id` (`assignment_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+
             "CREATE TABLE IF NOT EXISTS `push_subscriptions` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `user_id` varchar(50) DEFAULT NULL,
