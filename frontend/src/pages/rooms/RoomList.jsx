@@ -13,6 +13,7 @@ export default function RoomList() {
   const { t } = useTranslation();
   const [groupedRooms, setGroupedRooms] = useState({});
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [assignDate, setAssignDate] = useState('');
@@ -260,6 +261,8 @@ export default function RoomList() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-primary-500" size={18} />
         <input 
           type="text" 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t('rooms.search_placeholder')}
           className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all shadow-sm font-medium"
         />
@@ -278,7 +281,14 @@ export default function RoomList() {
         </div>
       ) : (
         <div className="space-y-6">
-          {Object.entries(groupedRooms).map(([propertyName, group]) => (
+          {Object.entries(groupedRooms).map(([propertyName, group]) => {
+            const filteredRooms = group.rooms.filter(room => 
+              room.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            
+            if (searchQuery && filteredRooms.length === 0) return null;
+
+            return (
             <div key={propertyName} className="card overflow-hidden">
               <div 
                 className={cn("p-4 border-b flex items-center justify-between", getContrastColor(group.theme))}
@@ -290,7 +300,7 @@ export default function RoomList() {
                   <span className={cn("px-2 py-0.5 rounded-full text-xs font-bold ml-2", 
                     parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
                     ? "bg-black/10 text-slate-800" : "bg-white/20 text-white")}>
-                    {group.rooms.length}
+                    {filteredRooms.length}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -317,7 +327,7 @@ export default function RoomList() {
                   </button>
                 </div>
               </div>
-              {group.rooms.length === 0 ? (
+              {filteredRooms.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 text-sm">
                   {t('rooms.no_rooms')}
                 </div>
@@ -374,7 +384,7 @@ export default function RoomList() {
                           </td>
                         </tr>
                       )}
-                      {group.rooms.map(room => (
+                      {filteredRooms.map(room => (
                         <tr key={room.id} className="hover:bg-slate-50 transition-colors">
                           <td className="p-4">
                             <div className="flex items-center space-x-3 group">
@@ -447,7 +457,7 @@ export default function RoomList() {
                 </div>
               )}
             </div>
-          ))}
+          )})}
         </div>
       )}
 
