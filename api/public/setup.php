@@ -62,6 +62,10 @@ if ($action === 'install') {
             "CREATE TABLE IF NOT EXISTS `properties` (
                 `id` varchar(50) NOT NULL,
                 `name` varchar(255) NOT NULL,
+                `scheduleTime` varchar(50) DEFAULT '10:00 AM',
+                `theme` varchar(20) DEFAULT '#0ea5e9',
+                `coverImage` text DEFAULT NULL,
+                `logo` text DEFAULT NULL,
                 `cleaners` text DEFAULT NULL,
                 `managers` text DEFAULT NULL,
                 PRIMARY KEY (`id`)

@@ -33,13 +33,15 @@ try {
                 "SELECT 1;"
             ]
         ]
-        // Example future migration:
-        // 2 => [
-        //     'description' => 'Add language preference to users',
-        //     'queries' => [
-        //         "ALTER TABLE users ADD COLUMN language varchar(10) DEFAULT 'en';"
-        //     ]
-        // ]
+        2 => [
+            'description' => 'Add visual customization and schedule columns to properties table',
+            'queries' => [
+                "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `scheduleTime` varchar(50) DEFAULT '10:00 AM';",
+                "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `theme` varchar(20) DEFAULT '#0ea5e9';",
+                "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `coverImage` text DEFAULT NULL;",
+                "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `logo` text DEFAULT NULL;"
+            ]
+        ]
     ];
 
     // 3. Get applied migrations
