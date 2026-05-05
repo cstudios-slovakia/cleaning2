@@ -22,7 +22,9 @@
     },
     "scripts": {
         "post-create-project-cmd": [
-            "echo \"Cstudios Cleaning System installed. Please run 'npm install' and 'npm run build' in the frontend directory, then access the app to run the setup wizard.\""
+            "cd frontend && npm install && npm run build",
+            "cp -r frontend/dist/* .",
+            "echo \"Build complete. Frontend files moved to root.\""
         ]
     }
 }
