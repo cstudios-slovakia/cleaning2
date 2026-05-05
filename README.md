@@ -72,19 +72,6 @@ The system uses a custom migration script to keep the database schema up to date
 
 ---
 
-## 📁 Project Structure
-
-- `/api`: PHP Backend (Source and Endpoints)
-  - `/api/public`: Entry points for API requests
-  - `/api/src`: Core business logic and database classes
-  - `/api/config`: Database and environment configuration
-- `/frontend`: React SPA (Source)
-  - `/frontend/src`: React components, hooks, and logic
-- `/assets`: Built CSS/JS assets (for production)
-- `.htaccess`: URL rewriting for SPA routing
-
----
-
 ## 🔧 Server Configuration
 
 ### Apache (.htaccess)
