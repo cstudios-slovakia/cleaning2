@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical, ClipboardList } from 'lucide-react';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from '../assignments/AssignmentDetail';
 import { fetchRoomDetails, saveRoom } from '../../lib/api';
