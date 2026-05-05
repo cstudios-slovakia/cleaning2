@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import PropertyList from './pages/properties/PropertyList';
@@ -12,11 +13,32 @@ import UserList from './pages/users/UserList';
 import Login from './pages/Login';
 import Setup from './pages/Setup';
 import { useAuth } from './contexts/AuthContext';
+import { checkSystemSetup } from './lib/api';
 
 import Settings from './pages/settings/Settings';
 
 function App() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      if (location.pathname === '/setup') {
+        setChecking(false);
+        return;
+      }
+      const isSetup = await checkSystemSetup();
+      if (!isSetup) {
+        navigate('/setup');
+      }
+      setChecking(false);
+    };
+    init();
+  }, [location.pathname, navigate]);
+
+  if (checking) return null;
 
   return (
     <Routes>

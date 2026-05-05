@@ -11,6 +11,21 @@ export const fetchAssignments = async () => {
     return json.data || [];
 };
 
+export const checkSystemSetup = async () => {
+    try {
+        const res = await fetch(`${API_BASE_URL}/users.php`);
+        if (!res.ok && res.status === 503) {
+            const data = await res.json();
+            if (data.code === 'NEEDS_SETUP') {
+                return false;
+            }
+        }
+    } catch (e) {
+        // Assume true if network error or other, let the actual fetch handle it later
+    }
+    return true;
+};
+
 export const saveAssignment = async (assignment) => {
     const res = await fetch(`${API_BASE_URL}/assignments.php`, {
         method: 'POST',
