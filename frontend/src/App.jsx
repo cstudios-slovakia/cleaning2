@@ -13,15 +13,41 @@ import UserList from './pages/users/UserList';
 import Login from './pages/Login';
 import Setup from './pages/Setup';
 import { useAuth } from './contexts/AuthContext';
+import { useTranslation } from './contexts/I18nContext';
 import { checkSystemSetup } from './lib/api';
 
 import Settings from './pages/settings/Settings';
 
 function App() {
   const { user } = useAuth();
+  const { systemName } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [checking, setChecking] = useState(true);
+
+  // Dynamically update manifest for PWA installation
+  useEffect(() => {
+    const manifestElement = document.querySelector('link[rel="manifest"]');
+    if (manifestElement) {
+      const manifest = {
+        name: systemName || "Cleaning System",
+        short_name: systemName || "Cleaning",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#0ea5e9",
+        icons: [
+          { src: "/favicon.svg", sizes: "192x192", type: "image/svg+xml" },
+          { src: "/favicon.svg", sizes: "512x512", type: "image/svg+xml" }
+        ]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+      const manifestURL = URL.createObjectURL(blob);
+      manifestElement.setAttribute('href', manifestURL);
+
+      return () => URL.revokeObjectURL(manifestURL);
+    }
+  }, [systemName]);
 
   useEffect(() => {
     const init = async () => {

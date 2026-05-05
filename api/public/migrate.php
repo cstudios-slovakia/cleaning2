@@ -41,6 +41,19 @@ try {
                 "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `coverImage` text DEFAULT NULL;",
                 "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `logo` text DEFAULT NULL;"
             ]
+        ],
+        3 => [
+            'description' => 'Create room_tasks table',
+            'queries' => [
+                "CREATE TABLE IF NOT EXISTS `room_tasks` (
+                    `id` int(11) NOT NULL AUTO_INCREMENT,
+                    `room_id` varchar(50) NOT NULL,
+                    `title` varchar(255) NOT NULL,
+                    `position` int(11) DEFAULT 0,
+                    PRIMARY KEY (`id`),
+                    KEY `room_id` (`room_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
+            ]
         ]
     ];
 

@@ -80,6 +80,15 @@ if ($action === 'install') {
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
+            "CREATE TABLE IF NOT EXISTS `room_tasks` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `room_id` varchar(50) NOT NULL,
+                `title` varchar(255) NOT NULL,
+                `position` int(11) DEFAULT 0,
+                PRIMARY KEY (`id`),
+                KEY `room_id` (`room_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+
             "CREATE TABLE IF NOT EXISTS `assignments` (
                 `id` varchar(50) NOT NULL,
                 `property` varchar(255) NOT NULL,
