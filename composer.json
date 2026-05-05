@@ -1,11 +1,11 @@
 {
-    "name": "cstudios/emerald-cleaner",
-    "description": "Emerald Cleaning System - PWA for cleaning management",
+    "name": "cstudios-slovakia/cleaner",
+    "description": "PWA for cleaning management",
     "type": "project",
     "license": "MIT",
     "authors": [
         {
-            "name": "Cstudios Software",
+            "name": "Cstudios s.r.o.",
             "email": "hello@cstudios.sk"
         }
     ],
@@ -20,7 +20,7 @@
     },
     "scripts": {
         "post-create-project-cmd": [
-            "echo \"Emerald Cleaning System installed. Please run 'npm install' and 'npm run build' in the frontend directory, then access the app to run the setup wizard.\""
+            "echo \"Cstudios Cleaning System installed. Please run 'npm install' and 'npm run build' in the frontend directory, then access the app to run the setup wizard.\""
         ]
     }
 }

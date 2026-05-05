@@ -32,7 +32,7 @@ const Setup = () => {
 
   // Step 2: System Settings
   const [sysConfig, setSysConfig] = useState({
-    systemName: 'Emerald Cleaner',
+    systemName: 'Cstudios Cleaner',
     adminEmail: 'admin@cleaner.sk',
     adminPassword: '',
     defaultLanguage: 'sk'
