@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical, ClipboardList } from 'lucide-react';
+import { ArrowLeft, Clock, Zap, CheckCircle2, History, Edit2, Save, X, Plus, Trash2, GripVertical, ClipboardList, ExternalLink } from 'lucide-react';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from '../assignments/AssignmentDetail';
 import { fetchRoomDetails, saveRoom } from '../../lib/api';
@@ -173,6 +173,15 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">{t('rooms.management_title')}{roomData.property}</span>
+              {isSlideout && (
+                <Link 
+                  to={`/rooms/${id}`} 
+                  className="p-1 text-slate-400 hover:text-primary-600 transition-colors"
+                  title="Open full page"
+                >
+                  <ExternalLink size={14} />
+                </Link>
+              )}
             </div>
             {isEditing ? (
               <input 
@@ -258,7 +267,22 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                 <p className="text-slate-400 font-semibold text-xs tracking-wider uppercase mb-1">{t('rooms.auto_interval')}</p>
                 <div className="flex items-center space-x-2 mt-2">
                   <Clock className="text-slate-300" size={20} />
-                  <span className="font-bold text-lg text-slate-400">{t('rooms.disabled')}</span>
+                  {isEditing ? (
+                    <div className="flex items-center space-x-2">
+                      <input 
+                        type="number"
+                        min="0"
+                        value={editForm.intervalDays}
+                        onChange={(e) => setEditForm({ ...editForm, intervalDays: parseInt(e.target.value) || 0 })}
+                        className="w-20 px-2 py-1 border border-slate-200 rounded-lg text-lg font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                      <span className="text-sm font-bold text-slate-400 uppercase tracking-wider">{t('common.days')}</span>
+                    </div>
+                  ) : (
+                    <span className="font-bold text-lg text-slate-700">
+                      {roomData.intervalDays > 0 ? `${roomData.intervalDays} ${t('common.days')}` : t('rooms.disabled')}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
