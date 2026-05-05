@@ -60,6 +60,7 @@ try {
     // 3. Get applied migrations
     $stmt = $pdo->query("SELECT version FROM migrations");
     $appliedVersions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $stmt->closeCursor();
 
     $appliedCount = 0;
 
@@ -79,7 +80,9 @@ try {
                 $pdo->commit();
                 $appliedCount++;
             } catch (Exception $e) {
-                $pdo->rollBack();
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
                 throw new Exception("Migration version {$version} failed: " . $e->getMessage());
             }
         }
