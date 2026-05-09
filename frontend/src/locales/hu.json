@@ -61,7 +61,8 @@
       "overdue": "Lejárt",
       "immediate": "Azonnal",
       "cleaning": "Takarítás alatt"
-    }
+    },
+    "problems_tab": "Reported Problems"
   },
   "common": {
     "cancel": "Mégse",

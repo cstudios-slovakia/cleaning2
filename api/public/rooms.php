@@ -84,27 +84,29 @@ if ($method === 'GET') {
         ");
         $stmt->execute([$id, $property_id, $name, $intervalDays, $lastCleaned]);
 
-        $pdo->prepare("DELETE FROM room_task_sets WHERE room_id = ?")->execute([$id]);
-        $pdo->prepare("DELETE FROM room_tasks WHERE room_id = ?")->execute([$id]);
-        
-        if (!empty($taskSets)) {
-            $tsStmt = $pdo->prepare("INSERT INTO room_task_sets (id, room_id, title, intervalDays, is_once, is_quick_clean, position) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $taskStmt = $pdo->prepare("INSERT INTO room_tasks (room_id, task_set_id, title, position) VALUES (?, ?, ?, ?)");
-            foreach ($taskSets as $tsIndex => $ts) {
-                $tsId = $ts['id'] ?? uniqid('ts_');
-                $tsStmt->execute([
-                    $tsId, 
-                    $id, 
-                    $ts['title'] ?? 'Task Set', 
-                    $ts['intervalDays'] ?? 0, 
-                    !empty($ts['isOnce']) ? 1 : 0, 
-                    !empty($ts['isQuickClean']) ? 1 : 0, 
-                    $tsIndex
-                ]);
-                
-                if (!empty($ts['tasks'])) {
-                    foreach ($ts['tasks'] as $tIndex => $task) {
-                        $taskStmt->execute([$id, $tsId, $task['text'] ?? ($task['title'] ?? 'Task'), $tIndex]);
+        if (isset($input['taskSets'])) {
+            $pdo->prepare("DELETE FROM room_task_sets WHERE room_id = ?")->execute([$id]);
+            $pdo->prepare("DELETE FROM room_tasks WHERE room_id = ?")->execute([$id]);
+            
+            if (!empty($taskSets)) {
+                $tsStmt = $pdo->prepare("INSERT INTO room_task_sets (id, room_id, title, intervalDays, is_once, is_quick_clean, position) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $taskStmt = $pdo->prepare("INSERT INTO room_tasks (room_id, task_set_id, title, position) VALUES (?, ?, ?, ?)");
+                foreach ($taskSets as $tsIndex => $ts) {
+                    $tsId = $ts['id'] ?? uniqid('ts_');
+                    $tsStmt->execute([
+                        $tsId, 
+                        $id, 
+                        $ts['title'] ?? 'Task Set', 
+                        $ts['intervalDays'] ?? 0, 
+                        !empty($ts['isOnce']) ? 1 : 0, 
+                        !empty($ts['isQuickClean']) ? 1 : 0, 
+                        $tsIndex
+                    ]);
+                    
+                    if (!empty($ts['tasks'])) {
+                        foreach ($ts['tasks'] as $tIndex => $task) {
+                            $taskStmt->execute([$id, $tsId, $task['text'] ?? ($task['title'] ?? 'Task'), $tIndex]);
+                        }
                     }
                 }
             }

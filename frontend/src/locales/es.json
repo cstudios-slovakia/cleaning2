@@ -61,7 +61,8 @@
       "overdue": "Atrasado",
       "immediate": "Inmediato",
       "cleaning": "Limpieza"
-    }
+    },
+    "problems_tab": "Reported Problems"
   },
   "common": {
     "cancel": "Cancelar",

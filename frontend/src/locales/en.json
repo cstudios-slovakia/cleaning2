@@ -54,7 +54,8 @@
       "immediate": "Immediate",
       "cleaning": "Cleaning"
     },
-    "express_clean": "Express Clean"
+    "express_clean": "Express Clean",
+    "problems_tab": "Reported Problems"
   },
   "common": {
     "cancel": "Cancel",

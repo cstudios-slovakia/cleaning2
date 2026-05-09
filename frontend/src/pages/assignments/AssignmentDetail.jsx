@@ -15,6 +15,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
   const [assignment, setAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
@@ -302,7 +303,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {(assignment.images || []).map((imgPath, idx) => (
                     <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-slate-200">
-                      <img src={`${API_BASE_URL.replace('/api/public', '')}/api/public/${imgPath}`} alt="Problem" className="w-full h-full object-cover" />
+                      <img src={`${API_BASE_URL.replace('/api/public', '')}/api/public/${imgPath}`} alt="Problem" className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setSelectedImage(imgPath)} />
                       <button 
                         onClick={() => removeImage(idx)}
                         className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
@@ -371,6 +372,28 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             >
               {showWarning ? t('assignments.confirm_finish') : t('assignments.finish_cleaning')}
             </button>
+          </div>
+        </div>
+      )}
+
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[100] bg-slate-900/90 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-screen flex items-center justify-center">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+              className="absolute -top-12 right-0 p-2 text-white hover:text-slate-300 transition-colors bg-slate-800/50 rounded-full"
+            >
+              <X size={24} />
+            </button>
+            <img 
+              src={`${API_BASE_URL.replace('/api/public', '')}/api/public/${selectedImage}`} 
+              alt="Problem detail" 
+              className="max-w-full max-h-[85vh] rounded-lg object-contain shadow-2xl ring-1 ring-white/10"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         </div>
       )}

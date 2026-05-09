@@ -61,7 +61,8 @@
       "overdue": "Прострочено",
       "immediate": "Терміново",
       "cleaning": "Прибирання"
-    }
+    },
+    "problems_tab": "Reported Problems"
   },
   "common": {
     "cancel": "Скасувати",

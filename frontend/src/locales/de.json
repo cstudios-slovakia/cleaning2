@@ -61,7 +61,8 @@
       "overdue": "Überfällig",
       "immediate": "Sofort",
       "cleaning": "Reinigung"
-    }
+    },
+    "problems_tab": "Reported Problems"
   },
   "common": {
     "cancel": "Abbrechen",

@@ -184,20 +184,56 @@ export default function PropertyDetail() {
     setEditCleaners(editCleaners.filter(c => c.id !== id));
   };
 
-  const handleCloneRoom = (room) => {
-    const newRoom = { ...room, id: Date.now(), name: `${room.name} (Copy)` };
-    setRooms([...rooms, newRoom]);
-    // Also clone the room details if they exist
-    const savedRoomDetails = localStorage.getItem(`cleaner_room_${room.id}`);
-    if (savedRoomDetails) {
-      const clonedDetails = JSON.parse(savedRoomDetails);
-      clonedDetails.name = newRoom.name;
-      localStorage.setItem(`cleaner_room_${newRoom.id}`, JSON.stringify(clonedDetails));
+  const handleCloneRoom = async (room) => {
+    try {
+      const { fetchRoomDetails, saveRoom, fetchRooms } = await import('../../lib/api');
+      const roomDetails = await fetchRoomDetails(room.id);
+      
+      const newRoomId = Date.now().toString();
+      const newRoomName = `${room.name} (Copy)`;
+      
+      const newRoomData = {
+        id: newRoomId,
+        property_id: id,
+        name: newRoomName,
+        intervalDays: roomDetails?.intervalDays || room.intervalDays || 0,
+        lastCleaned: 'Never',
+        taskSets: []
+      };
+      
+      if (roomDetails && roomDetails.taskSets) {
+        newRoomData.taskSets = roomDetails.taskSets.map((ts, i) => ({
+          ...ts,
+          id: Date.now().toString() + i,
+          tasks: (ts.tasks || []).map((t, j) => ({
+            ...t,
+            id: Date.now().toString() + i + j
+          }))
+        }));
+      }
+      
+      await saveRoom(newRoomData);
+      const freshRooms = await fetchRooms(id);
+      setRooms(freshRooms);
+      setEditRooms(freshRooms);
+      
+    } catch (e) {
+      console.error('Failed to clone room', e);
     }
   };
 
-  const handleArchiveRoom = (roomId) => {
-    setRooms(rooms.filter(r => r.id !== roomId));
+  const handleArchiveRoom = async (roomId) => {
+    if (window.confirm("Are you sure you want to delete this room?")) {
+      try {
+        const { deleteRoom, fetchRooms } = await import('../../lib/api');
+        await deleteRoom(roomId);
+        const freshRooms = await fetchRooms(id);
+        setRooms(freshRooms);
+        setEditRooms(freshRooms);
+      } catch (e) {
+        console.error('Failed to delete room', e);
+      }
+    }
   };
 
   const handleAssignCleaning = async (e) => {

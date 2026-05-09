@@ -122,6 +122,9 @@ export default function Dashboard() {
   const completedAssignments = (assignments || [])
     .filter(a => a.doneBy && a.doneAt)
     .sort((a, b) => parseDateString(b.doneAt) - parseDateString(a.doneAt));
+  const reportedProblems = (assignments || [])
+    .filter(a => a.problemReported)
+    .sort((a, b) => parseDateString(b.doneAt || b.date) - parseDateString(a.doneAt || a.date));
 
   return (
     <div className="space-y-6">
@@ -230,6 +233,20 @@ export default function Dashboard() {
               >
                 {t('dashboard.recent_logs_tab')}
               </button>
+              {['manager', 'admin'].includes(user?.role) && (
+                <button
+                  onClick={() => setActiveLogsTab('problems')}
+                  className={cn(
+                    "flex-1 py-3 text-xs font-extrabold uppercase tracking-widest rounded-lg transition-all flex justify-center",
+                    activeLogsTab === 'problems' ? "bg-white text-slate-800 shadow-sm" : "text-red-400 hover:text-red-600 hover:bg-red-50/50"
+                  )}
+                >
+                  <span className="flex items-center space-x-1.5">
+                    {reportedProblems.length > 0 && <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>}
+                    <span>{t('dashboard.problems_tab')}</span>
+                  </span>
+                </button>
+              )}
             </div>
           </div>
           

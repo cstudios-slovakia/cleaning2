@@ -61,7 +61,8 @@
       "overdue": "Po termíne",
       "immediate": "Ihneď",
       "cleaning": "Upratuje sa"
-    }
+    },
+    "problems_tab": "Nahlásené problémy"
   },
   "common": {
     "cancel": "Zrušiť",
