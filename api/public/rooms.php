@@ -21,9 +21,26 @@ if ($method === 'GET') {
         $stmt->execute([$roomId]);
         $room = $stmt->fetch();
         if ($room) {
+            $tsStmt = $pdo->prepare("SELECT * FROM room_task_sets WHERE room_id = ? ORDER BY position ASC");
+            $tsStmt->execute([$roomId]);
+            $taskSets = $tsStmt->fetchAll(PDO::FETCH_ASSOC);
+            
             $tStmt = $pdo->prepare("SELECT * FROM room_tasks WHERE room_id = ? ORDER BY position ASC");
             $tStmt->execute([$roomId]);
-            $room['tasks'] = $tStmt->fetchAll();
+            $allTasks = $tStmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($taskSets as &$ts) {
+                $ts['tasks'] = [];
+                $ts['intervalDays'] = (int)$ts['intervalDays'];
+                $ts['isOnce'] = (bool)$ts['is_once'];
+                $ts['isQuickClean'] = (bool)$ts['is_quick_clean'];
+                foreach ($allTasks as $t) {
+                    if ($t['task_set_id'] == $ts['id']) {
+                        $ts['tasks'][] = $t;
+                    }
+                }
+            }
+            $room['taskSets'] = $taskSets;
             // Fetch property name for consistency
             $pStmt = $pdo->prepare("SELECT name FROM properties WHERE id = ?");
             $pStmt->execute([$room['property_id']]);
@@ -53,7 +70,7 @@ if ($method === 'GET') {
     $name = $input['name'] ?? 'New Room';
     $intervalDays = $input['intervalDays'] ?? 0;
     $lastCleaned = $input['lastCleaned'] ?? 'Never';
-    $tasks = $input['tasks'] ?? [];
+    $taskSets = $input['taskSets'] ?? [];
 
     $pdo->beginTransaction();
     try {
@@ -67,11 +84,29 @@ if ($method === 'GET') {
         ");
         $stmt->execute([$id, $property_id, $name, $intervalDays, $lastCleaned]);
 
+        $pdo->prepare("DELETE FROM room_task_sets WHERE room_id = ?")->execute([$id]);
         $pdo->prepare("DELETE FROM room_tasks WHERE room_id = ?")->execute([$id]);
-        if (!empty($tasks)) {
-            $taskStmt = $pdo->prepare("INSERT INTO room_tasks (room_id, title, position) VALUES (?, ?, ?)");
-            foreach ($tasks as $index => $task) {
-                $taskStmt->execute([$id, $task['title'] ?? 'Task', $index]);
+        
+        if (!empty($taskSets)) {
+            $tsStmt = $pdo->prepare("INSERT INTO room_task_sets (id, room_id, title, intervalDays, is_once, is_quick_clean, position) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $taskStmt = $pdo->prepare("INSERT INTO room_tasks (room_id, task_set_id, title, position) VALUES (?, ?, ?, ?)");
+            foreach ($taskSets as $tsIndex => $ts) {
+                $tsId = $ts['id'] ?? uniqid('ts_');
+                $tsStmt->execute([
+                    $tsId, 
+                    $id, 
+                    $ts['title'] ?? 'Task Set', 
+                    $ts['intervalDays'] ?? 0, 
+                    !empty($ts['isOnce']) ? 1 : 0, 
+                    !empty($ts['isQuickClean']) ? 1 : 0, 
+                    $tsIndex
+                ]);
+                
+                if (!empty($ts['tasks'])) {
+                    foreach ($ts['tasks'] as $tIndex => $task) {
+                        $taskStmt->execute([$id, $tsId, $task['text'] ?? ($task['title'] ?? 'Task'), $tIndex]);
+                    }
+                }
             }
         }
         $pdo->commit();

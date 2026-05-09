@@ -69,6 +69,7 @@ if ($method === 'GET') {
     $time = $input['time'] ?? '';
     $doneBy = $input['doneBy'] ?? null;
     $doneAt = $input['doneAt'] ?? null;
+    $task_set_id = $input['task_set_id'] ?? null;
     $tasks = $input['tasks'] ?? [];
     $problemReported = !empty($input['problemReported']) ? 1 : 0;
     $images = isset($input['images']) && is_array($input['images']) ? json_encode($input['images']) : null;
@@ -78,8 +79,8 @@ if ($method === 'GET') {
     try {
         // Upsert assignment
         $stmt = $pdo->prepare("
-            INSERT INTO assignments (id, property, room, date, time, doneBy, doneAt, problemReported, images)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO assignments (id, property, room, date, time, doneBy, doneAt, problemReported, images, task_set_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 property = VALUES(property),
                 room = VALUES(room),
@@ -88,9 +89,22 @@ if ($method === 'GET') {
                 doneBy = VALUES(doneBy),
                 doneAt = VALUES(doneAt),
                 problemReported = VALUES(problemReported),
-                images = VALUES(images)
+                images = VALUES(images),
+                task_set_id = VALUES(task_set_id)
         ");
-        $stmt->execute([$id, $property, $room, $date, $time, $doneBy, $doneAt, $problemReported, $images]);
+        $stmt->execute([$id, $property, $room, $date, $time, $doneBy, $doneAt, $problemReported, $images, $task_set_id]);
+        
+        // Update task sets if finished
+        if ($doneAt && $task_set_id) {
+            $tsStmt = $pdo->prepare("SELECT room_id, position FROM room_task_sets WHERE id = ?");
+            $tsStmt->execute([$task_set_id]);
+            $ts = $tsStmt->fetch();
+            if ($ts) {
+                $todayStr = date('d. m. Y');
+                $updateStmt = $pdo->prepare("UPDATE room_task_sets SET lastCleaned = ? WHERE room_id = ? AND position <= ?");
+                $updateStmt->execute([$todayStr, $ts['room_id'], $ts['position']]);
+            }
+        }
 
         // For simplicity with tasks: delete existing and re-insert
         // Since tasks might have their own IDs in React, we need to handle them carefully.

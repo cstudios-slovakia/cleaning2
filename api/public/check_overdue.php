@@ -5,27 +5,27 @@ require_once __DIR__ . '/../src/Database.php';
 try {
     $pdo = Database::getConnection();
     
-    // An overdue room is one where the lastCleaned date plus intervalDays is in the past.
-    // However, lastCleaned is stored as string in our database ("Never" or a date string).
-    // Let's simply call a script that checks all rooms. For simplicity, we can just say any room
-    // that is 'overdue' should trigger a notification to its property managers.
-    // Since we don't have a strict SQL date for lastCleaned (it's varchar), we fetch all and check in PHP.
+    // An overdue task set is one where the lastCleaned date plus intervalDays is in the past.
     
-    $stmt = $pdo->query("SELECT r.*, p.managers, p.name as property_name FROM rooms r JOIN properties p ON r.property_id = p.id");
-    $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->query("
+        SELECT ts.intervalDays, ts.lastCleaned, ts.room_id, r.property_id 
+        FROM room_task_sets ts 
+        JOIN rooms r ON ts.room_id = r.id
+    ");
+    $taskSets = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     $overdueProperties = [];
     $today = new DateTime();
     $today->setTime(0, 0, 0);
     
-    foreach ($rooms as $room) {
-        $intervalDays = (int)($room['intervalDays'] ?? 0);
+    foreach ($taskSets as $ts) {
+        $intervalDays = (int)($ts['intervalDays'] ?? 0);
         if ($intervalDays <= 0) continue;
         
-        $lastCleaned = $room['lastCleaned'];
+        $lastCleaned = $ts['lastCleaned'];
         if ($lastCleaned === 'Never') {
             // It's overdue immediately if it has an interval
-            $overdueProperties[$room['property_id']] = true;
+            $overdueProperties[$ts['property_id']] = true;
             continue;
         }
         
@@ -38,7 +38,7 @@ try {
         if ($lastCleanedDate) {
             $lastCleanedDate->modify("+$intervalDays days");
             if ($lastCleanedDate < $today) {
-                $overdueProperties[$room['property_id']] = true;
+                $overdueProperties[$ts['property_id']] = true;
             }
         }
     }

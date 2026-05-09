@@ -209,7 +209,10 @@ export default function PropertyDetail() {
 
     try {
       const roomData = await fetchRoomDetails(room.id);
-      const tasks = roomData?.tasks || [];
+      const quickCleanSet = (roomData?.taskSets || []).find(ts => ts.isQuickClean) || (roomData?.taskSets || [])[0];
+      const tasksToAssign = quickCleanSet?.tasks?.length > 0 
+        ? quickCleanSet.tasks.map(t => ({ title: t.title || t.text, done: false })) 
+        : [{ title: 'The room is cleaned', done: false }];
 
       const newId = Date.now().toString();
       const newAssignment = {
@@ -220,9 +223,8 @@ export default function PropertyDetail() {
         time: '10:00 AM',
         doneBy: null,
         doneAt: null,
-        tasks: tasks.length > 0 
-          ? tasks.map(t => ({ title: t.title, done: false })) 
-          : [{ title: 'The room is cleaned', done: false }]
+        task_set_id: quickCleanSet?.id || null,
+        tasks: tasksToAssign
       };
 
       await saveAssignment(newAssignment);
@@ -247,7 +249,10 @@ export default function PropertyDetail() {
       const room = rooms[0];
       try {
         const roomData = await fetchRoomDetails(room.id);
-        const tasks = roomData?.tasks || [];
+        const quickCleanSet = (roomData?.taskSets || []).find(ts => ts.isQuickClean) || (roomData?.taskSets || [])[0];
+        const tasksToAssign = quickCleanSet?.tasks?.length > 0 
+          ? quickCleanSet.tasks.map(t => ({ title: t.title || t.text, done: false })) 
+          : [{ title: 'The room is cleaned', done: false }];
 
         const newId = Date.now().toString();
         const newAssignment = {
@@ -258,9 +263,8 @@ export default function PropertyDetail() {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           doneBy: null,
           doneAt: null,
-          tasks: tasks.length > 0 
-            ? tasks.map(t => ({ title: t.title, done: false })) 
-            : [{ title: 'The room is cleaned', done: false }]
+          task_set_id: quickCleanSet?.id || null,
+          tasks: tasksToAssign
         };
         
         await saveAssignment(newAssignment);
