@@ -6,6 +6,7 @@ import AssignmentDetail from '../assignments/AssignmentDetail';
 import { fetchRoomDetails, saveRoom } from '../../lib/api';
 import { useAssignments } from '../../hooks/useAssignments';
 import { useTranslation } from '../../contexts/I18nContext';
+import { cn } from '../../lib/utils';
 
 export default function RoomDetail({ roomId, isSlideout, propertyName, roomName, initialTab = 'settings' }) {
   const { t } = useTranslation();

@@ -53,7 +53,8 @@
       "overdue": "Overdue",
       "immediate": "Immediate",
       "cleaning": "Cleaning"
-    }
+    },
+    "express_clean": "Express Clean"
   },
   "common": {
     "cancel": "Cancel",
