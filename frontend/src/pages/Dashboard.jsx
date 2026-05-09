@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCcw, FileText, CheckCircle, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CONFIG as config } from '../config';
 import { cn, parseDateString, isToday, isYesterday } from '../lib/utils';
 import { fetchProperties, fetchRooms, saveAssignment, fetchRoomDetails } from '../lib/api';
 import { useAssignments } from '../hooks/useAssignments';
@@ -123,7 +124,7 @@ export default function Dashboard() {
     .filter(a => a.doneBy && a.doneAt)
     .sort((a, b) => parseDateString(b.doneAt) - parseDateString(a.doneAt));
   const reportedProblems = (assignments || [])
-    .filter(a => a.problemReported)
+    .filter(a => a.problemReported && String(a.problemReported) !== "0" && String(a.problemReported) !== "false")
     .sort((a, b) => parseDateString(b.doneAt || b.date) - parseDateString(a.doneAt || a.date));
 
   return (
@@ -288,6 +289,71 @@ export default function Dashboard() {
                   <div className="p-12 text-center flex flex-col items-center justify-center h-full opacity-60">
                     <CheckCircle size={40} className="text-slate-300 mb-4" />
                     <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">No pending tasks today</p>
+                  </div>
+                )}
+              </div>
+            ) : activeLogsTab === 'problems' ? (
+              <div className="h-full bg-slate-50/50">
+                {reportedProblems.length > 0 ? (
+                  <div className="p-4 space-y-4">
+                    {reportedProblems.map((a) => {
+                      return (
+                      <button 
+                        key={a.id} 
+                        className="block w-full text-left bg-white border border-red-200 hover:border-red-400 p-4 rounded-xl shadow-sm hover:shadow-md transition-all group overflow-hidden"
+                        onClick={() => setSlideoutAssignment(a)}
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                              <p className="font-bold text-base text-red-600">
+                                {a.room} <span className="text-slate-400 font-semibold text-xs ml-1 uppercase tracking-wider">({a.property})</span>
+                              </p>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">
+                              Reported by <span className="font-bold text-slate-700">{a.doneBy || 'Someone'}</span>
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-lg">
+                              {a.doneAt ? (
+                                <>
+                                  {parseDateString(a.doneAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}{' '}
+                                  {parseDateString(a.doneAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </>
+                              ) : (
+                                a.date + ' ' + (a.time || '')
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {a.images && a.images.length > 0 && (
+                          <div className="flex gap-2 overflow-x-auto pb-1 mt-3">
+                            {a.images.map((imgPath, idx) => {
+                              const baseUrl = config?.API_URL ? config.API_URL.replace('/api', '') : 'https://clean.cstudios.ninja';
+                              const src = `${baseUrl}/api/public/${imgPath}`;
+                              return (
+                                <div key={idx} className="w-16 h-16 shrink-0 rounded-lg overflow-hidden border border-slate-200">
+                                  <img src={src} alt="Problem" className="w-full h-full object-cover" />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        
+                        <div className="mt-3 text-xs font-bold text-red-500 uppercase tracking-widest flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span>View Details</span>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </div>
+                      </button>
+                    )})}
+                  </div>
+                ) : (
+                  <div className="p-12 text-center flex flex-col items-center justify-center h-full opacity-60">
+                    <CheckCircle size={40} className="text-green-500 mb-4" />
+                    <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">No reported problems</p>
                   </div>
                 )}
               </div>
