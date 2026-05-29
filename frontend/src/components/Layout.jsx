@@ -123,9 +123,9 @@ export default function Layout() {
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-0">
         {/* Aurora Background Effect */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10 bg-slate-50/50">
-          <div className="absolute -top-[20%] -left-[10%] w-[55%] h-[55%] rounded-full bg-gradient-to-br from-blue-400/20 via-sky-300/15 to-indigo-400/20 blur-[100px] animate-aurora-1" />
-          <div className="absolute top-[20%] -right-[15%] w-[65%] h-[65%] rounded-full bg-gradient-to-tr from-purple-400/20 via-pink-300/10 to-rose-400/20 blur-[130px] animate-aurora-2" />
-          <div className="absolute -bottom-[20%] left-[10%] w-[60%] h-[60%] rounded-full bg-gradient-to-r from-emerald-400/10 via-teal-300/15 to-cyan-400/20 blur-[110px] animate-aurora-3" />
+          <div className="absolute -top-[20%] -left-[10%] w-[55%] h-[55%] rounded-full blob-aurora-1 blur-[100px] animate-aurora-1" />
+          <div className="absolute top-[20%] -right-[15%] w-[65%] h-[65%] rounded-full blob-aurora-2 blur-[130px] animate-aurora-2" />
+          <div className="absolute -bottom-[20%] left-[10%] w-[60%] h-[60%] rounded-full blob-aurora-3 blur-[110px] animate-aurora-3" />
         </div>
 
         {/* Header */}

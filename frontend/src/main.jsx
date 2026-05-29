@@ -4,8 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './index.css'
 import { AuthProvider } from './contexts/AuthContext.jsx'
-
 import { I18nProvider } from './contexts/I18nContext.jsx'
+import { ThemeProvider } from './contexts/ThemeContext.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -13,9 +13,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <I18nProvider>
-          <ErrorBoundary>
-            <App />
-          </ErrorBoundary>
+          <ThemeProvider>
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
+          </ThemeProvider>
         </I18nProvider>
       </AuthProvider>
     </BrowserRouter>

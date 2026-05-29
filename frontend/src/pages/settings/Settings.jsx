@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation, LANGUAGES } from '../../contexts/I18nContext';
+import { useTheme, THEMES } from '../../contexts/ThemeContext';
 import { Globe, User, Save, Shield, Key, Mail, Cpu, Eye, RefreshCw, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { saveUser, API_BASE_URL } from '../../lib/api';
 
 export default function Settings() {
   const { user } = useAuth();
   const { t, currentLang, systemLang, userLang, changeUserLanguage, changeSystemLanguage, systemName, changeSystemName } = useTranslation();
+  const { theme, setTheme } = useTheme();
   
   const [selectedUserLang, setSelectedUserLang] = useState(userLang || '');
   const [selectedSysLang, setSelectedSysLang] = useState(systemLang);
@@ -203,6 +205,46 @@ export default function Settings() {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* Visual Theme Selection */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                <Eye size={20} />
+              </div>
+              <h2 className="text-lg font-bold text-slate-800">{t('settings.theme_title', 'Visual Theme')}</h2>
+            </div>
+            
+            <p className="text-xs text-slate-500 mb-4">{t('settings.theme_desc', 'Customize the look and feel of your application interface.')}</p>
+
+            <div className="grid grid-cols-2 gap-3">
+              {THEMES.map(tOption => {
+                const isActive = theme === tOption.id;
+                return (
+                  <button
+                    key={tOption.id}
+                    type="button"
+                    onClick={() => setTheme(tOption.id)}
+                    className={`flex flex-col items-start p-4 rounded-2xl border text-left transition-all ${
+                      isActive 
+                        ? 'border-primary-500 bg-primary-50/50 ring-2 ring-primary-100' 
+                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/30'
+                    }`}
+                  >
+                    <span className="font-bold text-sm text-slate-900">{tOption.label}</span>
+                    <span className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">
+                      {tOption.id === 'basic' && 'Blue Accent'}
+                      {tOption.id === 'emerald' && 'Green Emerald'}
+                      {tOption.id === 'lp' && 'Luxury Gold'}
+                      {tOption.id === 'dark' && 'Dark Slate'}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
