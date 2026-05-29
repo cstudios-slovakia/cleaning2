@@ -27,6 +27,35 @@ try {
         if (isset($config['main_admin'])) {
             array_unshift($users, $config['main_admin']);
         }
+
+        // Fetch properties to map user property assignments
+        $propStmt = $pdo->query("SELECT id, name, cleaners, managers FROM properties");
+        $properties = $propStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($users as &$u) {
+            $u['propertyIds'] = [];
+            $uid = $u['id'];
+            $uname = $u['name'];
+            $urole = $u['role'];
+            
+            foreach ($properties as $prop) {
+                $list = [];
+                if ($urole === 'cleaner') {
+                    $list = $prop['cleaners'] ? json_decode($prop['cleaners'], true) : [];
+                } else {
+                    $list = $prop['managers'] ? json_decode($prop['managers'], true) : [];
+                }
+                
+                if (is_array($list)) {
+                    foreach ($list as $item) {
+                        if ((isset($item['id']) && $item['id'] == $uid) || (isset($item['name']) && $item['name'] == $uname)) {
+                            $u['propertyIds'][] = $prop['id'];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         
         echo json_encode($users);
         exit;
@@ -72,6 +101,60 @@ try {
             // Insert
             $stmt = $pdo->prepare("INSERT INTO users (id, name, username, email, password, role, status, lastActive, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$id, $name, $username, $email, $password, $role, $status, $lastActive, $language]);
+        }
+
+        // Synchronize property assignments if propertyIds array is provided in input
+        if (isset($input['propertyIds']) && is_array($input['propertyIds'])) {
+            $selectedPropertyIds = $input['propertyIds'];
+
+            $words = explode(' ', trim($name));
+            $initials = '';
+            foreach ($words as $w) {
+                if (!empty($w)) $initials .= $w[0];
+            }
+            $initials = strtoupper(substr($initials, 0, 2)) ?: '?';
+
+            $allPropsStmt = $pdo->query("SELECT id, name, cleaners, managers FROM properties");
+            $allProperties = $allPropsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($allProperties as $prop) {
+                $propId = $prop['id'];
+                $cleanersList = $prop['cleaners'] ? json_decode($prop['cleaners'], true) : [];
+                $managersList = $prop['managers'] ? json_decode($prop['managers'], true) : [];
+
+                if (!is_array($cleanersList)) $cleanersList = [];
+                if (!is_array($managersList)) $managersList = [];
+
+                $cleanersList = array_values(array_filter($cleanersList, function($item) use ($id, $name) {
+                    return (!empty($item['id']) && $item['id'] != $id) && (!empty($item['name']) && $item['name'] != $name);
+                }));
+                $managersList = array_values(array_filter($managersList, function($item) use ($id, $name) {
+                    return (!empty($item['id']) && $item['id'] != $id) && (!empty($item['name']) && $item['name'] != $name);
+                }));
+
+                if (in_array($propId, $selectedPropertyIds)) {
+                    if ($role === 'cleaner') {
+                        $cleanersList[] = [
+                            'id' => $id,
+                            'name' => $name,
+                            'initials' => $initials
+                        ];
+                    } else { // admin, superadmin, manager
+                        $managersList[] = [
+                            'id' => $id,
+                            'name' => $name,
+                            'initials' => $initials
+                        ];
+                    }
+                }
+
+                $upPropStmt = $pdo->prepare("UPDATE properties SET cleaners = ?, managers = ? WHERE id = ?");
+                $upPropStmt->execute([
+                    json_encode($cleanersList),
+                    json_encode($managersList),
+                    $propId
+                ]);
+            }
         }
 
         echo json_encode(['success' => true, 'id' => $id]);

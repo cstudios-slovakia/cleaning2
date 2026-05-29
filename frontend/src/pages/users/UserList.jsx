@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Edit2, ShieldAlert, Trash2, X, Save } from 'lucide-react';
+import { UserPlus, Edit2, ShieldAlert, Trash2, X, Save, Building } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { fetchUsers, saveUser, deleteUser } from '../../lib/api';
+import { fetchUsers, saveUser, deleteUser, fetchProperties } from '../../lib/api';
 import Modal from '../../components/Modal';
 import { useTranslation } from '../../contexts/I18nContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function UserList() {
   const [activeTab, setActiveTab] = useState('cleaners');
   const [users, setUsers] = useState([]);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -16,29 +17,36 @@ export default function UserList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
 
-  const loadUsers = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      const data = await fetchUsers();
-      setUsers(data);
+      const [usersData, propsData] = await Promise.all([
+        fetchUsers(),
+        fetchProperties()
+      ]);
+      setUsers(usersData);
+      setProperties(propsData);
     } catch (e) {
-      console.error('Failed to load users', e);
+      console.error('Failed to load users & properties', e);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadUsers();
+    loadData();
   }, []);
 
   const cleaners = (users || []).filter(u => u.role === 'cleaner');
   const managers = (users || []).filter(u => u.role !== 'cleaner');
   const activeUsers = activeTab === 'cleaners' ? cleaners : managers;
 
-  const handleOpenModal = (user = null) => {
-    if (user) {
-      setEditUser({ ...user });
+  const handleOpenModal = (selectedUser = null) => {
+    if (selectedUser) {
+      setEditUser({ 
+        ...selectedUser,
+        propertyIds: selectedUser.propertyIds || []
+      });
     } else {
       setEditUser({
         id: '',
@@ -48,7 +56,8 @@ export default function UserList() {
         password: '',
         role: activeTab === 'cleaners' ? 'cleaner' : 'manager',
         status: 'active',
-        language: 'en'
+        language: 'en',
+        propertyIds: []
       });
     }
     setIsModalOpen(true);
@@ -58,6 +67,12 @@ export default function UserList() {
     e.preventDefault();
     if (!editUser.name.trim()) return;
 
+    // Validation: Cleaners must have at least one assigned property
+    if (editUser.role === 'cleaner' && (!editUser.propertyIds || editUser.propertyIds.length === 0)) {
+      alert("Cleaner must be assigned to at least one property!");
+      return;
+    }
+
     try {
       await saveUser({
         ...editUser,
@@ -65,7 +80,7 @@ export default function UserList() {
         lastActive: editUser.lastActive || t('rooms.never')
       });
       setIsModalOpen(false);
-      loadUsers();
+      loadData();
     } catch (e) {
       console.error('Failed to save user', e);
     }
@@ -75,11 +90,57 @@ export default function UserList() {
     if (!window.confirm(t('users.delete_confirm'))) return;
     try {
       await deleteUser(id);
-      loadUsers();
+      loadData();
     } catch (e) {
       console.error('Failed to delete user', e);
     }
   };
+
+  const togglePropertyAssignment = (propId) => {
+    const currentProps = editUser.propertyIds || [];
+    if (currentProps.includes(propId)) {
+      setEditUser({
+        ...editUser,
+        propertyIds: currentProps.filter(id => id !== propId)
+      });
+    } else {
+      setEditUser({
+        ...editUser,
+        propertyIds: [...currentProps, propId]
+      });
+    }
+  };
+
+  // Helper to render property badges
+  const renderPropertyBadges = (u) => {
+    const userPropIds = u.propertyIds || [];
+    if (userPropIds.length === 0) {
+      return <span className="text-xs text-slate-400 italic">Unassigned</span>;
+    }
+    return (
+      <div className="flex flex-wrap gap-1 mt-1">
+        {userPropIds.map(pId => {
+          const prop = properties.find(p => p.id.toString() === pId.toString());
+          if (!prop) return null;
+          return (
+            <span 
+              key={pId} 
+              className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full border"
+              style={{
+                backgroundColor: `${prop.theme || '#0ea5e9'}10`,
+                color: prop.theme || '#0ea5e9',
+                borderColor: `${prop.theme || '#0ea5e9'}30`
+              }}
+            >
+              {prop.name}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const isSuperOrAdmin = user && ['admin', 'superadmin', 'subadmin', 'owner'].includes(user.role);
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -88,17 +149,19 @@ export default function UserList() {
           <h2 className="text-2xl font-bold text-slate-800">{t('users.title')}</h2>
           <p className="text-sm text-slate-500 mt-1">{t('users.subtitle')}</p>
         </div>
-        <button 
-          onClick={() => handleOpenModal()}
-          className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 shadow-sm font-medium transition-colors"
-        >
-          <UserPlus size={18} />
-          <span className="hidden sm:inline">{t('users.add_user')}</span>
-        </button>
+        {isSuperOrAdmin && (
+          <button 
+            onClick={() => handleOpenModal()}
+            className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 shadow-sm font-medium transition-colors"
+          >
+            <UserPlus size={18} />
+            <span className="hidden sm:inline">{t('users.add_user')}</span>
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
-      {(user?.role === 'admin' || user?.role === 'owner') && (
+      {isSuperOrAdmin && (
         <div className="flex space-x-2 bg-slate-200/50 p-1 rounded-xl w-fit">
           <button
             onClick={() => setActiveTab('cleaners')}
@@ -132,65 +195,76 @@ export default function UserList() {
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="p-4 font-semibold text-slate-600 text-sm">{t('users.name_identifiers')}</th>
+                  <th className="p-4 font-semibold text-slate-600 text-sm">Assigned Properties</th>
                   <th className="p-4 font-semibold text-slate-600 text-sm">{t('users.status_role')}</th>
-                  <th className="p-4 font-semibold text-slate-600 text-sm text-right">{t('users.actions')}</th>
+                  {isSuperOrAdmin && <th className="p-4 font-semibold text-slate-600 text-sm text-right">{t('users.actions')}</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {activeUsers.map(user => (
-                  <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                {activeUsers.map(u => (
+                  <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600">
-                          {user.name.charAt(0)}
+                          {u.name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-bold text-slate-800">{user.name}</p>
+                          <p className="font-bold text-slate-800">{u.name}</p>
                           <p className="text-sm text-slate-500">
-                            {user.role === 'cleaner' ? t('users.pin_label', { pin: user.username || '?' }) : user.email}
+                            {u.role === 'cleaner' ? t('users.pin_label', { pin: u.username || '?' }) : u.email}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="p-4">
-                      {user.role === 'cleaner' ? (
+                      {renderPropertyBadges(u)}
+                    </td>
+                    <td className="p-4">
+                      {u.role === 'cleaner' ? (
                         <div className="flex flex-col space-y-1">
                           <span className={cn(
                             "inline-flex w-fit px-2 py-0.5 rounded-md text-xs font-bold border",
-                            user.status === 'active' ? "bg-green-50 text-green-700 border-green-200" : "bg-slate-100 text-slate-600 border-slate-200"
+                            u.status === 'active' ? "bg-green-50 text-green-700 border-green-200" : "bg-slate-100 text-slate-600 border-slate-200"
                           )}>
-                            {user.status === 'active' ? t('users.active') : t('users.inactive')}
+                            {u.status === 'active' ? t('users.active') : t('users.inactive')}
                           </span>
-                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: user.lastActive })}</span>
+                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: u.lastActive })}</span>
                         </div>
                       ) : (
-                        <div className="flex items-center space-x-1">
-                          {user.role === 'admin' && <ShieldAlert size={14} className="text-blue-600"/>}
-                          <span className={cn(
-                            "font-medium text-sm capitalize px-2 py-0.5 rounded-md border",
-                            user.role === 'admin' ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-slate-50 text-slate-700 border-slate-200"
-                          )}>
-                            {user.role === 'admin' ? 'Admin' : 'Manager'}
-                          </span>
+                        <div className="flex flex-col space-y-1">
+                          <div className="flex items-center space-x-1">
+                            {['admin', 'subadmin'].includes(u.role) && <ShieldAlert size={14} className="text-blue-600"/>}
+                            <span className={cn(
+                              "font-bold text-xs uppercase px-2 py-0.5 rounded-md border",
+                              u.role === 'admin' ? "bg-red-50 text-red-700 border-red-200" :
+                              u.role === 'subadmin' ? "bg-blue-50 text-blue-700 border-blue-200" :
+                              "bg-slate-50 text-slate-700 border-slate-200"
+                            )}>
+                              {u.role === 'admin' ? 'Superadmin' : u.role === 'subadmin' ? 'Admin' : 'Manager'}
+                            </span>
+                          </div>
+                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: u.lastActive })}</span>
                         </div>
                       )}
                     </td>
-                    <td className="p-4 text-right">
-                      <div className="flex justify-end space-x-2">
-                        <button 
-                          onClick={() => handleOpenModal(user)}
-                          className="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors border border-transparent hover:border-primary-100"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(user.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+                    {isSuperOrAdmin && (
+                      <td className="p-4 text-right">
+                        <div className="flex justify-end space-x-2">
+                          <button 
+                            onClick={() => handleOpenModal(u)}
+                            className="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors border border-transparent hover:border-primary-100"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(u.id)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -228,15 +302,16 @@ export default function UserList() {
                 <label className="block text-sm font-semibold text-slate-700 mb-1">{t('users.role')}</label>
                 <select 
                   value={editUser.role}
-                  onChange={(e) => setEditUser({...editUser, role: e.target.value})}
+                  onChange={(e) => setEditUser({...editUser, role: e.target.value, propertyIds: e.target.value === 'admin' ? [] : (editUser.propertyIds || [])})}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   disabled={user?.role === 'manager'}
                 >
                   <option value="cleaner">{t('users.cleaners_tab').slice(0, -1)}</option>
-                  {(user?.role === 'admin' || user?.role === 'owner') && (
+                  {['admin', 'superadmin', 'subadmin', 'owner'].includes(user?.role) && (
                     <>
                       <option value="manager">{t('users.managers_tab').split(' ')[0]}</option>
-                      <option value="admin">Admin</option>
+                      <option value="subadmin">Admin</option>
+                      <option value="admin">Superadmin</option>
                     </>
                   )}
                 </select>
@@ -254,6 +329,38 @@ export default function UserList() {
                   <option value="hu">Magyar</option>
                 </select>
               </div>
+
+              {/* Property Assignments (Not applicable to Superadmin who sees everything) */}
+              {editUser.role !== 'admin' && (
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center space-x-1">
+                    <Building size={16} className="text-slate-400" />
+                    <span>Assigned Properties {editUser.role === 'cleaner' && <span className="text-red-500">*</span>}</span>
+                  </label>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 max-h-36 overflow-y-auto space-y-2">
+                    {properties.map(prop => {
+                      const isChecked = (editUser.propertyIds || []).includes(prop.id);
+                      return (
+                        <label key={prop.id} className="flex items-center space-x-3 cursor-pointer text-sm py-0.5">
+                          <input 
+                            type="checkbox" 
+                            checked={isChecked} 
+                            onChange={() => togglePropertyAssignment(prop.id)}
+                            className="rounded border-slate-300 text-primary-600 focus:ring-primary-500 h-4 w-4"
+                          />
+                          <span className="font-semibold text-slate-700">{prop.name}</span>
+                        </label>
+                      );
+                    })}
+                    {properties.length === 0 && (
+                      <p className="text-xs text-slate-400 italic">No properties created yet.</p>
+                    )}
+                  </div>
+                  {editUser.role === 'cleaner' && (
+                    <p className="text-[10px] text-slate-400 mt-1">Cleaners must have at least one property assigned to view tasks.</p>
+                  )}
+                </div>
+              )}
 
               {editUser.role === 'cleaner' ? (
                 <div className="space-y-4">

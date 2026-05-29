@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Circle, Check, AlertTriangle, Image as ImageIcon, Plus, X } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Circle, Check, AlertTriangle, Image as ImageIcon, Plus, X, BookOpen, MessageSquare } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from '../../contexts/I18nContext';
@@ -16,7 +16,12 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [showWarning, setShowWarning] = useState(false);
+
+  // Local notes state for onBlur autosave
+  const [localNotes, setLocalNotes] = useState('');
+  const [localProblemNote, setLocalProblemNote] = useState('');
+  const notesFocused = useRef(false);
+  const problemNoteFocused = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -24,9 +29,9 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
         const data = await fetchAssignments();
         const a = data.find(x => x.id && id && x.id.toString() === id.toString());
         if (a) {
-          // Merge to avoid overriding local optimistic state randomly if possible,
-          // but for simple real-time, just set it.
           setAssignment(a);
+          if (!notesFocused.current) setLocalNotes(a.notes || '');
+          if (!problemNoteFocused.current) setLocalProblemNote(a.problemNote || '');
         }
         setLoading(false);
       } catch (e) {
@@ -40,7 +45,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
 
   const themeColor = propTheme || '#0ea5e9';
 
-  const canEdit = assignment && (!assignment.doneBy || (user && ['admin', 'owner', 'manager'].includes(user.role)));
+  const canEdit = assignment && (!assignment.doneBy || (user && ['admin', 'superadmin', 'subadmin', 'owner', 'manager'].includes(user.role)));
 
   const toggleTask = async (taskId) => {
     if (!canEdit) return;
@@ -48,10 +53,8 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     const newTasks = assignment.tasks.map(t => t.id === taskId ? { ...t, done: !t.done } : t);
     const newAssignment = { ...assignment, tasks: newTasks };
     
-    // Optimistic update
     setAssignment(newAssignment);
     
-    // Save to DB
     try {
       await saveAssignment(newAssignment);
     } catch (e) {
@@ -79,6 +82,28 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
       }
     } catch (e) {
       console.error('Save failed', e);
+    }
+  };
+
+  const saveNotesOnBlur = async () => {
+    notesFocused.current = false;
+    if (!assignment) return;
+    const newAssignment = { ...assignment, notes: localNotes };
+    try {
+      await saveAssignment(newAssignment);
+    } catch (e) {
+      console.error('Notes save failed', e);
+    }
+  };
+
+  const saveProblemNoteOnBlur = async () => {
+    problemNoteFocused.current = false;
+    if (!assignment) return;
+    const newAssignment = { ...assignment, problemNote: localProblemNote };
+    try {
+      await saveAssignment(newAssignment);
+    } catch (e) {
+      console.error('Problem note save failed', e);
     }
   };
 
@@ -147,8 +172,8 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
   const handleFinish = async () => {
     if (!canEdit) return;
     
-    if (!isAllDone && !assignment.problemReported && !showWarning) {
-      setShowWarning(true);
+    // Strict requirement: all tasks must be checked off in order to close
+    if (!isAllDone) {
       return;
     }
     
@@ -158,7 +183,9 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     const newAssignment = { 
       ...assignment, 
       doneBy: user?.name || 'User',
-      doneAt: doneAt
+      doneAt: doneAt,
+      notes: localNotes,
+      problemNote: localProblemNote
     };
     
     setAssignment(newAssignment);
@@ -179,7 +206,6 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     if (label === 'Tomorrow') return t('common.tomorrow');
     if (label === 'Yesterday') return t('common.yesterday');
     
-    // Check if it's an ISO date string (YYYY-MM-DD)
     if (/^\d{4}-\d{2}-\d{2}$/.test(label)) {
       const d = new Date(label);
       if (!isNaN(d.getTime())) {
@@ -190,8 +216,27 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
     return label;
   };
 
+  // Dynamic Grouping Logic (Task 9)
+  const groupedTasks = {};
+  (assignment.tasks || []).forEach(task => {
+    if (task.title.includes('>')) {
+      const parts = task.title.split('>').map(s => s.trim());
+      const groupName = parts[0];
+      const restTitle = parts.slice(1).join(' > ');
+      if (!groupedTasks[groupName]) {
+        groupedTasks[groupName] = [];
+      }
+      groupedTasks[groupName].push({ ...task, displayTitle: restTitle });
+    } else {
+      if (!groupedTasks['']) {
+        groupedTasks[''] = [];
+      }
+      groupedTasks[''].push({ ...task, displayTitle: task.title });
+    }
+  });
+
   return (
-    <div className={cn("space-y-6 max-w-2xl mx-auto pb-24", isSlideout ? "p-0 pb-32" : "p-4 sm:p-6")}>
+    <div className={cn("space-y-6 max-w-2xl mx-auto pb-32", isSlideout ? "p-0" : "p-4 sm:p-6")}>
       {!isSlideout && (
         <div className="flex items-center space-x-4 mb-4">
           <Link to="/properties/1" className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors shadow-sm">
@@ -241,136 +286,187 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
           </div>
         </div>
 
+        {/* Grouped Tasks Checklist */}
         <div className="space-y-4">
-          <h4 className="font-bold text-slate-800 text-lg">{t('assignments.task_list')}</h4>
-          <div className="space-y-3">
-            {assignment.tasks.map((task) => (
-              <button
-                key={task.id}
-                onClick={() => toggleTask(task.id)}
-                disabled={!canEdit}
-                className={cn(
-                  "w-full flex items-center space-x-4 p-4 rounded-xl border transition-all text-left",
-                  task.done 
-                    ? "bg-green-50/50 border-green-200" 
-                    : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm",
-                  !canEdit && "opacity-70 cursor-not-allowed"
+          <h4 className="font-black text-slate-800 text-lg">{t('assignments.task_list')}</h4>
+          <div className="space-y-6">
+            {Object.entries(groupedTasks).map(([groupName, tasksList]) => (
+              <div key={groupName} className="space-y-3">
+                {groupName !== '' && (
+                  <div className="text-xs font-black text-slate-400 uppercase tracking-widest mt-4 pl-1 border-l-2 border-primary-500 pl-2">
+                    {groupName}
+                  </div>
                 )}
-              >
-                {task.done ? (
-                  <CheckCircle size={24} className="text-green-500 shrink-0" />
-                ) : (
-                  <Circle size={24} className="text-slate-300 shrink-0" />
-                )}
-                <span className={cn(
-                  "font-medium text-lg transition-colors",
-                  task.done ? "text-slate-400 line-through" : "text-slate-700"
-                )}>
-                  {task.title}
-                </span>
-              </button>
+                <div className="space-y-2.5">
+                  {tasksList.map((task) => (
+                    <button
+                      key={task.id}
+                      onClick={() => toggleTask(task.id)}
+                      disabled={!canEdit}
+                      className={cn(
+                        "w-full flex items-center space-x-4 p-4 rounded-xl border transition-all text-left",
+                        task.done 
+                          ? "bg-green-50/40 border-green-200 shadow-none" 
+                          : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm",
+                        !canEdit && "opacity-70 cursor-not-allowed"
+                      )}
+                    >
+                      {task.done ? (
+                        <CheckCircle size={24} className="text-green-500 shrink-0" />
+                      ) : (
+                        <Circle size={24} className="text-slate-300 shrink-0" />
+                      )}
+                      <span className={cn(
+                        "font-semibold text-base transition-colors",
+                        task.done ? "text-slate-400 line-through" : "text-slate-700"
+                      )}>
+                        {task.displayTitle}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
 
-        {canEdit && (
+        {/* General Cleaning Notes (Task 3) */}
+        <div className="space-y-2 pt-6 border-t border-slate-100">
+          <div className="flex items-center space-x-2">
+            <BookOpen className="text-slate-400" size={18} />
+            <span className="font-bold text-slate-800">Cleaning Notes / Comments</span>
+          </div>
+          <textarea
+            value={localNotes}
+            onChange={(e) => setLocalNotes(e.target.value)}
+            onFocus={() => { notesFocused.current = true; }}
+            onBlur={saveNotesOnBlur}
+            disabled={!canEdit}
+            placeholder="Add a comment or general feedback about the cleaning of this room..."
+            className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm h-24"
+          />
+        </div>
+
+        {/* Report Problem (Task 2) */}
+        {(canEdit || (assignment.problemReported && String(assignment.problemReported) !== "0" && String(assignment.problemReported) !== "false")) && (
           <div className="space-y-4 pt-6 border-t border-slate-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <AlertTriangle className={assignment.problemReported ? "text-red-500" : "text-slate-400"} size={20} />
+                <AlertTriangle className={(assignment.problemReported && String(assignment.problemReported) !== "0" && String(assignment.problemReported) !== "false") ? "text-red-500" : "text-slate-400"} size={20} />
                 <span className="font-bold text-slate-800">{t('assignments.report_problem')}</span>
               </div>
-              <button 
-                onClick={toggleProblem}
-                className={cn(
-                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none",
-                  assignment.problemReported ? "bg-red-500" : "bg-slate-200"
-                )}
-              >
-                <span 
+              {canEdit && (
+                <button 
+                  onClick={toggleProblem}
                   className={cn(
-                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
-                    assignment.problemReported ? "translate-x-6" : "translate-x-1"
+                    "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none",
+                    assignment.problemReported ? "bg-red-500" : "bg-slate-200"
                   )}
-                />
-              </button>
+                >
+                  <span 
+                    className={cn(
+                      "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                      assignment.problemReported ? "translate-x-6" : "translate-x-1"
+                    )}
+                  />
+                </button>
+              )}
             </div>
 
-            {assignment.problemReported && (
+            {(assignment.problemReported && String(assignment.problemReported) !== "0" && String(assignment.problemReported) !== "false") && (
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4 animate-fade-in-up">
-                <p className="text-sm text-slate-600 font-medium">{t('assignments.upload_images')}</p>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {(assignment.images || []).map((imgPath, idx) => (
-                    <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-slate-200">
-                      <img src={`${API_BASE_URL.replace('/api/public', '')}/api/public/${imgPath}`} alt="Problem" className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setSelectedImage(imgPath)} />
-                      <button 
-                        onClick={() => removeImage(idx)}
-                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  ))}
-                  
-                  <label className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 hover:bg-slate-100 flex flex-col items-center justify-center cursor-pointer transition-colors">
-                    {uploading ? (
-                      <span className="text-xs font-bold text-slate-500 animate-pulse">{t('assignments.uploading')}</span>
-                    ) : (
-                      <>
-                        <Plus className="text-slate-400 mb-1" size={24} />
-                        <span className="text-xs font-bold text-slate-500">{t('assignments.add_image')}</span>
-                      </>
-                    )}
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      multiple
-                      className="hidden" 
-                      onChange={handleImageUpload} 
-                      disabled={uploading}
-                    />
-                  </label>
+                {/* Problem Description Note */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    <MessageSquare size={14} className="text-red-500" />
+                    <span>Describe the Problem</span>
+                  </div>
+                  <textarea
+                    value={localProblemNote}
+                    onChange={(e) => setLocalProblemNote(e.target.value)}
+                    onFocus={() => { problemNoteFocused.current = true; }}
+                    onBlur={saveProblemNoteOnBlur}
+                    disabled={!canEdit}
+                    placeholder="Enter details of the issue (e.g. Broken faucet, stained carpet)..."
+                    className="w-full p-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm h-20"
+                  />
                 </div>
+
+                {((assignment.images && assignment.images.length > 0) || canEdit) && (
+                  <>
+                    <p className="text-xs text-slate-600 font-bold uppercase tracking-wider">{t('assignments.upload_images')}</p>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {(assignment.images || []).map((imgPath, idx) => (
+                        <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden bg-slate-200">
+                          <img src={`${API_BASE_URL.replace('/api/public', '')}/api/public/${imgPath}`} alt="Problem" className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity" onClick={() => setSelectedImage(imgPath)} />
+                          {canEdit && (
+                            <button 
+                              onClick={() => removeImage(idx)}
+                              className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity animate-fade-in"
+                            >
+                              <X size={14} />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      
+                      {canEdit && (
+                        <label className="relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-slate-400 hover:bg-slate-100 flex flex-col items-center justify-center cursor-pointer transition-colors bg-white">
+                          {uploading ? (
+                            <span className="text-xs font-bold text-slate-500 animate-pulse">{t('assignments.uploading')}</span>
+                          ) : (
+                            <>
+                              <Plus className="text-slate-400 mb-1" size={24} />
+                              <span className="text-xs font-bold text-slate-500">{t('assignments.add_image')}</span>
+                            </>
+                          )}
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple
+                            className="hidden" 
+                            onChange={handleImageUpload} 
+                            disabled={uploading}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Fixed bottom bar for the finish button */}
+      {/* Fixed bottom bar for the finish button (Task 5) */}
       {canEdit && !assignment.doneBy && (
         <div className={cn(
           "fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50 transition-all",
           !isSlideout && "md:left-20 lg:left-64",
-          showWarning && "bg-orange-50/95 border-orange-200"
+          !isAllDone && "bg-slate-50/90"
         )}>
-          {showWarning && (
-            <div className="max-w-2xl mx-auto mb-3 flex items-start space-x-2 text-orange-800 bg-orange-100 p-3 rounded-xl animate-fade-in-up">
-              <AlertTriangle size={20} className="shrink-0 mt-0.5" />
-              <p className="text-sm font-medium">
-                <strong>{t('common.warning')}:</strong> {t('assignments.warning_incomplete')}
+          {!isAllDone && (
+            <div className="max-w-2xl mx-auto mb-3 flex items-start space-x-2 text-slate-700 bg-slate-100 p-3 rounded-xl border border-slate-200">
+              <Circle size={18} className="shrink-0 mt-0.5 text-slate-400" />
+              <p className="text-xs font-semibold">
+                All tasks must be checked off in order to close this cleaning assignment.
               </p>
             </div>
           )}
-          <div className="max-w-2xl mx-auto flex justify-end space-x-3">
-            {showWarning && (
-              <button 
-                onClick={() => setShowWarning(false)}
-                className="px-6 py-3 rounded-xl font-bold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all"
-              >
-                {t('common.cancel')}
-              </button>
-            )}
+          <div className="max-w-2xl mx-auto flex justify-end">
             <button 
               onClick={handleFinish}
-              style={{ backgroundColor: showWarning ? '#ea580c' : themeColor }}
+              disabled={!isAllDone}
+              style={{ backgroundColor: isAllDone ? themeColor : '#cbd5e1' }}
               className={cn(
-                "w-full md:w-auto px-8 py-3 rounded-xl font-bold text-white shadow-sm transition-all hover:opacity-90",
-                showWarning && "shadow-orange-200"
+                "w-full md:w-auto px-8 py-3 rounded-xl font-bold text-white shadow-sm transition-all text-center",
+                isAllDone ? "hover:opacity-90 cursor-pointer shadow-primary-200" : "cursor-not-allowed text-slate-400 shadow-none border border-slate-200"
               )}
             >
-              {showWarning ? t('assignments.confirm_finish') : t('assignments.finish_cleaning')}
+              {t('assignments.finish_cleaning')}
             </button>
           </div>
         </div>
@@ -381,7 +477,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
           className="fixed inset-0 z-[100] bg-slate-900/90 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative max-w-4xl max-h-screen flex items-center justify-center">
+          <div className="relative max-w-4xl max-h-screen flex items-center justify-center animate-fade-in">
             <button 
               onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
               className="absolute -top-12 right-0 p-2 text-white hover:text-slate-300 transition-colors bg-slate-800/50 rounded-full"

@@ -87,6 +87,35 @@ try {
                 "ALTER TABLE `room_tasks` ADD COLUMN IF NOT EXISTS `task_set_id` varchar(50) DEFAULT NULL;",
                 "ALTER TABLE `assignments` ADD COLUMN IF NOT EXISTS `task_set_id` varchar(50) DEFAULT NULL;"
             ]
+        ],
+        6 => [
+            'description' => 'Add notes, problem notes, settings table and property report tracker',
+            'queries' => [
+                "ALTER TABLE `assignments` ADD COLUMN IF NOT EXISTS `notes` TEXT DEFAULT NULL;",
+                "ALTER TABLE `assignments` ADD COLUMN IF NOT EXISTS `problemNote` TEXT DEFAULT NULL;",
+                "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `last_report_sent_at` VARCHAR(50) DEFAULT NULL;",
+                "CREATE TABLE IF NOT EXISTS `system_settings` (
+                    `setting_key` VARCHAR(255) NOT NULL,
+                    `setting_value` TEXT DEFAULT NULL,
+                    PRIMARY KEY (`setting_key`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+            ]
+        ],
+        7 => [
+            'description' => 'Create sent_emails table to log all operational email notifications',
+            'queries' => [
+                "CREATE TABLE IF NOT EXISTS `sent_emails` (
+                    `id` int(11) NOT NULL AUTO_INCREMENT,
+                    `property_name` varchar(255) DEFAULT NULL,
+                    `recipient` text NOT NULL,
+                    `subject` varchar(255) NOT NULL,
+                    `body` longtext NOT NULL,
+                    `sent_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+                    `status` varchar(50) NOT NULL,
+                    `error_message` text DEFAULT NULL,
+                    PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+            ]
         ]
     ];
 

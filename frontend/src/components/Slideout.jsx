@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useTranslation } from '../contexts/I18nContext';
 
@@ -10,6 +11,7 @@ export default function Slideout({ isOpen, onClose, title, children, width = "ma
   useEffect(() => {
     if (isOpen) {
       setRender(true);
+      document.body.style.overflow = 'hidden';
       // Small delay to ensure the browser has a frame with the initial state
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -18,7 +20,11 @@ export default function Slideout({ isOpen, onClose, title, children, width = "ma
       });
     } else {
       setIsAnimated(false);
+      document.body.style.overflow = '';
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   const onTransitionEnd = () => {
@@ -27,8 +33,8 @@ export default function Slideout({ isOpen, onClose, title, children, width = "ma
 
   if (!shouldRender) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
       <div className="absolute inset-0 overflow-hidden">
         {/* Background overlay */}
         <div 
@@ -41,7 +47,7 @@ export default function Slideout({ isOpen, onClose, title, children, width = "ma
             className={`pointer-events-auto w-screen ${width} transform transition duration-300 ease-in-out ${isAnimated ? 'translate-x-0' : 'translate-x-full'}`}
             onTransitionEnd={onTransitionEnd}
           >
-            <div className="flex h-full flex-col overflow-y-scroll bg-slate-50 shadow-2xl">
+            <div className="flex h-full flex-col overflow-y-scroll overscroll-contain bg-slate-50 shadow-2xl [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]">
               {/* Header */}
               <div className="bg-white px-4 py-6 sm:px-6 border-b border-slate-100 shadow-sm sticky top-0 z-10 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-slate-800" id="slide-over-title">
@@ -58,13 +64,14 @@ export default function Slideout({ isOpen, onClose, title, children, width = "ma
               </div>
               
               {/* Content */}
-              <div className="relative flex-1 px-4 py-6 sm:px-6">
+              <div className="relative flex-1 px-4 py-6 sm:px-6 pb-32">
                 {children}
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

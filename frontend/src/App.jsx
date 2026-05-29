@@ -17,6 +17,7 @@ import { useTranslation } from './contexts/I18nContext';
 import { checkSystemSetup } from './lib/api';
 
 import Settings from './pages/settings/Settings';
+import EmailLogs from './pages/emails/EmailLogs';
 
 function App() {
   const { user } = useAuth();
@@ -90,6 +91,7 @@ function App() {
 
         <Route path="users" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <UserList />} />
 
+        <Route path="emails" element={user?.role === 'cleaner' ? <Navigate to="/assignments" replace /> : <EmailLogs />} />
         <Route path="settings" element={<Settings />} />
       </Route>
 

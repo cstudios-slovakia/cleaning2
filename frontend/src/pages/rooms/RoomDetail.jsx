@@ -15,6 +15,7 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
   const [activeTab, setActiveTab] = useState(initialTab);
   const [isEditing, setIsEditing] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
+  const [bulkInputs, setBulkInputs] = useState({});
   
   const [roomData, setRoomData] = useState({
     name: roomName || 'Room 101',
@@ -190,6 +191,34 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
         }
         return ts;
       })
+    });
+  };
+
+  const handleBulkAddTasks = (tsId) => {
+    const text = bulkInputs[tsId] || '';
+    if (!text.trim()) return;
+
+    const newTasksList = text.split('\n')
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map((line, idx) => ({
+        id: `${Date.now()}_bulk_${idx}_${Math.random().toString(36).substr(2, 4)}`,
+        text: line
+      }));
+
+    setEditForm({
+      ...editForm,
+      taskSets: editForm.taskSets.map(ts => {
+        if (ts.id === tsId) {
+          return { ...ts, tasks: [...ts.tasks, ...newTasksList] };
+        }
+        return ts;
+      })
+    });
+
+    setBulkInputs({
+      ...bulkInputs,
+      [tsId]: ''
     });
   };
 
@@ -406,6 +435,27 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                           <Plus size={14} />
                           <span>Add Task to Set</span>
                         </button>
+                        <p className="text-[10px] text-slate-400 mt-2 text-center">
+                          💡 Tip: Use <b>Group &gt; Task</b> format (e.g. <i>Kitchen &gt; Clean counter</i>) to group tasks visually!
+                        </p>
+
+                        <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">⚡ Quick Bulk Add Tasks (one per line)</label>
+                          <textarea
+                            value={bulkInputs[ts.id] || ''}
+                            onChange={(e) => setBulkInputs({ ...bulkInputs, [ts.id]: e.target.value })}
+                            placeholder="Kitchen > Clean counters&#10;Kitchen > Empty trash&#10;Vacuum floors"
+                            className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-medium text-xs h-20"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => handleBulkAddTasks(ts.id)}
+                            className="text-xs font-bold text-primary-600 hover:text-primary-700 bg-primary-50 hover:bg-primary-100 px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1 justify-center w-full border border-primary-200"
+                          >
+                            <Plus size={12} />
+                            <span>Bulk Add Tasks to Set</span>
+                          </button>
+                        </div>
                       </div>
                     ))}
                     {editForm.taskSets.length === 0 && (
@@ -420,25 +470,56 @@ export default function RoomDetail({ roomId, isSlideout, propertyName, roomName,
                         <p className="text-sm text-slate-500 font-medium">No task sets</p>
                       </div>
                     ) : (
-                      roomData.taskSets.map((ts) => (
-                        <div key={ts.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                          <div className="bg-slate-50 px-4 py-2 border-b flex justify-between items-center">
-                            <span className="font-bold text-slate-700">{ts.title}</span>
-                            <div className="flex gap-2 text-xs font-bold">
-                              {ts.isQuickClean && <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Quick Clean</span>}
-                              {ts.isOnce ? <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">Once</span> : <span className="bg-slate-200 text-slate-700 px-2 py-0.5 rounded">Every {ts.intervalDays} days</span>}
+                      roomData.taskSets.map((ts) => {
+                        const groupedTasks = {};
+                        (ts.tasks || []).forEach(task => {
+                          if (task.text.includes('>')) {
+                            const parts = task.text.split('>').map(s => s.trim());
+                            const groupName = parts[0];
+                            const restTitle = parts.slice(1).join(' > ');
+                            if (!groupedTasks[groupName]) {
+                              groupedTasks[groupName] = [];
+                            }
+                            groupedTasks[groupName].push({ ...task, displayText: restTitle });
+                          } else {
+                            if (!groupedTasks['']) {
+                              groupedTasks[''] = [];
+                            }
+                            groupedTasks[''].push({ ...task, displayText: task.text });
+                          }
+                        });
+
+                        return (
+                          <div key={ts.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                            <div className="bg-slate-50 px-4 py-2 border-b flex justify-between items-center">
+                              <span className="font-bold text-slate-700">{ts.title}</span>
+                              <div className="flex gap-2 text-xs font-bold">
+                                {ts.isQuickClean && <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Quick Clean</span>}
+                                {ts.isOnce ? <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">Once</span> : <span className="bg-slate-200 text-slate-700 px-2 py-0.5 rounded">Every {ts.intervalDays} days</span>}
+                              </div>
+                            </div>
+                            <div className="p-4 space-y-4">
+                              {Object.entries(groupedTasks).map(([groupName, tasksList]) => (
+                                <div key={groupName} className="space-y-2">
+                                  {groupName !== '' && (
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 border-l-2 border-primary-500">
+                                      {groupName}
+                                    </div>
+                                  )}
+                                  <ul className="space-y-2">
+                                    {tasksList.map((task) => (
+                                      <li key={task.id} className="flex items-center space-x-3 text-sm pl-2">
+                                        <CheckCircle2 size={16} className="text-slate-300 shrink-0" />
+                                        <span className="font-medium text-slate-600">{task.displayText}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                          <ul className="p-3 space-y-2">
-                            {ts.tasks.map((task) => (
-                              <li key={task.id} className="flex items-center space-x-3 text-sm">
-                                <CheckCircle2 size={16} className="text-slate-300" />
-                                <span className="font-medium text-slate-600">{task.text}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 )}

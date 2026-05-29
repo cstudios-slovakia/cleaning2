@@ -56,6 +56,10 @@ export default function Dashboard() {
 
   const getAssignmentStatus = (a) => {
     if (!a) return 'ok';
+    // If it has tasks and at least one task is checked, it is currently "cleaning"
+    if (a.tasks && a.tasks.some(t => t.done) && !a.doneAt) {
+      return 'cleaning';
+    }
     if (isToday(a.date)) {
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -171,11 +175,15 @@ export default function Dashboard() {
                     let status = 'ok';
                     for (const a of roomAssignments) {
                       const aStatus = getAssignmentStatus(a);
-                      if (aStatus === 'overdue') {
-                        status = 'overdue';
-                        break;
+                      if (aStatus === 'cleaning') {
+                        status = 'cleaning';
+                        break; // 'cleaning' has highest operational priority for the dashboard
                       }
-                      if (aStatus === 'due') status = 'due';
+                      if (aStatus === 'overdue' && status !== 'cleaning') {
+                        status = 'overdue';
+                      } else if (aStatus === 'due' && status !== 'cleaning' && status !== 'overdue') {
+                        status = 'due';
+                      }
                     }
 
                     return (
@@ -234,7 +242,7 @@ export default function Dashboard() {
               >
                 {t('dashboard.recent_logs_tab')}
               </button>
-              {['manager', 'admin'].includes(user?.role) && (
+              {['manager', 'admin', 'subadmin'].includes(user?.role) && (
                 <button
                   onClick={() => setActiveLogsTab('problems')}
                   className={cn(

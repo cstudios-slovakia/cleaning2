@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Archive, Building2, History } from 'lucide-react';
 import Modal from '../../components/Modal';
-import { fetchProperties, saveProperty, deleteProperty } from '../../lib/api';
+import { fetchProperties, saveProperty, deleteProperty, saveRoom } from '../../lib/api';
 import { useTranslation } from '../../contexts/I18nContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function PropertyList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPropName, setNewPropName] = useState('');
+  const [quickRoomsText, setQuickRoomsText] = useState('');
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -38,8 +39,9 @@ export default function PropertyList() {
     e.preventDefault();
     if (!newPropName.trim()) return;
 
+    const propId = Date.now().toString();
     const newProp = {
-      id: Date.now().toString(),
+      id: propId,
       name: newPropName,
       scheduleTime: '10:00 AM',
       theme: '#0ea5e9',
@@ -49,11 +51,70 @@ export default function PropertyList() {
 
     try {
       await saveProperty(newProp);
+
+      // Parse and Save Quick Rooms & Tasks
+      if (quickRoomsText.trim()) {
+        const lines = quickRoomsText.split('\n');
+        const roomsMap = {};
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+
+          const parts = trimmed.split('>').map(p => p.trim());
+          if (parts.length === 1) {
+            const roomName = parts[0];
+            if (!roomsMap[roomName]) roomsMap[roomName] = ['Clean room'];
+          } else if (parts.length === 2) {
+            const roomName = parts[0];
+            const tasks = parts[1].split('+').map(t => t.trim()).filter(Boolean);
+            if (!roomsMap[roomName]) roomsMap[roomName] = [];
+            roomsMap[roomName].push(...tasks);
+          } else if (parts.length >= 3) {
+            const roomName = parts[0];
+            const groupName = parts[1];
+            const tasks = parts[2].split('+').map(t => t.trim()).filter(Boolean);
+            if (!roomsMap[roomName]) roomsMap[roomName] = [];
+            // Prefix tasks with the group name to satisfy grouped tasks
+            const groupedTasks = tasks.map(t => `${groupName} > ${t}`);
+            roomsMap[roomName].push(...groupedTasks);
+          }
+        }
+
+        // Save each room sequentially
+        for (const [roomName, tasksList] of Object.entries(roomsMap)) {
+          const roomId = `${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+          const roomObj = {
+            id: roomId,
+            property_id: propId,
+            name: roomName,
+            intervalDays: 0,
+            lastCleaned: 'Never',
+            taskSets: [
+              {
+                id: `ts_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                title: 'Quick Clean',
+                intervalDays: 0,
+                isOnce: false,
+                isQuickClean: true,
+                tasks: tasksList.map((taskText, idx) => ({
+                  id: `t_${Date.now()}_${idx}`,
+                  text: taskText
+                }))
+              }
+            ]
+          };
+
+          await saveRoom(roomObj);
+        }
+      }
+
       await loadProperties();
       setNewPropName('');
+      setQuickRoomsText('');
       setIsModalOpen(false);
     } catch (e) {
-      console.error('Failed to add property', e);
+      console.error('Failed to add property & quick rooms', e);
     }
   };
 
@@ -68,6 +129,8 @@ export default function PropertyList() {
     }
   };
 
+  const isSuperOrOwner = user && ['admin', 'superadmin', 'subadmin', 'owner'].includes(user.role);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -75,7 +138,7 @@ export default function PropertyList() {
           <h2 className="text-2xl font-bold text-slate-800">{t('properties.title')}</h2>
           <p className="text-sm text-slate-500 mt-1">{t('properties.subtitle')}</p>
         </div>
-        {(user?.role === 'admin' || user?.role === 'owner') && (
+        {isSuperOrOwner && (
           <button 
             onClick={() => setIsModalOpen(true)}
             className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm font-medium"
@@ -102,7 +165,7 @@ export default function PropertyList() {
                 </div>
               )}
               
-              {(user?.role === 'admin' || user?.role === 'owner') && (
+              {isSuperOrOwner && (
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
@@ -165,13 +228,30 @@ export default function PropertyList() {
                 placeholder={t('properties.property_name_placeholder')}
                 className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 autoFocus
+                required
               />
             </div>
           </div>
+
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-1">Quick Add Rooms & Tasks</label>
+            <textarea
+              value={quickRoomsText}
+              onChange={(e) => setQuickRoomsText(e.target.value)}
+              placeholder="Format:&#10;Room 101 > Kitchen > Clean counters + check trash&#10;Room 101 > Bed > Change sheets&#10;Room 102 > Vacuum floor&#10;Lobby"
+              className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all font-mono text-xs h-32"
+            />
+            <p className="text-[10px] text-slate-400 mt-1">One room definition per line. Use `&gt;` to group tasks and `+` to separate multiple tasks on a line.</p>
+          </div>
+
           <div className="flex space-x-3 pt-2">
             <button 
               type="button"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setNewPropName('');
+                setQuickRoomsText('');
+                setIsModalOpen(false);
+              }}
               className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium transition-colors"
             >
               {t('common.cancel')}
@@ -188,4 +268,3 @@ export default function PropertyList() {
     </div>
   );
 }
-

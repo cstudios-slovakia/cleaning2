@@ -2,6 +2,18 @@
 
 A premium Progressive Web Application (PWA) designed for managing cleaning properties, rooms, and assignments with a focus on real-time task tracking and personnel management.
 
+## ✨ Version 1.4 Features
+
+The system has been upgraded to **v1.4** with several major enhancements:
+
+* **Relational Role Segregation (4 Levels)**: Separates operations between **Superadmin** (master configuration), **Admin** (regional control, assigned property management), **Manager** (localized supervisor), and **Cleaner** (mobile-first checking unit).
+* **SMTP Outbound Socket Mailer & AI Summaries**: Sends beautiful daily HTML operational summaries automatically via socket-based SMTP, utilizing OpenAI ChatGPT-3.5 to compile concise daily executive reviews.
+* **Smart Anti-Spam Filter**: Automatically skips email reports if none of the rooms cleaned today contain any general comments, note details, or reported problems, keeping management inboxes clean.
+* **Outbox Email Logs & sandbox HTML Inspector**: Offers a dedicated management console to audit outgoing logs, filter by transmission statuses (Delivered/Failed), inspect raw transmission details, and render full daily HTML reports inside a sandboxed visual iframe previewer.
+* **Dynamic "Cleaning" (In-Progress) Status**: Ticking the first checkbox in any active cleaner list instantly updates the property matrix on the dashboard to **"Cleaning"** (purple), providing supervisors with real-time room tracking.
+* **Fluid Aurora Gradients & Glassmorphism Blur**: Features a dynamic, animated visual aurora backdrop with slow-gliding glowing blobs and a semi-translucent header with CSS backdrop filters.
+* **Touch-Optimized Slideover Modals**: Overhauls core slideovers using React Portals (`createPortal` to `document.body` with `z-[100]`) and comfortable bottom layouts (`pb-32` scrolling) to prevent overlay blocking or notch clipping on iOS/Android browsers.
+
 ## 🚀 Quick Start (Production Deployment)
 
 The easiest way to install the system on a live server is via Composer. This will download the latest stable version and the pre-built frontend.

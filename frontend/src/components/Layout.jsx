@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Building2, BedDouble, ClipboardList, Users, LogOut, Settings } from 'lucide-react';
+import { LayoutDashboard, Building2, BedDouble, ClipboardList, Users, LogOut, Settings, Mail } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../contexts/I18nContext';
@@ -88,6 +88,20 @@ export default function Layout() {
         </nav>
         
         <div className="py-6 flex flex-col items-center space-y-4 border-t border-slate-50">
+          {['admin', 'superadmin', 'subadmin', 'owner'].includes(user?.role) && (
+            <Link 
+              to="/emails"
+              className={cn(
+                "w-12 h-12 flex items-center justify-center rounded-xl transition-all",
+                location.pathname.startsWith('/emails') 
+                  ? "bg-indigo-50 text-indigo-600 shadow-sm" 
+                  : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+              )}
+              title={t('nav.emails', 'Email Logs')}
+            >
+              <Mail size={22} />
+            </Link>
+          )}
           <Link 
             to="/settings"
             className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
@@ -106,9 +120,16 @@ export default function Layout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-0">
+        {/* Aurora Background Effect */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10 bg-slate-50/50">
+          <div className="absolute -top-[20%] -left-[10%] w-[55%] h-[55%] rounded-full bg-gradient-to-br from-blue-400/20 via-sky-300/15 to-indigo-400/20 blur-[100px] animate-aurora-1" />
+          <div className="absolute top-[20%] -right-[15%] w-[65%] h-[65%] rounded-full bg-gradient-to-tr from-purple-400/20 via-pink-300/10 to-rose-400/20 blur-[130px] animate-aurora-2" />
+          <div className="absolute -bottom-[20%] left-[10%] w-[60%] h-[60%] rounded-full bg-gradient-to-r from-emerald-400/10 via-teal-300/15 to-cyan-400/20 blur-[110px] animate-aurora-3" />
+        </div>
+
         {/* Header */}
-        <header className="bg-white border-b border-slate-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
+        <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
           <div>
             <h1 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">
               {systemName || t('login.title')}
@@ -116,6 +137,14 @@ export default function Layout() {
             <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">v{CONFIG.VERSION}</p>
           </div>
           <div className="flex items-center space-x-4 sm:space-x-6">
+            {['admin', 'superadmin', 'subadmin', 'owner'].includes(user?.role) && (
+              <Link to="/emails" className={cn(
+                "transition-colors",
+                location.pathname.startsWith('/emails') ? "text-indigo-600" : "text-slate-400 hover:text-indigo-600"
+              )} title={t('nav.emails', 'Email Logs')}>
+                <Mail size={20} />
+              </Link>
+            )}
             <Link to="/settings" className="text-slate-400 hover:text-slate-600 transition-colors">
               <Settings size={20} />
             </Link>
@@ -129,7 +158,13 @@ export default function Layout() {
             <div className="flex items-center space-x-3">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-bold text-slate-900 leading-none">{user?.name || (user?.role === 'cleaner' ? t('login.cleaner_tab') : 'Admin')}</p>
-                <p className="text-[10px] font-medium text-slate-400 mt-0.5">{user?.role ? (user.role === 'cleaner' ? t('login.cleaner_tab') : 'Manager') : 'Administrator'}</p>
+                <p className="text-[10px] font-medium text-slate-400 mt-0.5">
+                  {user?.role ? (
+                    user.role === 'cleaner' ? t('login.cleaner_tab') :
+                    user.role === 'admin' ? 'Superadmin' :
+                    user.role === 'subadmin' ? 'Admin' : 'Manager'
+                  ) : 'Administrator'}
+                </p>
               </div>
               <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white font-bold flex items-center justify-center text-sm shadow-lg shadow-slate-200">
                 {user?.name?.charAt(0) || 'E'}
@@ -138,7 +173,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 relative z-10">
           <div className="max-w-7xl mx-auto">
             {showNotificationBanner && !permissionGranted && (
               <div className="mb-6 bg-primary-50 border border-primary-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between shadow-sm animate-fade-in-up">

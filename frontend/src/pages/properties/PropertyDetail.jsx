@@ -19,6 +19,7 @@ export default function PropertyDetail() {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [assignDate, setAssignDate] = useState('');
   const [assignRoomId, setAssignRoomId] = useState('');
+  const [customTasksText, setCustomTasksText] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
   const isAssignmentDone = (id) => {
@@ -246,9 +247,18 @@ export default function PropertyDetail() {
     try {
       const roomData = await fetchRoomDetails(room.id);
       const quickCleanSet = (roomData?.taskSets || []).find(ts => ts.isQuickClean) || (roomData?.taskSets || [])[0];
-      const tasksToAssign = quickCleanSet?.tasks?.length > 0 
-        ? quickCleanSet.tasks.map(t => ({ title: t.title || t.text, done: false })) 
-        : [{ title: 'The room is cleaned', done: false }];
+      
+      let tasksToAssign = [];
+      if (customTasksText.trim()) {
+        tasksToAssign = customTasksText.split('\n')
+          .map(t => t.trim())
+          .filter(Boolean)
+          .map(t => ({ title: t, done: false }));
+      } else {
+        tasksToAssign = quickCleanSet?.tasks?.length > 0 
+          ? quickCleanSet.tasks.map(t => ({ title: t.title || t.text, done: false })) 
+          : [{ title: 'The room is cleaned', done: false }];
+      }
 
       const newId = Date.now().toString();
       const newAssignment = {
@@ -267,6 +277,7 @@ export default function PropertyDetail() {
       setIsAssignModalOpen(false);
       setAssignDate('');
       setAssignRoomId('');
+      setCustomTasksText('');
       setSuccessMessage(`Cleaning assigned for ${room.name}`);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
@@ -740,7 +751,7 @@ export default function PropertyDetail() {
                         className="flex-1 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
                       >
                         <option value="">Select Manager...</option>
-                        {availableUsers.filter(u => u.role === 'manager' || u.role === 'admin').map(u => (
+                        {availableUsers.filter(u => u.role === 'manager' || u.role === 'admin' || u.role === 'subadmin').map(u => (
                           <option key={u.id} value={u.name}>{u.name}</option>
                         ))}
                       </select>
@@ -938,6 +949,17 @@ export default function PropertyDetail() {
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Custom Tasks (Optional)</label>
+            <textarea 
+              value={customTasksText}
+              onChange={(e) => setCustomTasksText(e.target.value)}
+              placeholder="Leave empty to use room's default task set template...&#10;Kitchen > Clean counters&#10;Vacuum floor"
+              className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-medium text-sm h-28"
+            />
+            <p className="text-[10px] text-slate-400">One task definition per line. Use `&gt;` to group tasks visually.</p>
           </div>
           
           <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">

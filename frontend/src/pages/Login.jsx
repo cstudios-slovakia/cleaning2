@@ -26,7 +26,7 @@ function Login() {
       let foundUser = null;
 
       if (activeTab === 'manager') {
-        foundUser = users.find(u => u.email === email && u.password === password && ['admin', 'manager', 'owner'].includes(u.role));
+        foundUser = users.find(u => u.email === email && u.password === password && ['admin', 'subadmin', 'manager', 'owner'].includes(u.role));
         if (foundUser && foundUser.status === 'inactive') {
           setError(t('login.errors.deactivated'));
           setLoading(false);
