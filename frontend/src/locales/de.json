@@ -3,15 +3,16 @@
     "dashboard": "Dashboard",
     "properties": "Liegenschaften",
     "rooms": "Zimmer",
-    "assignments": "Zuweisungen",
+    "assignments": "Aufgaben",
     "users": "Benutzer",
+    "emails": "E-Mail-Protokolle",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
   "loading": {
-    "assignment": "Zuweisung wird geladen...",
+    "assignment": "Aufgabe wird geladen...",
     "rooms": "Zimmer werden geladen...",
-    "properties": "Eigenschaften werden geladen..."
+    "properties": "Liegenschaften werden geladen..."
   },
   "tooltips": {
     "close": "Panel schließen",
@@ -27,7 +28,7 @@
     "username": "Benutzername",
     "pin": "PIN",
     "submit": "Anmelden",
-    "signing_in": "Anmelden...",
+    "signing_in": "Anmeldung...",
     "errors": {
       "deactivated": "Dieses Konto ist deaktiviert.",
       "invalid_manager": "Ungültige E-Mail oder Passwort.",
@@ -35,20 +36,12 @@
       "connection": "Verbindung zum Server fehlgeschlagen."
     },
     "pin_help": "4-stellige PIN",
-    "username_placeholder": "reiniger_jan"
+    "username_placeholder": "reiniger_hans"
   },
   "dashboard": {
-    "property_status": "Objektstatus-Matrix",
-    "activity": "Aktivität",
-    "timeline": "Zeitachse",
-    "pending_today": "Heute ausstehend",
-    "recent_logs": "Aktuelle Protokolle",
-    "express_clean": "Expressreinigung",
-    "assign": "Zuweisen",
-    "no_tasks": "Keine ausstehenden Aufgaben",
     "completed": "Abgeschlossen",
     "title": "Systemübersicht",
-    "subtitle": "Wichtige Leistungsindikatoren und Status.",
+    "subtitle": "Leistungskennzahlen und Status.",
     "tasks_matrix": "Heutige Aufgabenmatrix",
     "no_rooms": "Keine Zimmer",
     "pending_today_tab": "Heute ausstehend",
@@ -60,9 +53,10 @@
       "due": "Fällig",
       "overdue": "Überfällig",
       "immediate": "Sofort",
-      "cleaning": "Reinigung"
+      "cleaning": "In Reinigung"
     },
-    "problems_tab": "Reported Problems"
+    "express_clean": "Expressreinigung",
+    "problems_tab": "Gemeldete Probleme"
   },
   "common": {
     "cancel": "Abbrechen",
@@ -80,7 +74,7 @@
     "refresh": "Aktualisieren",
     "warning": "Warnung",
     "at": "um",
-    "by": "Von"
+    "by": "von"
   },
   "settings": {
     "title": "Einstellungen",
@@ -99,15 +93,19 @@
     "system_language_help": "Legen Sie die Standardsprache für alle Benutzer fest",
     "errors": {
       "password_mismatch": "Passwörter stimmen nicht überein",
-      "save_failed": "Passwort konnte nicht gespeichert werden"
+      "save_failed": "Speichern des Passworts fehlgeschlagen"
     },
     "system_name": "Systemname",
-    "system_name_help": "Der globale Name, der im gesamten System angezeigt wird",
-    "admin_config_only": "Das Haupt-Administrator-Passwort kann nur in der Systemkonfigurationsdatei geändert werden."
+    "system_name_help": "Der global angezeigte Systemname",
+    "admin_config_only": "Das Haupt-Admin-Passwort kann nur in der Systemkonfigurationsdatei geändert werden.",
+    "push_notifications": "Benachrichtigungen aktivieren",
+    "push_notifications_help": "Erhalten Sie Benachrichtigungen über sofortige Reinigungen und Probleme.",
+    "push_notifications_later": "Später",
+    "push_notifications_enable": "Aktivieren"
   },
   "assignments": {
-    "title": "Reinigungsaufträge",
-    "details": "Verfolgen und verwalten Sie die Aufgabenerledigung.",
+    "title": "Reinigungsaufgaben",
+    "details": "Verfolgen und verwalten Sie den Fortschritt.",
     "overdue": "Überfällig",
     "today": "Heute",
     "tomorrow": "Morgen",
@@ -117,19 +115,19 @@
     "scheduled": "Geplant",
     "completed_by": "Abgeschlossen von",
     "task_list": "Aufgabenliste",
-    "assignment_title": "Reinigungsauftrag",
+    "assignment_title": "Reinigungsaufgabe",
     "report_problem": "Problem melden",
     "upload_images": "Bitte laden Sie Bilder hoch, um das Problem zu dokumentieren.",
     "add_image": "Bild hinzufügen",
     "uploading": "Wird hochgeladen...",
-    "warning_incomplete": "Warnung: Sie haben noch nicht abgehakte Aufgaben. Sind Sie sicher, dass Sie die Reinigung beenden möchten? Es wird im Protokoll als unvollständig (orange) markiert.",
+    "warning_incomplete": "Warnung: Sie haben nicht ausgefüllte Aufgaben. Sind Sie sicher, dass Sie die Reinigung beenden möchten? Es wird im Protokoll als unvollständig (orange) markiert.",
     "confirm_finish": "Beenden bestätigen"
   },
   "rooms": {
     "title": "Zimmer",
-    "subtitle": "Verwalten Sie Reinigungseinheiten und -intervalle.",
+    "subtitle": "Verwalten Sie Reinigungseinheiten und Intervalle.",
     "search_placeholder": "Zimmer suchen...",
-    "manage_property": "Eigenschaft verwalten",
+    "manage_property": "Objekt verwalten",
     "add_room": "Zimmer hinzufügen",
     "room_name": "Zimmername",
     "last_cleaned": "Zuletzt gereinigt",
@@ -148,24 +146,24 @@
       "settings": "Zimmereinstellungen",
       "log": "Reinigungsprotokoll"
     },
-    "next_assignment": "NÄCHSTER AUFTRAG",
+    "next_assignment": "NÄCHSTE REINIGUNG",
     "not_scheduled": "Nicht geplant",
     "auto_interval": "AUTO-INTERVALL (TAGE)",
     "disabled": "Deaktiviert",
-    "task_template": "Aufgabenliste Vorlage",
-    "no_template_tasks": "Dieser Zimmervorlage sind keine Aufgaben zugewiesen.",
+    "task_template": "Aufgabenlistenvorlage",
+    "no_template_tasks": "Keine Aufgaben für diese Zimmervorlage zugewiesen.",
     "full_log": "Vollständiges Reinigungsprotokoll",
-    "no_history": "Noch kein Reinigungsverlauf aufgezeichnet.",
+    "no_history": "Bisher kein Reinigungsprotokoll aufgezeichnet.",
     "done_suffix": "Fertig",
-    "tasks_checklist": "Aufgaben Checkliste",
+    "tasks_checklist": "Aufgaben-Checkliste",
     "loading": "Zimmer werden geladen...",
     "cleaning_assigned": "Reinigung für {{room}} zugewiesen",
     "room_added": "Zimmer \"{{room}}\" erfolgreich hinzugefügt!",
     "room_cloned": "Zimmer \"{{room}}\" erfolgreich geklont!",
     "room_restored": "Zimmer \"{{room}}\" wiederhergestellt!",
-    "no_properties": "Keine Immobilien gefunden",
-    "create_property_first": "Erstellen Sie zuerst eine Immobilie, um deren Zimmer zu verwalten.",
-    "go_to_properties": "Zu den Immobilien",
+    "no_properties": "Keine Objekte gefunden",
+    "create_property_first": "Erstellen Sie zuerst ein Objekt, um dessen Zimmer zu verwalten.",
+    "go_to_properties": "Gehe zu Liegenschaften",
     "save_room": "Zimmer speichern",
     "clone_room": "Zimmer klonen",
     "archive_room": "Zimmer archivieren",
@@ -176,27 +174,27 @@
     "assign_cleaning_title": "Reinigung zuweisen: {{room}}"
   },
   "properties": {
-    "title": "Immobilien",
+    "title": "Objekte",
     "subtitle": "Verwalten Sie Hotels und Standorte.",
-    "add_property": "Neue Immobilie hinzufügen",
-    "new_property": "Neue Immobilie",
-    "property_name": "Name der Immobilie",
-    "property_name_placeholder": "z.B. Grand Hotel",
+    "add_property": "Neues Objekt hinzufügen",
+    "new_property": "Neues Objekt",
+    "property_name": "Objektname",
+    "property_name_placeholder": "z. B. Grand Hotel",
     "archive_confirm": "Sind Sie sicher, dass Sie {{name}} archivieren möchten?",
-    "archive_tooltip": "Immobilie archivieren",
+    "archive_tooltip": "Objekt archivieren",
     "logs_tooltip": "Reinigungsprotokolle anzeigen",
-    "manage_property": "Immobilie verwalten",
+    "manage_property": "Objekt verwalten",
     "rooms_count": "Zimmer",
     "managers_count": "Manager",
     "create": "Erstellen"
   },
   "logs": {
-    "title": "Immobilienprotokolle",
+    "title": "Objektprotokolle",
     "history": "Reinigungshistorie",
     "history_with_name": "Reinigungshistorie: {{name}}",
-    "no_logs": "Keine Reinigungsprotokolle für diese Immobilie gefunden.",
-    "completed_cleaning": "hat die Reinigung abgeschlossen",
-    "room_cleaning_completed": "{{room}} Reinigung abgeschlossen",
+    "no_logs": "Keine Reinigungsprotokolle für dieses Objekt gefunden.",
+    "completed_cleaning": "Reinigung abgeschlossen",
+    "room_cleaning_completed": "Reinigung von {{room}} abgeschlossen",
     "by_user": "Von {{user}}"
   },
   "users": {
@@ -205,7 +203,7 @@
     "add_user": "Benutzer hinzufügen",
     "edit_user": "Benutzer bearbeiten",
     "save_user": "Benutzer speichern",
-    "cleaners_tab": "Reinigungskräfte",
+    "cleaners_tab": "Reiniger",
     "managers_tab": "Manager & Admins",
     "loading": "Benutzer werden geladen...",
     "no_users": "Keine Benutzer gefunden.",
@@ -225,5 +223,30 @@
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "delete_confirm": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?"
+  },
+  "emails": {
+    "title": "Postausgangs-E-Mail-Protokolle",
+    "subtitle": "Auditieren Sie tägliche Reinigungsberichte und ausgehende operative Benachrichtigungen",
+    "op_log": "Betriebsprotokoll",
+    "verify_desc": "Überprüfen Sie System-E-Mail-Zustellungen und SMTP-Verbindungen",
+    "loading": "E-Mail-Verlauf wird geladen...",
+    "no_emails": "Noch keine E-Mails protokolliert",
+    "sent_reports_appear": "Gesendete Berichte werden hier automatisch angezeigt.",
+    "sent_date": "Sendedatum",
+    "property": "Objekt",
+    "recipients": "Empfänger",
+    "subject": "Betreff",
+    "status": "Status",
+    "actions": "Aktionen",
+    "delivered": "Zugestellt",
+    "failed": "Fehlgeschlagen",
+    "inspect": "Prüfen",
+    "inspector_title": "E-Mail-Inspektor",
+    "inspector_subtitle": "Rohes Audit-Protokoll und HTML-Übertragungsdaten",
+    "unauthorized": "Unbefugter Zugriff",
+    "smtp_error_details": "SMTP-Übertragungsfehlerdetails",
+    "html_output": "HTML-Ausgabe gerendert",
+    "all_emails": "Alle E-Mails",
+    "sent": "Gesendet"
   }
 }

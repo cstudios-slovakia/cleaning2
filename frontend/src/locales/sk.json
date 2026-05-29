@@ -39,14 +39,6 @@
     "username_placeholder": "meno_upratovaca"
   },
   "dashboard": {
-    "property_status": "Matica stavu budov",
-    "activity": "Aktivita",
-    "timeline": "Časová os",
-    "pending_today": "Dnes čaká",
-    "recent_logs": "Nedávne záznamy",
-    "express_clean": "Rýchle upratovanie",
-    "assign": "Priradiť",
-    "no_tasks": "Žiadne čakajúce úlohy",
     "completed": "Dokončené",
     "title": "Prehľad systému",
     "subtitle": "Kľúčové ukazovatele výkonnosti a stav.",
@@ -63,6 +55,7 @@
       "immediate": "Ihneď",
       "cleaning": "Upratuje sa"
     },
+    "express_clean": "Rýchle upratovanie",
     "problems_tab": "Nahlásené problémy"
   },
   "common": {
@@ -230,5 +223,30 @@
     "active": "Aktívny",
     "inactive": "Neaktívny",
     "delete_confirm": "Naozaj chcete vymazať tohto používateľa?"
+  },
+  "emails": {
+    "title": "Archív odoslaných e-mailov",
+    "subtitle": "Audit denných prehľadov upratovania a prevádzkových oznámení",
+    "op_log": "Prevádzkový denník",
+    "verify_desc": "Overenie doručenia systémových e-mailov a pripojení SMTP",
+    "loading": "Načítavam históriu e-mailov...",
+    "no_emails": "Zatiaľ neboli zaznamenané žiadne e-maily",
+    "sent_reports_appear": "Odoslané reporty sa tu zobrazia automaticky.",
+    "sent_date": "Dátum odoslania",
+    "property": "Budova",
+    "recipients": "Príjemcovia",
+    "subject": "Predmet",
+    "status": "Stav",
+    "actions": "Akcie",
+    "delivered": "Doručené",
+    "failed": "Zlyhalo",
+    "inspect": "Skontrolovať",
+    "inspector_title": "Inšpektor e-mailov",
+    "inspector_subtitle": "Záznam auditu a HTML dáta prenosu",
+    "unauthorized": "Neoprávnený prístup",
+    "smtp_error_details": "Podrobnosti o chybe prenosu SMTP",
+    "html_output": "HTML vykreslený výstup",
+    "all_emails": "Všetky e-maily",
+    "sent": "Odoslané"
   }
 }

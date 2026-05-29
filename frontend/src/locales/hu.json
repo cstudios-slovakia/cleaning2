@@ -5,6 +5,7 @@
     "rooms": "Szobák",
     "assignments": "Feladatok",
     "users": "Felhasználók",
+    "emails": "Email naplók",
     "settings": "Beállítások",
     "logout": "Kijelentkezés"
   },
@@ -18,7 +19,7 @@
     "cleaning_log": "Takarítási napló"
   },
   "login": {
-    "title": "Tisztító rendszer",
+    "title": "Takarító Rendszer",
     "subtitle": "Jelentkezzen be a fiókjába",
     "manager_tab": "Menedzser / Admin",
     "cleaner_tab": "Takarító",
@@ -29,29 +30,21 @@
     "submit": "Bejelentkezés",
     "signing_in": "Bejelentkezés...",
     "errors": {
-      "deactivated": "Ez a fiók inaktiválva van.",
+      "deactivated": "Ez a fiók deaktiválva van.",
       "invalid_manager": "Érvénytelen email vagy jelszó.",
       "invalid_cleaner": "Érvénytelen felhasználónév vagy PIN.",
-      "connection": "Nem sikerült csatlakozni a szerverhez."
+      "connection": "Nem sikerült kapcsolódni a szerverhez."
     },
-    "pin_help": "4 jegyű PIN",
+    "pin_help": "4 számjegyű PIN",
     "username_placeholder": "takarito_janos"
   },
   "dashboard": {
-    "property_status": "Ingatlan állapot mátrix",
-    "activity": "Tevékenység",
-    "timeline": "Idővonal",
-    "pending_today": "Ma esedékes",
-    "recent_logs": "Legutóbbi naplók",
-    "express_clean": "Expressz takarítás",
-    "assign": "Kiosztás",
-    "no_tasks": "Nincsenek várakozó feladatok",
     "completed": "Befejezve",
     "title": "Rendszer áttekintés",
-    "subtitle": "Kulcsfontosságú teljesítménymutatók és állapot.",
+    "subtitle": "Fő teljesítménymutatók és állapot.",
     "tasks_matrix": "Mai feladat mátrix",
     "no_rooms": "Nincsenek szobák",
-    "pending_today_tab": "Ma esedékes",
+    "pending_today_tab": "Mai függő feladatok",
     "recent_logs_tab": "Legutóbbi naplók",
     "badge_overdue": "Lejárt",
     "badge_due_today": "Ma esedékes",
@@ -59,10 +52,11 @@
       "ok": "OK",
       "due": "Esedékes",
       "overdue": "Lejárt",
-      "immediate": "Azonnal",
+      "immediate": "Azonnali",
       "cleaning": "Takarítás alatt"
     },
-    "problems_tab": "Reported Problems"
+    "express_clean": "Expressz takarítás",
+    "problems_tab": "Bejelentett problémák"
   },
   "common": {
     "cancel": "Mégse",
@@ -78,9 +72,9 @@
     "overdue": "Lejárt",
     "future": "Jövőbeli",
     "refresh": "Frissítés",
-    "warning": "Figyelem",
-    "at": "-kor",
-    "by": "Által"
+    "warning": "Figyelmeztetés",
+    "at": "ekkor:",
+    "by": "általa:"
   },
   "settings": {
     "title": "Beállítások",
@@ -99,15 +93,19 @@
     "system_language_help": "Állítsa be az alapértelmezett nyelvet minden felhasználó számára",
     "errors": {
       "password_mismatch": "A jelszavak nem egyeznek",
-      "save_failed": "Nem sikerült menteni a jelszót"
+      "save_failed": "Jelszó mentése sikertelen"
     },
-    "system_name": "Rendszer neve",
+    "system_name": "Rendszer név",
     "system_name_help": "A rendszerben megjelenő globális név",
-    "admin_config_only": "A fő adminisztrátor jelszava csak a rendszerkonfigurációs fájlban módosítható."
+    "admin_config_only": "A fő adminisztrátori jelszó csak a rendszer konfigurációs fájljában módosítható.",
+    "push_notifications": "Értesítések engedélyezése",
+    "push_notifications_help": "Kapjon értesítést az azonnali takarításokról és problémákról.",
+    "push_notifications_later": "Később",
+    "push_notifications_enable": "Engedélyezés"
   },
   "assignments": {
     "title": "Takarítási feladatok",
-    "details": "A feladatok elvégzésének nyomon követése és kezelése.",
+    "details": "Kövesse és kezelje a feladatok befejezését.",
     "overdue": "Lejárt",
     "today": "Ma",
     "tomorrow": "Holnap",
@@ -118,11 +116,11 @@
     "completed_by": "Befejezte",
     "task_list": "Feladatlista",
     "assignment_title": "Takarítási feladat",
-    "report_problem": "Probléma jelentése",
+    "report_problem": "Probléma bejelentése",
     "upload_images": "Kérjük, töltsön fel képeket a probléma dokumentálásához.",
     "add_image": "Kép hozzáadása",
     "uploading": "Feltöltés...",
-    "warning_incomplete": "Figyelem: Vannak befejezetlen feladatai. Biztosan be akarja fejezni a takarítást? A naplókban befejezetlenként (narancssárga) lesz megjelölve.",
+    "warning_incomplete": "Figyelmeztetés: Befejezetlen feladatai vannak. Biztosan be akarja fejezni a takarítást? A naplóban befejezetlenként (narancssárga) lesz megjelölve.",
     "confirm_finish": "Befejezés megerősítése"
   },
   "rooms": {
@@ -133,14 +131,14 @@
     "add_room": "Szoba hozzáadása",
     "room_name": "Szoba neve",
     "last_cleaned": "Utoljára takarítva",
-    "action": "Művelet",
+    "action": "Akcia",
     "express": "EXPRESSZ",
     "assign": "KIOSZTÁS",
     "manage": "KEZELÉS",
     "express_tooltip": "Expressz takarítás (Azonnal)",
     "assign_tooltip": "Takarítási dátum kiosztása",
     "never": "Soha",
-    "enter_name_placeholder": "Adja meg a szoba nevét...",
+    "enter_name_placeholder": "Írja be a szoba nevét...",
     "new_room": "Új szoba",
     "no_rooms": "Még nincsenek szobák hozzáadva ehhez az ingatlanhoz.",
     "management_title": "Kezelés: ",
@@ -148,32 +146,32 @@
       "settings": "Szoba beállítások",
       "log": "Takarítási napló"
     },
-    "next_assignment": "KÖVETKEZŐ FELADAT",
+    "next_assignment": "KÖVETKEZŐ TAKARÍTÁS",
     "not_scheduled": "Nincs ütemezve",
-    "auto_interval": "AUTÓMATIKUS INTERVALLUM (NAP)",
+    "auto_interval": "AUTO INTERVALLUM (NAP)",
     "disabled": "Kikapcsolva",
     "task_template": "Feladatlista sablon",
-    "no_template_tasks": "Nincsenek feladatok rendelve ehhez a szobasablonhoz.",
+    "no_template_tasks": "Nincsenek feladatok hozzárendelve ehhez a szobasablonhoz.",
     "full_log": "Teljes takarítási napló",
-    "no_history": "Még nem rögzítettek takarítási előzményt.",
+    "no_history": "Még nincs rögzített takarítási előzmény.",
     "done_suffix": "Kész",
-    "tasks_checklist": "feladatok ellenőrzőlista",
+    "tasks_checklist": "feladatok ellenőrzőlistája",
     "loading": "Szobák betöltése...",
-    "cleaning_assigned": "Takarítás hozzárendelve: {{room}}",
-    "room_added": "\"{{room}}\" szoba sikeresen hozzáadva!",
-    "room_cloned": "\"{{room}}\" szoba sikeresen klónozva!",
-    "room_restored": "\"{{room}}\" szoba visszaállítva!",
+    "cleaning_assigned": "Takarítás kiosztva a következő szobához: {{room}}",
+    "room_added": "Szoba \"{{room}}\" sikeresen hozzáadva!",
+    "room_cloned": "Szoba \"{{room}}\" sikeresen másolva!",
+    "room_restored": "Szoba \"{{room}}\" visszaállítva!",
     "no_properties": "Nem találhatók ingatlanok",
-    "create_property_first": "Előbb hozzon létre egy ingatlant a szobák kezeléséhez.",
+    "create_property_first": "Először hozzon létre egy ingatlant a szobái kezeléséhez.",
     "go_to_properties": "Ugrás az ingatlanokhoz",
     "save_room": "Szoba mentése",
-    "clone_room": "Szoba klónozása",
+    "clone_room": "Szoba másolása",
     "archive_room": "Szoba archiválása",
     "room_archived": "Szoba archiválva",
     "undo": "VISSZAVONÁS",
-    "target_date": "Cél dátum",
-    "confirm_assignment": "Hozzárendelés megerősítése",
-    "assign_cleaning_title": "Takarítás hozzárendelése: {{room}}"
+    "target_date": "Céldátum",
+    "confirm_assignment": "Kiosztás megerősítése",
+    "assign_cleaning_title": "Takarítás kiosztása: {{room}}"
   },
   "properties": {
     "title": "Ingatlanok",
@@ -195,9 +193,9 @@
     "history": "Takarítási előzmények",
     "history_with_name": "Takarítási előzmények: {{name}}",
     "no_logs": "Nem találhatók takarítási naplók ehhez az ingatlanhoz.",
-    "completed_cleaning": "befejezte a takarítást",
-    "room_cleaning_completed": "{{room}} takarítása befejezve",
-    "by_user": "{{user}} által"
+    "completed_cleaning": "takarítás befejezve",
+    "room_cleaning_completed": "{{room}} takarítás befejezve",
+    "by_user": "Általa: {{user}}"
   },
   "users": {
     "title": "Felhasználókezelés",
@@ -210,7 +208,7 @@
     "loading": "Felhasználók betöltése...",
     "no_users": "Nem találhatók felhasználók.",
     "name_identifiers": "Név / Azonosítók",
-    "status_role": "Állapot / Szerepkör",
+    "status_role": "Stav / Szerepkör",
     "actions": "Műveletek",
     "pin_label": "PIN: {{pin}}",
     "last_seen": "Utoljára látva: {{at}}",
@@ -225,5 +223,30 @@
     "active": "Aktív",
     "inactive": "Inaktív",
     "delete_confirm": "Biztosan törölni szeretné ezt a felhasználót?"
+  },
+  "emails": {
+    "title": "Kimenő email naplók",
+    "subtitle": "Napi takarítási jelentések és kimenő prevenciós értesítések ellenőrzése",
+    "op_log": "Prevenciós napló",
+    "verify_desc": "Rendszer email kézbesítések és SMTP kapcsolatok ellenőrzése",
+    "loading": "Email előzmények betöltése...",
+    "no_emails": "Még nincsenek naplózott emailek",
+    "sent_reports_appear": "Az elküldött jelentések itt jelennek meg automatikusan.",
+    "sent_date": "Küldés dátuma",
+    "property": "Ingatlan",
+    "recipients": "Címzettek",
+    "subject": "Tárgy",
+    "status": "Állapot",
+    "actions": "Műveletek",
+    "delivered": "Kézbesítve",
+    "failed": "Sikertelen",
+    "inspect": "Megtekintés",
+    "inspector_title": "Email megtekintő",
+    "inspector_subtitle": "Nyers audit napló és HTML átviteli adatok",
+    "unauthorized": "Jogosulatlan hozzáférés",
+    "smtp_error_details": "SMTP átviteli hiba részletei",
+    "html_output": "HTML renderelt kimenet",
+    "all_emails": "Összes email",
+    "sent": "Elküldött"
   }
 }

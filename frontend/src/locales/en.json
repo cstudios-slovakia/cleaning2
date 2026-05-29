@@ -223,5 +223,30 @@
     "active": "Active",
     "inactive": "Inactive",
     "delete_confirm": "Are you sure you want to delete this user?"
+  },
+  "emails": {
+    "title": "Outbound Email Logs",
+    "subtitle": "Audit daily cleaning reports and outbound operational notifications",
+    "op_log": "Operational Log",
+    "verify_desc": "Verify system email deliveries and SMTP connections",
+    "loading": "Loading email history...",
+    "no_emails": "No emails logged yet",
+    "sent_reports_appear": "Sent reports will appear here automatically.",
+    "sent_date": "Sent Date",
+    "property": "Property",
+    "recipients": "Recipients",
+    "subject": "Subject",
+    "status": "Status",
+    "actions": "Actions",
+    "delivered": "Delivered",
+    "failed": "Failed",
+    "inspect": "Inspect",
+    "inspector_title": "Email Inspector",
+    "inspector_subtitle": "Raw audit log and HTML transmission data",
+    "unauthorized": "Unauthorized Access",
+    "smtp_error_details": "SMTP Transmission Error Details",
+    "html_output": "HTML Rendered Output",
+    "all_emails": "All Emails",
+    "sent": "Sent"
   }
 }

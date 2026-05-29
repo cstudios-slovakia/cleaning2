@@ -53,7 +53,7 @@ export default function EmailLogs() {
   if (!isSystemAdmin) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-500 font-bold">Unauthorized Access</p>
+        <p className="text-red-500 font-bold">{t('emails.unauthorized')}</p>
       </div>
     );
   }
@@ -61,8 +61,8 @@ export default function EmailLogs() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Outbound Email Logs</h1>
-        <p className="text-slate-500 font-medium mt-1">Audit daily cleaning reports and outbound operational notifications</p>
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{t('emails.title')}</h1>
+        <p className="text-slate-500 font-medium mt-1">{t('emails.subtitle')}</p>
       </div>
 
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
@@ -72,8 +72,8 @@ export default function EmailLogs() {
               <Mail size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Operational Log</h2>
-              <p className="text-xs text-slate-400 font-medium">Verify system email deliveries and SMTP connections</p>
+              <h2 className="text-lg font-bold text-slate-800">{t('emails.op_log')}</h2>
+              <p className="text-xs text-slate-400 font-medium">{t('emails.verify_desc')}</p>
             </div>
           </div>
           <button
@@ -82,16 +82,16 @@ export default function EmailLogs() {
             className="flex items-center space-x-1.5 px-3.5 py-2 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all disabled:opacity-50"
           >
             <RefreshCw size={14} className={loadingEmails ? "animate-spin" : ""} />
-            <span>Refresh</span>
+            <span>{t('common.refresh')}</span>
           </button>
         </div>
 
         {/* Filters */}
         <div className="flex space-x-2 mb-6">
           {[
-            { id: 'all', label: 'All Emails' },
-            { id: 'success', label: 'Sent' },
-            { id: 'failed', label: 'Failed' }
+            { id: 'all', label: t('emails.all_emails') },
+            { id: 'success', label: t('emails.sent') },
+            { id: 'failed', label: t('emails.failed') }
           ].map(f => (
             <button
               key={f.id}
@@ -112,25 +112,25 @@ export default function EmailLogs() {
         {loadingEmails ? (
           <div className="text-center py-12">
             <div className="inline-block w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-3"></div>
-            <p className="text-sm font-semibold text-slate-400">Loading email history...</p>
+            <p className="text-sm font-semibold text-slate-400">{t('emails.loading')}</p>
           </div>
         ) : sentEmails.length === 0 ? (
           <div className="text-center py-12 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
             <Mail className="mx-auto text-slate-300 mb-3" size={32} />
-            <p className="text-sm font-semibold text-slate-500">No emails logged yet</p>
-            <p className="text-xs text-slate-400 mt-1">Sent reports will appear here automatically.</p>
+            <p className="text-sm font-semibold text-slate-500">{t('emails.no_emails')}</p>
+            <p className="text-xs text-slate-400 mt-1">{t('emails.sent_reports_appear')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-slate-100">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
-                  <th className="py-4 px-6">Sent Date</th>
-                  <th className="py-4 px-6">Property</th>
-                  <th className="py-4 px-6">Recipients</th>
-                  <th className="py-4 px-6">Subject</th>
-                  <th className="py-4 px-6">Status</th>
-                  <th className="py-4 px-6 text-right">Actions</th>
+                  <th className="py-4 px-6">{t('emails.sent_date')}</th>
+                  <th className="py-4 px-6">{t('emails.property')}</th>
+                  <th className="py-4 px-6">{t('emails.recipients')}</th>
+                  <th className="py-4 px-6">{t('emails.subject')}</th>
+                  <th className="py-4 px-6">{t('emails.status')}</th>
+                  <th className="py-4 px-6 text-right">{t('emails.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -139,7 +139,7 @@ export default function EmailLogs() {
                   .map(email => (
                     <tr key={email.id} className="hover:bg-slate-50/50 transition-colors text-sm text-slate-700">
                       <td className="py-4 px-6 font-medium whitespace-nowrap">
-                        {new Date(email.sent_at).toLocaleString('sk-SK', {
+                        {new Date(email.sent_at).toLocaleString(currentLang === 'sk' ? 'sk-SK' : 'en-US', {
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric',
@@ -159,7 +159,7 @@ export default function EmailLogs() {
                         {email.status === 'success' ? (
                           <span className="inline-flex items-center space-x-1 px-2.5 py-1 text-xs font-bold text-green-700 bg-green-50 border border-green-100 rounded-full">
                             <CheckCircle2 size={12} />
-                            <span>Delivered</span>
+                            <span>{t('emails.delivered')}</span>
                           </span>
                         ) : (
                           <span 
@@ -167,7 +167,7 @@ export default function EmailLogs() {
                             title={email.error_message}
                           >
                             <AlertCircle size={12} />
-                            <span>Failed</span>
+                            <span>{t('emails.failed')}</span>
                           </span>
                         )}
                       </td>
@@ -177,7 +177,7 @@ export default function EmailLogs() {
                           className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all"
                         >
                           <Eye size={12} />
-                          <span>Inspect</span>
+                          <span>{t('emails.inspect')}</span>
                         </button>
                       </td>
                     </tr>
@@ -201,8 +201,8 @@ export default function EmailLogs() {
           <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200 flex flex-col z-10">
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div>
-                <h3 className="text-lg font-black text-slate-900">Email Inspector</h3>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">Raw audit log and HTML transmission data</p>
+                <h3 className="text-lg font-black text-slate-900">{t('emails.inspector_title')}</h3>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">{t('emails.inspector_subtitle')}</p>
               </div>
               <button 
                 onClick={() => setSelectedEmail(null)}
@@ -216,24 +216,24 @@ export default function EmailLogs() {
               {/* Metadata Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-100 text-sm">
                 <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Subject</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('emails.subject')}</p>
                   <p className="font-extrabold text-slate-800 mt-1">{selectedEmail.subject}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sent At</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('emails.sent_date')}</p>
                   <p className="font-bold text-slate-700 mt-1">
-                    {new Date(selectedEmail.sent_at).toLocaleString('sk-SK')}
+                    {new Date(selectedEmail.sent_at).toLocaleString(currentLang === 'sk' ? 'sk-SK' : 'en-US')}
                   </p>
                 </div>
                 <div className="sm:col-span-2 border-t border-slate-200/60 pt-3 mt-1">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Recipients</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('emails.recipients')}</p>
                   <p className="font-medium text-slate-700 mt-1 break-all">{selectedEmail.recipient}</p>
                 </div>
                 {selectedEmail.status === 'failed' && (
                   <div className="sm:col-span-2 border-t border-red-200 bg-red-50/50 p-3 rounded-xl mt-1">
                     <p className="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center space-x-1">
                       <AlertCircle size={14} />
-                      <span>SMTP Transmission Error Details</span>
+                      <span>{t('emails.smtp_error_details')}</span>
                     </p>
                     <p className="font-mono text-xs text-red-700 mt-1">{selectedEmail.error_message}</p>
                   </div>
@@ -242,7 +242,7 @@ export default function EmailLogs() {
 
               {/* rendered HTML Email Iframe */}
               <div>
-                <p className="text-xs font-bold text-slate-600 mb-3 uppercase tracking-wider">HTML Rendered Output</p>
+                <p className="text-xs font-bold text-slate-600 mb-3 uppercase tracking-wider">{t('emails.html_output')}</p>
                 <iframe
                   srcDoc={selectedEmail.body}
                   title="Email HTML Preview"
