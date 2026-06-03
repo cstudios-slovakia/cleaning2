@@ -313,18 +313,20 @@ export default function RoomList() {
                       <span>{t('rooms.manage_property')}</span>
                     </Link>
                   )}
-                  <button 
-                    onClick={() => {
-                      setAddingToPropertyId(group.id);
-                      setNewRoomName('');
-                    }}
-                    className={cn("flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border",
-                      parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
-                      ? "bg-primary-600 text-white border-primary-700 hover:bg-primary-700" : "bg-white text-slate-900 border-white hover:bg-slate-50")}
-                  >
-                    <Plus size={14} />
-                    <span>{t('rooms.add_room')}</span>
-                  </button>
+                  {user?.role !== 'cleaner' && (
+                    <button 
+                      onClick={() => {
+                        setAddingToPropertyId(group.id);
+                        setNewRoomName('');
+                      }}
+                      className={cn("flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border",
+                        parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
+                        ? "bg-primary-600 text-white border-primary-700 hover:bg-primary-700" : "bg-white text-slate-900 border-white hover:bg-slate-50")}
+                    >
+                      <Plus size={14} />
+                      <span>{t('rooms.add_room')}</span>
+                    </button>
+                  )}
                 </div>
               </div>
               {filteredRooms.length === 0 ? (

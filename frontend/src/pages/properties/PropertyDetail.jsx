@@ -8,9 +8,11 @@ import AssignmentDetail from '../assignments/AssignmentDetail';
 import { saveAssignment, fetchUsers, fetchRoomDetails } from '../../lib/api';
 import { useAssignments } from '../../hooks/useAssignments';
 import { cn, isToday, isYesterday } from '../../lib/utils';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function PropertyDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
   const [slideoutRoomId, setSlideoutRoomId] = useState(null);
@@ -461,17 +463,19 @@ export default function PropertyDetail() {
               </button>
             </>
           ) : (
-            <button 
-              onClick={() => {
-                setEditForm({ ...propertyData });
-                setEditRooms([...rooms]);
-                setIsEditing(true);
-              }}
-              className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors font-medium shadow-sm"
-            >
-              <Edit2 size={16} />
-              <span>Edit Property</span>
-            </button>
+            user?.role !== 'cleaner' && (
+              <button 
+                onClick={() => {
+                  setEditForm({ ...propertyData });
+                  setEditRooms([...rooms]);
+                  setIsEditing(true);
+                }}
+                className="flex items-center space-x-2 bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 transition-colors font-medium shadow-sm"
+              >
+                <Edit2 size={16} />
+                <span>Edit Property</span>
+              </button>
+            )
           )}
         </div>
       </div>
@@ -707,20 +711,22 @@ export default function PropertyDetail() {
                 rooms.map(room => (
                   <div key={room.id} className="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
                     <span className="font-medium text-slate-700">{room.name}</span>
-                    <div className="flex items-center space-x-3">
-                      <button onClick={() => handleCloneRoom(room)} className="text-slate-400 hover:text-primary-600 transition-colors" title="Clone">
-                        <Copy size={16} />
-                      </button>
-                      <button onClick={() => handleArchiveRoom(room.id)} className="text-slate-400 hover:text-amber-600 transition-colors" title="Archive">
-                        <Archive size={16} />
-                      </button>
-                      <button 
-                        onClick={() => { setSlideoutRoomId(room.id); setIsSlideoutOpen(true); }}
-                        className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium"
-                      >
-                        Manage
-                      </button>
-                    </div>
+                    {user?.role !== 'cleaner' && (
+                      <div className="flex items-center space-x-3">
+                        <button onClick={() => handleCloneRoom(room)} className="text-slate-400 hover:text-primary-600 transition-colors" title="Clone">
+                          <Copy size={16} />
+                        </button>
+                        <button onClick={() => handleArchiveRoom(room.id)} className="text-slate-400 hover:text-amber-600 transition-colors" title="Archive">
+                          <Archive size={16} />
+                        </button>
+                        <button 
+                          onClick={() => { setSlideoutRoomId(room.id); setIsSlideoutOpen(true); }}
+                          className="text-sm px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium"
+                        >
+                          Manage
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))
               )}
