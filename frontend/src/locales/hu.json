@@ -126,7 +126,13 @@
     "notes_placeholder": "Írjon megjegyzést vagy általános visszajelzést a szoba takarításáról...",
     "describe_problem": "Probléma leírása",
     "problem_placeholder": "Írja le a probléma részleteit (pl. törött csaptelep, foltos szőnyeg)...",
-    "all_tasks_required": "Minden feladatot be kell jelölni a takarítási feladat lezárásához."
+    "all_tasks_required": "Minden feladatot be kell jelölni a takarítási feladat lezárásához.",
+    "my_assignments": "Feladataim",
+    "cleaner_subtitle": "Mai ütemezett takarítási ellenőrzőlista",
+    "todays_task_list": "Mai feladatlista",
+    "overdue_label": "Lejárt",
+    "no_assignments_today": "Ma nincs elvégzendő feladat!",
+    "enjoy_your_day": "Élvezze a napot, vagy érdeklődjön a menedzserénél."
   },
   "rooms": {
     "title": "Szobák",

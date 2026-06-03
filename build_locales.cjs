@@ -130,7 +130,13 @@ const locales = {
       notes_placeholder: "Add a comment or general feedback about the cleaning of this room...",
       describe_problem: "Describe the Problem",
       problem_placeholder: "Enter details of the issue (e.g. Broken faucet, stained carpet)...",
-      all_tasks_required: "All tasks must be checked off in order to close this cleaning assignment."
+      all_tasks_required: "All tasks must be checked off in order to close this cleaning assignment.",
+      my_assignments: "My Assignments",
+      cleaner_subtitle: "Today's scheduled cleaning checklist",
+      todays_task_list: "Today's Task List",
+      overdue_label: "Overdue",
+      no_assignments_today: "No Assignments Today!",
+      enjoy_your_day: "Enjoy your day or check with your manager."
     },
     rooms: {
       title: "Rooms",
@@ -387,7 +393,13 @@ const locales = {
       notes_placeholder: "Pridajte komentár alebo všeobecnú spätnú väzbu k upratovaniu tejto izby...",
       describe_problem: "Popíšte problém",
       problem_placeholder: "Zadajte podrobnosti o probléme (napr. nefunkčný kohútik, znečistený koberec)...",
-      all_tasks_required: "Pre uzavretie tejto úlohy na upratovanie musia byť splnené všetky čiastkové úlohy."
+      all_tasks_required: "Pre uzavretie tejto úlohy na upratovanie musia byť splnené všetky čiastkové úlohy.",
+      my_assignments: "Moje úlohy",
+      cleaner_subtitle: "Dnešný plánovaný zoznam upratovania",
+      todays_task_list: "Dnešný zoznam úloh",
+      overdue_label: "Po termíne",
+      no_assignments_today: "Dnes žiadne úlohy!",
+      enjoy_your_day: "Užite si deň alebo sa informujte u svojho manažéra."
     },
     rooms: {
       title: "Izby",
@@ -644,7 +656,13 @@ const locales = {
       notes_placeholder: "Írjon megjegyzést vagy általános visszajelzést a szoba takarításáról...",
       describe_problem: "Probléma leírása",
       problem_placeholder: "Írja le a probléma részleteit (pl. törött csaptelep, foltos szőnyeg)...",
-      all_tasks_required: "Minden feladatot be kell jelölni a takarítási feladat lezárásához."
+      all_tasks_required: "Minden feladatot be kell jelölni a takarítási feladat lezárásához.",
+      my_assignments: "Feladataim",
+      cleaner_subtitle: "Mai ütemezett takarítási ellenőrzőlista",
+      todays_task_list: "Mai feladatlista",
+      overdue_label: "Lejárt",
+      no_assignments_today: "Ma nincs elvégzendő feladat!",
+      enjoy_your_day: "Élvezze a napot, vagy érdeklődjön a menedzserénél."
     },
     rooms: {
       title: "Szobák",
@@ -901,7 +919,13 @@ const locales = {
       notes_placeholder: "Fügen Sie einen Kommentar oder allgemeines Feedback zur Reinigung dieses Zimmers hinzu...",
       describe_problem: "Problem beschreiben",
       problem_placeholder: "Geben Sie Details zum Problem ein (z. B. defekter Wasserhahn, Fleck auf dem Teppich)...",
-      all_tasks_required: "Alle Aufgaben müssen abgehakt sein, um diesen Reinigungsauftrag abzuschließen."
+      all_tasks_required: "Alle Aufgaben müssen abgehakt sein, um diesen Reinigungsauftrag abzuschließen.",
+      my_assignments: "Meine Aufgaben",
+      cleaner_subtitle: "Heutige geplante Reinigungs-Checkliste",
+      todays_task_list: "Heutige Aufgabenliste",
+      overdue_label: "Überfällig",
+      no_assignments_today: "Keine Aufgaben heute!",
+      enjoy_your_day: "Genießen Sie Ihren Tag oder sprechen Sie mit Ihrem Manager."
     },
     rooms: {
       title: "Zimmer",
@@ -1158,7 +1182,13 @@ const locales = {
       notes_placeholder: "Agregue un comentario o comentarios generales sobre la limpieza de esta habitación...",
       describe_problem: "Describir el problema",
       problem_placeholder: "Ingrese detalles del problema (por ejemplo, grifo roto, alfombra manchada)...",
-      all_tasks_required: "Todas las tareas deben estar marcadas para cerrar esta asignación de limpieza."
+      all_tasks_required: "Todas las tareas deben estar marcadas para cerrar esta asignación de limpieza.",
+      my_assignments: "Mis asignaciones",
+      cleaner_subtitle: "Lista de verificación de limpieza programada para hoy",
+      todays_task_list: "Lista de tareas de hoy",
+      overdue_label: "Atrasado",
+      no_assignments_today: "¡No hay asignaciones hoy!",
+      enjoy_your_day: "Disfruta de tu día o consulta con tu manager."
     },
     rooms: {
       title: "Habitaciones",
@@ -1415,7 +1445,13 @@ const locales = {
       notes_placeholder: "Додайте коментар або загальний відгук про прибирання цієї кімнати...",
       describe_problem: "Опишіть проблему",
       problem_placeholder: "Введіть деталі проблеми (наприклад, зламаний кран, пляма на килимі)...",
-      all_tasks_required: "Усі завдання мають бути відмічені, щоб закрити це завдання на прибирання."
+      all_tasks_required: "Усі завдання мають бути відмічені, щоб закрити це завдання на прибирання.",
+      my_assignments: "Мої завдання",
+      cleaner_subtitle: "Сьогоднішній запланований контрольний список прибирання",
+      todays_task_list: "Сьогоднішній список завдань",
+      overdue_label: "Прострочено",
+      no_assignments_today: "Сьогодні немає завдань!",
+      enjoy_your_day: "Гарного дня або зверніться до свого менеджера."
     },
     rooms: {
       title: "Кімнати",
@@ -1672,7 +1708,13 @@ const locales = {
       notes_placeholder: "Добавьте комментарий или общий отзыв об уборке этой комнаты...",
       describe_problem: "Опишите проблему",
       problem_placeholder: "Введите детали проблемы (например, сломанный кран, пятно на ковре)...",
-      all_tasks_required: "Все задачи должны быть отмечены для завершения этой уборки."
+      all_tasks_required: "Все задачи должны быть отмечены для завершения этой уборки.",
+      my_assignments: "Мои задания",
+      cleaner_subtitle: "Сегодняшний запланированный список уборки",
+      todays_task_list: "Сегодняшний список задач",
+      overdue_label: "Просрочено",
+      no_assignments_today: "Сегодня нет заданий!",
+      enjoy_your_day: "Хорошего дня или свяжитесь с вашим менеджером."
     },
     rooms: {
       title: "Комнаты",

@@ -155,10 +155,10 @@ export default function AssignmentList() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-slate-800">
-            {isCleanerRole ? "My Assignments" : t('assignments.title')}
+            {isCleanerRole ? t('assignments.my_assignments') : t('assignments.title')}
           </h2>
           <p className="text-sm text-slate-500 mt-1">
-            {isCleanerRole ? "Today's scheduled cleaning checklist" : t('assignments.details')}
+            {isCleanerRole ? t('assignments.cleaner_subtitle') : t('assignments.details')}
           </p>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function AssignmentList() {
         /* Flat Cleaner View */
         <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
           <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4 text-white">
-            <h3 className="font-black text-sm uppercase tracking-wider">Today's Task List</h3>
+            <h3 className="font-black text-sm uppercase tracking-wider">{t('assignments.todays_task_list')}</h3>
           </div>
           <div className="divide-y divide-slate-100">
             {cleanerListMerged.map(a => {
@@ -203,7 +203,7 @@ export default function AssignmentList() {
                     <div className="text-right">
                       {a.isOverdueFlag ? (
                         <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2.5 py-1 rounded-lg uppercase tracking-wider animate-pulse flex items-center gap-1">
-                          Overdue ({translateLabel(a.time)})
+                          {t('assignments.overdue_label')} ({translateLabel(a.time)})
                         </span>
                       ) : (
                         <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2.5 py-1 rounded-lg uppercase tracking-wider">
@@ -219,8 +219,8 @@ export default function AssignmentList() {
             {cleanerListMerged.length === 0 && (
               <div className="p-12 text-center text-slate-500">
                 <p className="text-4xl mb-4">🎉</p>
-                <h4 className="font-black text-lg text-slate-800">No Assignments Today!</h4>
-                <p className="text-sm text-slate-400 mt-1">Enjoy your day or check with your manager.</p>
+                <h4 className="font-black text-lg text-slate-800">{t('assignments.no_assignments_today')}</h4>
+                <p className="text-sm text-slate-400 mt-1">{t('assignments.enjoy_your_day')}</p>
               </div>
             )}
           </div>

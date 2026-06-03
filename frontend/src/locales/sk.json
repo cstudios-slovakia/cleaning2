@@ -126,7 +126,13 @@
     "notes_placeholder": "Pridajte komentár alebo všeobecnú spätnú väzbu k upratovaniu tejto izby...",
     "describe_problem": "Popíšte problém",
     "problem_placeholder": "Zadajte podrobnosti o probléme (napr. nefunkčný kohútik, znečistený koberec)...",
-    "all_tasks_required": "Pre uzavretie tejto úlohy na upratovanie musia byť splnené všetky čiastkové úlohy."
+    "all_tasks_required": "Pre uzavretie tejto úlohy na upratovanie musia byť splnené všetky čiastkové úlohy.",
+    "my_assignments": "Moje úlohy",
+    "cleaner_subtitle": "Dnešný plánovaný zoznam upratovania",
+    "todays_task_list": "Dnešný zoznam úloh",
+    "overdue_label": "Po termíne",
+    "no_assignments_today": "Dnes žiadne úlohy!",
+    "enjoy_your_day": "Užite si deň alebo sa informujte u svojho manažéra."
   },
   "rooms": {
     "title": "Izby",

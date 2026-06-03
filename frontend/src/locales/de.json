@@ -126,7 +126,13 @@
     "notes_placeholder": "Fügen Sie einen Kommentar oder allgemeines Feedback zur Reinigung dieses Zimmers hinzu...",
     "describe_problem": "Problem beschreiben",
     "problem_placeholder": "Geben Sie Details zum Problem ein (z. B. defekter Wasserhahn, Fleck auf dem Teppich)...",
-    "all_tasks_required": "Alle Aufgaben müssen abgehakt sein, um diesen Reinigungsauftrag abzuschließen."
+    "all_tasks_required": "Alle Aufgaben müssen abgehakt sein, um diesen Reinigungsauftrag abzuschließen.",
+    "my_assignments": "Meine Aufgaben",
+    "cleaner_subtitle": "Heutige geplante Reinigungs-Checkliste",
+    "todays_task_list": "Heutige Aufgabenliste",
+    "overdue_label": "Überfällig",
+    "no_assignments_today": "Keine Aufgaben heute!",
+    "enjoy_your_day": "Genießen Sie Ihren Tag oder sprechen Sie mit Ihrem Manager."
   },
   "rooms": {
     "title": "Zimmer",

@@ -126,7 +126,13 @@
     "notes_placeholder": "Add a comment or general feedback about the cleaning of this room...",
     "describe_problem": "Describe the Problem",
     "problem_placeholder": "Enter details of the issue (e.g. Broken faucet, stained carpet)...",
-    "all_tasks_required": "All tasks must be checked off in order to close this cleaning assignment."
+    "all_tasks_required": "All tasks must be checked off in order to close this cleaning assignment.",
+    "my_assignments": "My Assignments",
+    "cleaner_subtitle": "Today's scheduled cleaning checklist",
+    "todays_task_list": "Today's Task List",
+    "overdue_label": "Overdue",
+    "no_assignments_today": "No Assignments Today!",
+    "enjoy_your_day": "Enjoy your day or check with your manager."
   },
   "rooms": {
     "title": "Rooms",

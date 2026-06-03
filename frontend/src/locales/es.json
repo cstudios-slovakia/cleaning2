@@ -126,7 +126,13 @@
     "notes_placeholder": "Agregue un comentario o comentarios generales sobre la limpieza de esta habitación...",
     "describe_problem": "Describir el problema",
     "problem_placeholder": "Ingrese detalles del problema (por ejemplo, grifo roto, alfombra manchada)...",
-    "all_tasks_required": "Todas las tareas deben estar marcadas para cerrar esta asignación de limpieza."
+    "all_tasks_required": "Todas las tareas deben estar marcadas para cerrar esta asignación de limpieza.",
+    "my_assignments": "Mis asignaciones",
+    "cleaner_subtitle": "Lista de verificación de limpieza programada para hoy",
+    "todays_task_list": "Lista de tareas de hoy",
+    "overdue_label": "Atrasado",
+    "no_assignments_today": "¡No hay asignaciones hoy!",
+    "enjoy_your_day": "Disfruta de tu día o consulta con tu manager."
   },
   "rooms": {
     "title": "Habitaciones",
