@@ -6,6 +6,8 @@ import Modal from '../../components/Modal';
 import RoomDetail from '../rooms/RoomDetail';
 import AssignmentDetail from '../assignments/AssignmentDetail';
 import { saveAssignment, fetchUsers, fetchRoomDetails } from '../../lib/api';
+import { useAssignments } from '../../hooks/useAssignments';
+import { cn, isToday, isYesterday } from '../../lib/utils';
 
 export default function PropertyDetail() {
   const { id } = useParams();
@@ -22,13 +24,30 @@ export default function PropertyDetail() {
   const [customTasksText, setCustomTasksText] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
-  const isAssignmentDone = (id) => {
-    const saved = localStorage.getItem(`cleaner_assignment_${id}`);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return !!parsed.doneBy;
+  const { assignments } = useAssignments();
+
+  const getAssignmentStatus = (a) => {
+    if (!a) return 'ok';
+    if (a.tasks && a.tasks.some(t => t.done) && !a.doneAt) {
+      return 'cleaning';
     }
-    return false;
+    if (isToday(a.date)) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const timeMatch = String(a.time || '').match(/(\d{1,2}):(\d{2})/);
+      if (timeMatch) {
+        const isPM = String(a.time || '').toLowerCase().includes('pm');
+        let hours = parseInt(timeMatch[1]);
+        if (isPM && hours !== 12) hours += 12;
+        if (!isPM && hours === 12) hours = 0;
+        const scheduledMinutes = hours * 60 + parseInt(timeMatch[2]);
+        if (scheduledMinutes < currentMinutes) return 'overdue';
+      }
+      return 'due';
+    } else if (isYesterday(a.date)) {
+      return 'overdue';
+    }
+    return 'ok';
   };
   
   const [propertyData, setPropertyData] = useState(null);
@@ -556,69 +575,97 @@ export default function PropertyDetail() {
                 </div>
               </div>
               <div className="divide-y divide-slate-100">
-                {String(propertyData.id) === '1' ? (
-                  <>
-                    {!isAssignmentDone('1') && (
-                      <div className="p-4 bg-orange-50/50">
-                        <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3">Overdue</p>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => { setSelectedAssignmentId('1'); setIsAssignmentSlideoutOpen(true); }}
-                            className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-orange-100 shadow-sm hover:bg-orange-50 transition-colors text-left"
-                          >
-                            <div>
-                              <p className="font-bold text-slate-800">Lobby</p>
-                              <p className="text-xs text-slate-500">Scheduled: Yesterday 10:00 AM</p>
-                            </div>
-                            <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg uppercase">Overdue</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    {!isAssignmentDone('3') && (
-                      <div className="p-4 bg-blue-50/50">
-                        <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">Today</p>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => { setSelectedAssignmentId('3'); setIsAssignmentSlideoutOpen(true); }}
-                            className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-blue-100 shadow-sm hover:bg-blue-50 transition-colors text-left"
-                          >
-                            <div>
-                              <p className="font-bold text-slate-800">Room 101</p>
-                              <p className="text-xs text-slate-500">Scheduled: 10:00 AM</p>
-                            </div>
-                            <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-lg uppercase">Due</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    {!isAssignmentDone('4') && (
-                      <div className="p-4">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Upcoming</p>
-                        <div className="space-y-2">
-                          <button 
-                            onClick={() => { setSelectedAssignmentId('4'); setIsAssignmentSlideoutOpen(true); }}
-                            className="w-full flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors text-left"
-                          >
-                            <div>
-                              <p className="font-bold text-slate-700">Room 102</p>
-                              <p className="text-xs text-slate-500">Scheduled: Tomorrow 10:00 AM</p>
-                            </div>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    {(isAssignmentDone('1') && isAssignmentDone('3') && isAssignmentDone('4')) && (
+                {(() => {
+                  const activePropertyAssignments = (assignments || []).filter(
+                    a => a.property === propertyData?.name && !a.doneBy
+                  );
+                  const overdueAssignments = activePropertyAssignments.filter(a => getAssignmentStatus(a) === 'overdue');
+                  const todayAssignments = activePropertyAssignments.filter(a => getAssignmentStatus(a) === 'due' || getAssignmentStatus(a) === 'cleaning');
+                  const upcomingAssignments = activePropertyAssignments.filter(a => {
+                    const status = getAssignmentStatus(a);
+                    return status !== 'overdue' && status !== 'due' && status !== 'cleaning';
+                  });
+
+                  if (activePropertyAssignments.length === 0) {
+                    return (
                       <div className="p-6 text-center text-slate-500 text-sm">
-                        All cleaning assignments for this property are complete.
+                        No active cleaning assignments for this property.
                       </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="p-6 text-center text-slate-500 text-sm">
-                    No active cleaning assignments for this property.
-                  </div>
-                )}
+                    );
+                  }
+
+                  return (
+                    <>
+                      {overdueAssignments.length > 0 && (
+                        <div className="p-4 bg-orange-50/50 border-b border-slate-100">
+                          <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3">Overdue</p>
+                          <div className="space-y-2">
+                            {overdueAssignments.map(a => (
+                              <button 
+                                key={a.id}
+                                onClick={() => { setSelectedAssignmentId(a.id); setIsAssignmentSlideoutOpen(true); }}
+                                className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-orange-100 shadow-sm hover:bg-orange-50 transition-colors text-left"
+                              >
+                                <div>
+                                  <p className="font-bold text-slate-800">{a.room}</p>
+                                  <p className="text-xs text-slate-500">Scheduled: {a.date} {a.time}</p>
+                                </div>
+                                <span className="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-1 rounded-lg uppercase">Overdue</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {todayAssignments.length > 0 && (
+                        <div className="p-4 bg-blue-50/50 border-b border-slate-100">
+                          <p className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">Today</p>
+                          <div className="space-y-2">
+                            {todayAssignments.map(a => {
+                              const isCleaning = getAssignmentStatus(a) === 'cleaning';
+                              return (
+                                <button 
+                                  key={a.id}
+                                  onClick={() => { setSelectedAssignmentId(a.id); setIsAssignmentSlideoutOpen(true); }}
+                                  className="w-full flex justify-between items-center bg-white p-3 rounded-xl border border-blue-100 shadow-sm hover:bg-blue-50 transition-colors text-left"
+                                >
+                                  <div>
+                                    <p className="font-bold text-slate-800">{a.room}</p>
+                                    <p className="text-xs text-slate-500">Scheduled: {a.time}</p>
+                                  </div>
+                                  <span className={cn(
+                                    "text-xs font-bold px-2 py-1 rounded-lg uppercase",
+                                    isCleaning ? "text-purple-600 bg-purple-100 animate-pulse" : "text-blue-600 bg-blue-100"
+                                  )}>
+                                    {isCleaning ? "Cleaning" : "Due"}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {upcomingAssignments.length > 0 && (
+                        <div className="p-4">
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Upcoming</p>
+                          <div className="space-y-2">
+                            {upcomingAssignments.map(a => (
+                              <button 
+                                key={a.id}
+                                onClick={() => { setSelectedAssignmentId(a.id); setIsAssignmentSlideoutOpen(true); }}
+                                className="w-full flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors text-left"
+                              >
+                                <div>
+                                  <p className="font-bold text-slate-700">{a.room}</p>
+                                  <p className="text-xs text-slate-500">Scheduled: {a.date} {a.time}</p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             </div>
           )}
