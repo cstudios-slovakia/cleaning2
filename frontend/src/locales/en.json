@@ -121,7 +121,12 @@
     "add_image": "Add Image",
     "uploading": "Uploading...",
     "warning_incomplete": "Warning: You have unchecked tasks. Are you sure you want to finish the cleaning? It will be marked as incomplete (orange) in the logs.",
-    "confirm_finish": "Confirm Finish"
+    "confirm_finish": "Confirm Finish",
+    "cleaning_notes": "Cleaning Notes / Comments",
+    "notes_placeholder": "Add a comment or general feedback about the cleaning of this room...",
+    "describe_problem": "Describe the Problem",
+    "problem_placeholder": "Enter details of the issue (e.g. Broken faucet, stained carpet)...",
+    "all_tasks_required": "All tasks must be checked off in order to close this cleaning assignment."
   },
   "rooms": {
     "title": "Rooms",

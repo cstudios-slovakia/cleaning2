@@ -121,7 +121,12 @@
     "add_image": "Añadir Imagen",
     "uploading": "Cargando...",
     "warning_incomplete": "Advertencia: Tiene tareas sin marcar. ¿Está seguro de que desea terminar la limpieza? Se marcará como incompleta (naranja) en el historial.",
-    "confirm_finish": "Confirmar Terminación"
+    "confirm_finish": "Confirmar Terminación",
+    "cleaning_notes": "Notas de limpieza / Comentarios",
+    "notes_placeholder": "Agregue un comentario o comentarios generales sobre la limpieza de esta habitación...",
+    "describe_problem": "Describir el problema",
+    "problem_placeholder": "Ingrese detalles del problema (por ejemplo, grifo roto, alfombra manchada)...",
+    "all_tasks_required": "Todas las tareas deben estar marcadas para cerrar esta asignación de limpieza."
   },
   "rooms": {
     "title": "Habitaciones",

@@ -334,7 +334,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
         <div className="space-y-2 pt-6 border-t border-slate-100">
           <div className="flex items-center space-x-2">
             <BookOpen className="text-slate-400" size={18} />
-            <span className="font-bold text-slate-800">Cleaning Notes / Comments</span>
+            <span className="font-bold text-slate-800">{t('assignments.cleaning_notes')}</span>
           </div>
           <textarea
             value={localNotes}
@@ -342,7 +342,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             onFocus={() => { notesFocused.current = true; }}
             onBlur={saveNotesOnBlur}
             disabled={!canEdit}
-            placeholder="Add a comment or general feedback about the cleaning of this room..."
+            placeholder={t('assignments.notes_placeholder')}
             className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm h-24"
           />
         </div>
@@ -380,7 +380,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-xs font-bold text-slate-600 uppercase tracking-wider">
                     <MessageSquare size={14} className="text-red-500" />
-                    <span>Describe the Problem</span>
+                    <span>{t('assignments.describe_problem')}</span>
                   </div>
                   <textarea
                     value={localProblemNote}
@@ -388,7 +388,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
                     onFocus={() => { problemNoteFocused.current = true; }}
                     onBlur={saveProblemNoteOnBlur}
                     disabled={!canEdit}
-                    placeholder="Enter details of the issue (e.g. Broken faucet, stained carpet)..."
+                    placeholder={t('assignments.problem_placeholder')}
                     className="w-full p-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm h-20"
                   />
                 </div>
@@ -452,7 +452,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
             <div className="max-w-2xl mx-auto mb-3 flex items-start space-x-2 text-slate-700 bg-slate-100 p-3 rounded-xl border border-slate-200">
               <Circle size={18} className="shrink-0 mt-0.5 text-slate-400" />
               <p className="text-xs font-semibold">
-                All tasks must be checked off in order to close this cleaning assignment.
+                {t('assignments.all_tasks_required')}
               </p>
             </div>
           )}

@@ -125,7 +125,12 @@ const locales = {
       add_image: "Add Image",
       uploading: "Uploading...",
       warning_incomplete: "Warning: You have unchecked tasks. Are you sure you want to finish the cleaning? It will be marked as incomplete (orange) in the logs.",
-      confirm_finish: "Confirm Finish"
+      confirm_finish: "Confirm Finish",
+      cleaning_notes: "Cleaning Notes / Comments",
+      notes_placeholder: "Add a comment or general feedback about the cleaning of this room...",
+      describe_problem: "Describe the Problem",
+      problem_placeholder: "Enter details of the issue (e.g. Broken faucet, stained carpet)...",
+      all_tasks_required: "All tasks must be checked off in order to close this cleaning assignment."
     },
     rooms: {
       title: "Rooms",
@@ -376,8 +381,13 @@ const locales = {
       upload_images: "Prosím, nahrajte fotky pre zdokumentovanie problému.",
       add_image: "Pridať fotku",
       uploading: "Nahrávam...",
-      warning_incomplete: "Upozornenie: Máte neodškrtnuté úlohy. Ste si istý, že chcete dokončiť upratovanie? V záznamoch bude označené ako nedokončené (oranžové).",
-      confirm_finish: "Potvrdiť dokončenie"
+      warning_incomplete: "Upozornenie: Máte neodškrtnuté úlohy. Ste si istý, що chcete dokončiť upratovanie? V záznamoch bude označené ako nedokončené (oranžové).",
+      confirm_finish: "Potvrdiť dokončenie",
+      cleaning_notes: "Poznámky k upratovaniu / Komentáre",
+      notes_placeholder: "Pridajte komentár alebo všeobecnú spätnú väzbu k upratovaniu tejto izby...",
+      describe_problem: "Popíšte problém",
+      problem_placeholder: "Zadajte podrobnosti o probléme (napr. nefunkčný kohútik, znečistený koberec)...",
+      all_tasks_required: "Pre uzavretie tejto úlohy na upratovanie musia byť splnené všetky čiastkové úlohy."
     },
     rooms: {
       title: "Izby",
@@ -629,7 +639,12 @@ const locales = {
       add_image: "Kép hozzáadása",
       uploading: "Feltöltés...",
       warning_incomplete: "Figyelmeztetés: Befejezetlen feladatai vannak. Biztosan be akarja fejezni a takarítást? A naplóban befejezetlenként (narancssárga) lesz megjelölve.",
-      confirm_finish: "Befejezés megerősítése"
+      confirm_finish: "Befejezés megerősítése",
+      cleaning_notes: "Takarítási jegyzetek / megjegyzések",
+      notes_placeholder: "Írjon megjegyzést vagy általános visszajelzést a szoba takarításáról...",
+      describe_problem: "Probléma leírása",
+      problem_placeholder: "Írja le a probléma részleteit (pl. törött csaptelep, foltos szőnyeg)...",
+      all_tasks_required: "Minden feladatot be kell jelölni a takarítási feladat lezárásához."
     },
     rooms: {
       title: "Szobák",
@@ -881,7 +896,12 @@ const locales = {
       add_image: "Bild hinzufügen",
       uploading: "Wird hochgeladen...",
       warning_incomplete: "Warnung: Sie haben nicht ausgefüllte Aufgaben. Sind Sie sicher, dass Sie die Reinigung beenden möchten? Es wird im Protokoll als unvollständig (orange) markiert.",
-      confirm_finish: "Beenden bestätigen"
+      confirm_finish: "Beenden bestätigen",
+      cleaning_notes: "Reinigungshinweise / Kommentare",
+      notes_placeholder: "Fügen Sie einen Kommentar oder allgemeines Feedback zur Reinigung dieses Zimmers hinzu...",
+      describe_problem: "Problem beschreiben",
+      problem_placeholder: "Geben Sie Details zum Problem ein (z. B. defekter Wasserhahn, Fleck auf dem Teppich)...",
+      all_tasks_required: "Alle Aufgaben müssen abgehakt sein, um diesen Reinigungsauftrag abzuschließen."
     },
     rooms: {
       title: "Zimmer",
@@ -1133,7 +1153,12 @@ const locales = {
       add_image: "Añadir Imagen",
       uploading: "Cargando...",
       warning_incomplete: "Advertencia: Tiene tareas sin marcar. ¿Está seguro de que desea terminar la limpieza? Se marcará como incompleta (naranja) en el historial.",
-      confirm_finish: "Confirmar Terminación"
+      confirm_finish: "Confirmar Terminación",
+      cleaning_notes: "Notas de limpieza / Comentarios",
+      notes_placeholder: "Agregue un comentario o comentarios generales sobre la limpieza de esta habitación...",
+      describe_problem: "Describir el problema",
+      problem_placeholder: "Ingrese detalles del problema (por ejemplo, grifo roto, alfombra manchada)...",
+      all_tasks_required: "Todas las tareas deben estar marcadas para cerrar esta asignación de limpieza."
     },
     rooms: {
       title: "Habitaciones",
@@ -1385,7 +1410,12 @@ const locales = {
       add_image: "Додати Фото",
       uploading: "Завантаження...",
       warning_incomplete: "Попередження: У вас є незавершені завдання. Ви впевнені, що хочете закінчити прибирання? Воно буде позначене як незавершене (помаранчеве) в журналах.",
-      confirm_finish: "Підтвердити Завершення"
+      confirm_finish: "Підтвердити Завершення",
+      cleaning_notes: "Примітки до прибирання / Коментарі",
+      notes_placeholder: "Додайте коментар або загальний відгук про прибирання цієї кімнати...",
+      describe_problem: "Опишіть проблему",
+      problem_placeholder: "Введіть деталі проблеми (наприклад, зламаний кран, пляма на килимі)...",
+      all_tasks_required: "Усі завдання мають бути відмічені, щоб закрити це завдання на прибирання."
     },
     rooms: {
       title: "Кімнати",
@@ -1637,7 +1667,12 @@ const locales = {
       add_image: "Добавить Фото",
       uploading: "Загрузка...",
       warning_incomplete: "Предупреждение: У вас есть незавершенные задачи. Вы уверены, что хотите закончить уборку? Она будет помечена как незавершенная (оранжевая) в журналах.",
-      confirm_finish: "Подтвердить Завершение"
+      confirm_finish: "Подтвердить Завершение",
+      cleaning_notes: "Примечания по уборке / Комментарии",
+      notes_placeholder: "Добавьте комментарий или общий отзыв об уборке этой комнаты...",
+      describe_problem: "Опишите проблему",
+      problem_placeholder: "Введите детали проблемы (например, сломанный кран, пятно на ковре)...",
+      all_tasks_required: "Все задачи должны быть отмечены для завершения этой уборки."
     },
     rooms: {
       title: "Комнаты",

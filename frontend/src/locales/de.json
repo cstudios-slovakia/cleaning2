@@ -121,7 +121,12 @@
     "add_image": "Bild hinzufügen",
     "uploading": "Wird hochgeladen...",
     "warning_incomplete": "Warnung: Sie haben nicht ausgefüllte Aufgaben. Sind Sie sicher, dass Sie die Reinigung beenden möchten? Es wird im Protokoll als unvollständig (orange) markiert.",
-    "confirm_finish": "Beenden bestätigen"
+    "confirm_finish": "Beenden bestätigen",
+    "cleaning_notes": "Reinigungshinweise / Kommentare",
+    "notes_placeholder": "Fügen Sie einen Kommentar oder allgemeines Feedback zur Reinigung dieses Zimmers hinzu...",
+    "describe_problem": "Problem beschreiben",
+    "problem_placeholder": "Geben Sie Details zum Problem ein (z. B. defekter Wasserhahn, Fleck auf dem Teppich)...",
+    "all_tasks_required": "Alle Aufgaben müssen abgehakt sein, um diesen Reinigungsauftrag abzuschließen."
   },
   "rooms": {
     "title": "Zimmer",
