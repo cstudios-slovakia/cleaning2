@@ -10,8 +10,9 @@ import de from '../locales/de.json';
 import es from '../locales/es.json';
 import uk from '../locales/uk.json';
 import ru from '../locales/ru.json';
+import rom from '../locales/rom.json';
 
-const translations = { en, sk, hu, de, es, uk, ru };
+const translations = { en, sk, hu, de, es, uk, ru, rom };
 
 const I18nContext = createContext(null);
 
@@ -22,7 +23,8 @@ export const LANGUAGES = [
   { code: 'de', label: 'Deutsch' },
   { code: 'es', label: 'Español' },
   { code: 'uk', label: 'Українська' },
-  { code: 'ru', label: 'Русский' }
+  { code: 'ru', label: 'Русский' },
+  { code: 'rom', label: 'Romani (Gypsy)' }
 ];
 
 export function I18nProvider({ children }) {
