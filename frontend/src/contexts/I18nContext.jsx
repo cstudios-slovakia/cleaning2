@@ -11,8 +11,9 @@ import es from '../locales/es.json';
 import uk from '../locales/uk.json';
 import ru from '../locales/ru.json';
 import rom from '../locales/rom.json';
+import emo from '../locales/emo.json';
 
-const translations = { en, sk, hu, de, es, uk, ru, rom };
+const translations = { en, sk, hu, de, es, uk, ru, rom, emo };
 
 const I18nContext = createContext(null);
 
@@ -24,7 +25,8 @@ export const LANGUAGES = [
   { code: 'es', label: 'Español' },
   { code: 'uk', label: 'Українська' },
   { code: 'ru', label: 'Русский' },
-  { code: 'rom', label: 'Romani (Gypsy)' }
+  { code: 'rom', label: 'Romani (Gypsy)' },
+  { code: 'emo', label: 'Emoji (🎨🧹🔑)' }
 ];
 
 export function I18nProvider({ children }) {
