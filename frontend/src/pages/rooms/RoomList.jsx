@@ -27,6 +27,9 @@ export default function RoomList() {
 
   const [archivedRoomBackup, setArchivedRoomBackup] = useState(null);
   const [undoCountdown, setUndoCountdown] = useState(0);
+  const [selectedRoomTaskSets, setSelectedRoomTaskSets] = useState([]);
+  const [selectedTaskSetId, setSelectedTaskSetId] = useState('');
+  const [loadingTaskSets, setLoadingTaskSets] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -84,10 +87,19 @@ export default function RoomList() {
     return (yiq >= 160) ? 'text-slate-600' : 'text-white/70';
   };
 
-  const createAssignment = async (room, date, time) => {
+  const createAssignment = async (room, date, time, taskSetId = null, tasksInput = null) => {
     try {
-      const roomData = await fetchRoomDetails(room.id);
-      const tasks = roomData?.tasks || [];
+      let tasks = [];
+      let finalTaskSetId = taskSetId;
+      if (tasksInput !== null) {
+        tasks = tasksInput;
+      } else {
+        const roomData = await fetchRoomDetails(room.id);
+        const sets = roomData?.taskSets || [];
+        const defaultSet = sets.find(ts => ts.isQuickClean) || sets[0];
+        tasks = defaultSet?.tasks || [];
+        finalTaskSetId = defaultSet?.id || null;
+      }
 
       const newId = Date.now().toString();
       const newAssignment = {
@@ -98,8 +110,9 @@ export default function RoomList() {
         time: time,
         doneBy: null,
         doneAt: null,
+        task_set_id: finalTaskSetId,
         tasks: tasks.length > 0
-          ? tasks.map(t => ({ title: t.title, done: false }))
+          ? tasks.map(t => ({ title: t.text || t.title, done: false }))
           : [{ title: t('assignments.was_cleaned'), done: false }]
       };
 
@@ -115,19 +128,38 @@ export default function RoomList() {
     createAssignment(room, 'Today', new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   };
 
-  const handleOpenAssignModal = (room) => {
+  const handleOpenAssignModal = async (room) => {
     setSelectedRoom(room);
     setIsAssignModalOpen(true);
+    setLoadingTaskSets(true);
+    try {
+      const details = await fetchRoomDetails(room.id);
+      const sets = details?.taskSets || [];
+      setSelectedRoomTaskSets(sets);
+      if (sets.length > 0) {
+        setSelectedTaskSetId(sets[0].id);
+      } else {
+        setSelectedTaskSetId('');
+      }
+    } catch (e) {
+      console.error('Failed to load room task sets', e);
+    } finally {
+      setLoadingTaskSets(false);
+    }
   };
 
   const handleAssignCleaning = (e) => {
     e.preventDefault();
     if (!assignDate) return;
     
-    // Use the raw ISO string from the input (YYYY-MM-DD)
-    createAssignment(selectedRoom, assignDate, '10:00 AM');
+    const chosenSet = selectedRoomTaskSets.find(ts => ts.id === selectedTaskSetId);
+    const tasks = chosenSet?.tasks || [];
+
+    createAssignment(selectedRoom, assignDate, '10:00 AM', selectedTaskSetId || null, tasks.length > 0 ? tasks : null);
     setIsAssignModalOpen(false);
     setAssignDate('');
+    setSelectedRoomTaskSets([]);
+    setSelectedTaskSetId('');
   };
 
   const handleSaveRoom = async (propertyId) => {
@@ -519,6 +551,27 @@ export default function RoomList() {
               min={new Date().toISOString().split('T')[0]}
             />
           </div>
+
+          {loadingTaskSets ? (
+            <div className="text-xs text-slate-400 font-medium">Loading checklist options...</div>
+          ) : (
+            selectedRoomTaskSets.length > 0 && (
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Checklist Set</label>
+                <select 
+                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all font-medium"
+                  value={selectedTaskSetId}
+                  onChange={(e) => setSelectedTaskSetId(e.target.value)}
+                >
+                  {selectedRoomTaskSets.map(ts => (
+                    <option key={ts.id} value={ts.id}>
+                      {ts.title} {ts.isQuickClean ? '(Quick Clean)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )
+          )}
           
           <div className="flex justify-end space-x-3 pt-4">
             <button 
