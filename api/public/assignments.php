@@ -21,23 +21,40 @@ try {
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    // Fetch all assignments (you might want to filter by property later)
-    $stmt = $pdo->query("SELECT * FROM assignments ORDER BY date DESC, time DESC");
-    $assignments = $stmt->fetchAll();
+    $activeOnly = isset($_GET['active']) && ($_GET['active'] === '1' || $_GET['active'] === 'true');
+    $id = $_GET['id'] ?? null;
 
-    // Fetch tasks for all assignments
-    $tasksStmt = $pdo->query("SELECT * FROM assignment_tasks ORDER BY position ASC");
-    $allTasks = $tasksStmt->fetchAll();
+    if ($id) {
+        $stmt = $pdo->prepare("SELECT * FROM assignments WHERE id = ?");
+        $stmt->execute([$id]);
+        $assignments = $stmt->fetchAll();
+    } elseif ($activeOnly) {
+        $stmt = $pdo->query("SELECT * FROM assignments WHERE doneBy IS NULL ORDER BY date DESC, time DESC");
+        $assignments = $stmt->fetchAll();
+    } else {
+        $stmt = $pdo->query("SELECT * FROM assignments ORDER BY date DESC, time DESC");
+        $assignments = $stmt->fetchAll();
+    }
 
-    // Group tasks by assignment_id
+    // Fetch tasks only for retrieved assignments
     $tasksByAssignment = [];
-    foreach ($allTasks as $task) {
-        $tasksByAssignment[$task['assignment_id']][] = [
-            'id' => $task['id'],
-            'title' => $task['title'],
-            'done' => (bool)$task['done'],
-            'position' => $task['position']
-        ];
+    if (!empty($assignments)) {
+        $assignmentIds = array_column($assignments, 'id');
+        $placeholders = implode(',', array_fill(0, count($assignmentIds), '?'));
+        
+        $tasksStmt = $pdo->prepare("SELECT * FROM assignment_tasks WHERE assignment_id IN ($placeholders) ORDER BY position ASC");
+        $tasksStmt->execute($assignmentIds);
+        $allTasks = $tasksStmt->fetchAll();
+
+        // Group tasks by assignment_id
+        foreach ($allTasks as $task) {
+            $tasksByAssignment[$task['assignment_id']][] = [
+                'id' => $task['id'],
+                'title' => $task['title'],
+                'done' => (bool)$task['done'],
+                'position' => $task['position']
+            ];
+        }
     }
 
     // Attach tasks and decode images to assignments

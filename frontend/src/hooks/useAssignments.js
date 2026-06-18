@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchAssignments } from '../lib/api';
 
-export function useAssignments(pollInterval = 3000) {
+export function useAssignments(pollInterval = 10000, activeOnly = false) {
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -10,7 +10,7 @@ export function useAssignments(pollInterval = 3000) {
 
         const load = async () => {
             try {
-                const data = await fetchAssignments();
+                const data = await fetchAssignments({ activeOnly });
                 if (isMounted) {
                     setAssignments(data);
                     setLoading(false);
@@ -27,7 +27,7 @@ export function useAssignments(pollInterval = 3000) {
             isMounted = false;
             clearInterval(intervalId);
         };
-    }, [pollInterval]);
+    }, [pollInterval, activeOnly]);
 
     return { assignments, loading };
 }

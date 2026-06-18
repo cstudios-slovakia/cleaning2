@@ -4,11 +4,23 @@ import { CONFIG } from '../config';
 // Assuming the backend is at /api/public/ on the same domain, or we can use the specific domain.
 export const API_BASE_URL = import.meta.env.DEV ? 'https://clean.cstudios.ninja/api/public' : '/api/public';
 
-export const fetchAssignments = async () => {
-    const res = await fetch(`${API_BASE_URL}/assignments.php`);
+export const fetchAssignments = async (options = {}) => {
+    let url = `${API_BASE_URL}/assignments.php`;
+    const params = [];
+    if (options.activeOnly) params.push('active=1');
+    if (options.id) params.push(`id=${options.id}`);
+    if (params.length > 0) {
+        url += `?${params.join('&')}`;
+    }
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Failed to fetch assignments');
     const json = await res.json();
     return json.data || [];
+};
+
+export const fetchAssignmentDetail = async (id) => {
+    const data = await fetchAssignments({ id });
+    return data.length > 0 ? data[0] : null;
 };
 
 export const checkSystemSetup = async () => {

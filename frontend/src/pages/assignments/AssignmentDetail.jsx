@@ -4,7 +4,7 @@ import { ArrowLeft, CheckCircle, Circle, Check, AlertTriangle, Image as ImageIco
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from '../../contexts/I18nContext';
-import { fetchAssignments, saveAssignment, uploadImage, API_BASE_URL } from '../../lib/api';
+import { fetchAssignmentDetail, saveAssignment, uploadImage, API_BASE_URL } from '../../lib/api';
 
 export default function AssignmentDetail({ assignmentId: propId, isSlideout = false, theme: propTheme, coverImage: propCoverImage, onFinish, onFlashMessage }) {
   const { id: routeId } = useParams();
@@ -26,8 +26,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await fetchAssignments();
-        const a = data.find(x => x.id && id && x.id.toString() === id.toString());
+        const a = await fetchAssignmentDetail(id);
         if (a) {
           setAssignment(a);
           if (!notesFocused.current) setLocalNotes(a.notes || '');
@@ -39,7 +38,7 @@ export default function AssignmentDetail({ assignmentId: propId, isSlideout = fa
       }
     };
     load();
-    const interval = setInterval(load, 3000); // 3 second polling
+    const interval = setInterval(load, 10000); // 10 second polling
     return () => clearInterval(interval);
   }, [id]);
 

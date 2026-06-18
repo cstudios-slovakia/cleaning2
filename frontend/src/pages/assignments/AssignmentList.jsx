@@ -4,7 +4,8 @@ import { ChevronDown, ChevronRight, AlertTriangle, Clock, CheckCircle } from 'lu
 import { cn, isToday as isTodayHelper, isYesterday as isYesterdayHelper, isTomorrow as isTomorrowHelper } from '../../lib/utils';
 import Slideout from '../../components/Slideout';
 import AssignmentDetail from './AssignmentDetail';
-import { fetchAssignments, fetchProperties } from '../../lib/api';
+import { fetchProperties } from '../../lib/api';
+import { useAssignments } from '../../hooks/useAssignments';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from '../../contexts/I18nContext';
 
@@ -23,7 +24,7 @@ export default function AssignmentList() {
 
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [isSlideoutOpen, setIsSlideoutOpen] = useState(false);
-  const [dbAssignments, setDbAssignments] = useState([]);
+  const { assignments: dbAssignments } = useAssignments(10000, true);
   const [properties, setProperties] = useState([]);
   const [loadingProps, setLoadingProps] = useState(true);
   const [flashMessage, setFlashMessage] = useState('');
@@ -48,21 +49,6 @@ export default function AssignmentList() {
       }
     };
     loadProperties();
-  }, []);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchAssignments();
-        // Only show active assignments
-        setDbAssignments(data.filter(a => !a.doneBy));
-      } catch (e) {
-        console.error('Failed to fetch assignments', e);
-      }
-    };
-    load();
-    const interval = setInterval(load, 3000); // Poll every 3 seconds for real-time feel
-    return () => clearInterval(interval);
   }, []);
 
   const getPropertyData = (propertyName) => {
