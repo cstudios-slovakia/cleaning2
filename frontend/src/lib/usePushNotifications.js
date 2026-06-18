@@ -20,9 +20,13 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 export function usePushNotifications(user) {
-  const [permissionGranted, setPermissionGranted] = useState(Notification.permission === 'granted');
+  const hasSupport = typeof window !== 'undefined' && 'Notification' in window;
+  const [permissionGranted, setPermissionGranted] = useState(
+    hasSupport && window.Notification.permission === 'granted'
+  );
 
   const subscribeUser = useCallback((swReg) => {
+    if (!hasSupport) return;
     const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
     swReg.pushManager.subscribe({
       userVisibleOnly: true,
@@ -43,21 +47,21 @@ export function usePushNotifications(user) {
     .catch(function(err) {
       console.log('Failed to subscribe the user: ', err);
     });
-  }, [user]);
+  }, [user, hasSupport]);
 
   const requestPermission = useCallback(() => {
-    if (!user || !user.id) return;
+    if (!user || !user.id || !hasSupport) return;
     
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       navigator.serviceWorker.register('/sw.js')
         .then(function(swReg) {
-          if (Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
+          if (window.Notification.permission === 'default') {
+            window.Notification.requestPermission().then(permission => {
               if (permission === 'granted') {
                 subscribeUser(swReg);
               }
             });
-          } else if (Notification.permission === 'granted') {
+          } else if (window.Notification.permission === 'granted') {
             subscribeUser(swReg);
           }
         })
@@ -65,7 +69,7 @@ export function usePushNotifications(user) {
           console.error('Service Worker Error', error);
         });
     }
-  }, [user, subscribeUser]);
+  }, [user, subscribeUser, hasSupport]);
 
   return { requestPermission, permissionGranted };
 }
