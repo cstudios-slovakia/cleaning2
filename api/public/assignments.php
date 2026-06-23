@@ -156,13 +156,13 @@ if ($method === 'GET') {
                 if ($lastReportSentAt !== $todayDate) {
                     $todayPrefix = $todayDate . '%';
 
-                    // Check if there are any remaining pending assignments for today or overdue
+                    // Check if there are any remaining pending assignments for today
                     $pendingStmt = $pdo->prepare("
                         SELECT COUNT(*) 
                         FROM assignments 
                         WHERE property = ? 
                           AND doneBy IS NULL 
-                          AND (date = 'Today' OR date = 'Yesterday' OR date <= ?)
+                          AND (date = 'Today' OR date = ?)
                     ");
                     $pendingStmt->execute([$property, $todayDate]);
                     $pendingCount = intval($pendingStmt->fetchColumn());
