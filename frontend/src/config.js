@@ -1,5 +1,5 @@
 export const CONFIG = {
   SYSTEM_NAME: 'Cleaner',
   // Update this version whenever pushing a new release
-  VERSION: '1.4.3',
+  VERSION: '1.4.8',
 };
