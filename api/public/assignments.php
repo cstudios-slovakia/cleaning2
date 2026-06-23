@@ -154,22 +154,31 @@ if ($method === 'GET') {
                 $todayDate = date('Y-m-d');
 
                 if ($lastReportSentAt !== $todayDate) {
-                    $roomsCountStmt = $pdo->prepare("SELECT COUNT(*) FROM rooms WHERE property_id = ?");
-                    $roomsCountStmt->execute([$propertyId]);
-                    $totalRoomsCount = intval($roomsCountStmt->fetchColumn());
+                    $todayPrefix = $todayDate . '%';
 
-                    $todayPrefix = date('Y-m-d') . '%';
-                    $cleanedRoomsStmt = $pdo->prepare("
-                        SELECT COUNT(DISTINCT room) 
+                    // Check if there are any remaining pending assignments for today or overdue
+                    $pendingStmt = $pdo->prepare("
+                        SELECT COUNT(*) 
+                        FROM assignments 
+                        WHERE property = ? 
+                          AND doneBy IS NULL 
+                          AND (date = 'Today' OR date = 'Yesterday' OR date <= ?)
+                    ");
+                    $pendingStmt->execute([$property, $todayDate]);
+                    $pendingCount = intval($pendingStmt->fetchColumn());
+
+                    // Check if we completed at least one assignment today
+                    $completedTodayStmt = $pdo->prepare("
+                        SELECT COUNT(*) 
                         FROM assignments 
                         WHERE property = ? 
                           AND doneBy IS NOT NULL 
-                          AND (doneAt LIKE ? OR date = 'Today')
+                          AND doneAt LIKE ?
                     ");
-                    $cleanedRoomsStmt->execute([$property, $todayPrefix]);
-                    $cleanedRoomsCount = intval($cleanedRoomsStmt->fetchColumn());
+                    $completedTodayStmt->execute([$property, $todayPrefix]);
+                    $completedTodayCount = intval($completedTodayStmt->fetchColumn());
 
-                    if ($totalRoomsCount > 0 && $cleanedRoomsCount >= $totalRoomsCount) {
+                    if ($completedTodayCount > 0 && $pendingCount === 0) {
                         $settingsStmt = $pdo->query("SELECT setting_key, setting_value FROM system_settings");
                         $settingsRows = $settingsStmt->fetchAll(PDO::FETCH_ASSOC);
                         $systemSettings = [];
@@ -182,7 +191,7 @@ if ($method === 'GET') {
                             FROM assignments 
                             WHERE property = ? 
                               AND doneBy IS NOT NULL 
-                              AND (doneAt LIKE ? OR date = 'Today')
+                              AND doneAt LIKE ?
                         ");
                         $dailyAssignmentsStmt->execute([$property, $todayPrefix]);
                         $dailyAssignments = $dailyAssignmentsStmt->fetchAll(PDO::FETCH_ASSOC);
