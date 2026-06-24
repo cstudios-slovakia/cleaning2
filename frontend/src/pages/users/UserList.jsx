@@ -11,8 +11,27 @@ export default function UserList() {
   const [users, setUsers] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { t } = useTranslation();
+  const { t, currentLang } = useTranslation();
   const { user } = useAuth();
+
+  const formatLastSeen = (lastActive) => {
+    if (!lastActive || lastActive === 'Never' || lastActive === 'Nikdy') {
+      return t('rooms.never');
+    }
+    try {
+      const d = new Date(lastActive);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleString(currentLang === 'sk' ? 'sk-SK' : 'en-US', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    } catch(e) {}
+    return lastActive;
+  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
@@ -77,7 +96,7 @@ export default function UserList() {
       await saveUser({
         ...editUser,
         id: editUser.id || Date.now().toString(),
-        lastActive: editUser.lastActive || t('rooms.never')
+        lastActive: editUser.lastActive || 'Never'
       });
       setIsModalOpen(false);
       loadData();
@@ -228,7 +247,7 @@ export default function UserList() {
                           )}>
                             {u.status === 'active' ? t('users.active') : t('users.inactive')}
                           </span>
-                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: u.lastActive })}</span>
+                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: formatLastSeen(u.lastActive) })}</span>
                         </div>
                       ) : (
                         <div className="flex flex-col space-y-1">
@@ -243,7 +262,7 @@ export default function UserList() {
                               {u.role === 'admin' ? 'Superadmin' : u.role === 'subadmin' ? 'Admin' : 'Manager'}
                             </span>
                           </div>
-                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: u.lastActive })}</span>
+                          <span className="text-xs text-slate-400">{t('users.last_seen', { at: formatLastSeen(u.lastActive) })}</span>
                         </div>
                       )}
                     </td>

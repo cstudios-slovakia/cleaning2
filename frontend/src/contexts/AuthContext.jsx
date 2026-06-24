@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-import { fetchUsers } from '../lib/api';
+import { fetchUsers, saveUser } from '../lib/api';
 
 const AuthContext = createContext(null);
 
@@ -24,6 +24,20 @@ export function AuthProvider({ children }) {
         const foundUser = users.find(u => u.id === user.id);
         if (!foundUser || foundUser.status === 'inactive') {
           logout();
+          return;
+        }
+
+        // Periodically update lastActive in DB (throttle to once every 5 minutes to avoid DB spam)
+        const lastUpdateKey = `cleaner_last_active_${user.id}`;
+        const lastUpdate = localStorage.getItem(lastUpdateKey);
+        const now = Date.now();
+        if (!lastUpdate || now - parseInt(lastUpdate, 10) > 5 * 60 * 1000) {
+          const nowIso = new Date().toISOString();
+          await saveUser({
+            ...foundUser,
+            lastActive: nowIso
+          });
+          localStorage.setItem(lastUpdateKey, now.toString());
         }
       } catch (err) {
         console.error('Failed to verify user status', err);
