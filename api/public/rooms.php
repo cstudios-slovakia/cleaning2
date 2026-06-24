@@ -53,12 +53,13 @@ if ($method === 'GET') {
         }
         echo json_encode(['status' => 'success', 'data' => $room]);
     } else {
-        $query = "SELECT * FROM rooms ORDER BY position ASC, created_at DESC";
+        $query = "SELECT * FROM rooms";
         $params = [];
         if ($propertyId) {
             $query .= " WHERE property_id = ?";
             $params[] = $propertyId;
         }
+        $query .= " ORDER BY position ASC, created_at DESC";
         $stmt = $pdo->prepare($query);
         $stmt->execute($params);
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
