@@ -5,7 +5,7 @@ import { cn } from '../../lib/utils';
 import Modal from '../../components/Modal';
 import Slideout from '../../components/Slideout';
 import RoomDetail from './RoomDetail';
-import { saveAssignment, fetchProperties, fetchRooms, saveRoom, fetchRoomDetails } from '../../lib/api';
+import { saveAssignment, fetchProperties, fetchRooms, saveRoom, fetchRoomDetails, API_BASE_URL } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from '../../contexts/I18nContext';
 
@@ -221,6 +221,87 @@ export default function RoomList() {
     setIsRoomSlideoutOpen(true);
   };
 
+  // Drag and Drop for Rooms
+  const [draggedRoomId, setDraggedRoomId] = useState(null);
+  const [draggedRoomProperty, setDraggedRoomProperty] = useState(null);
+  const [draggedRoomIndex, setDraggedRoomIndex] = useState(-1);
+  const [dragOverRoomId, setDragOverRoomId] = useState(null);
+
+  const handleDragStartRoom = (e, roomId, propertyName, idx) => {
+    setDraggedRoomId(roomId);
+    setDraggedRoomProperty(propertyName);
+    setDraggedRoomIndex(idx);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOverRoom = (e, roomId, propertyName) => {
+    e.preventDefault();
+    if (draggedRoomProperty !== propertyName) return; // Only allow drag and drop within the same property
+    if (draggedRoomId === roomId) return;
+    setDragOverRoomId(roomId);
+  };
+
+  const handleDragEndRoom = () => {
+    setDraggedRoomId(null);
+    setDraggedRoomProperty(null);
+    setDraggedRoomIndex(-1);
+    setDragOverRoomId(null);
+  };
+
+  const handleDropRoom = async (e, targetRoomId, propertyName) => {
+    e.preventDefault();
+    if (draggedRoomProperty !== propertyName || draggedRoomId === targetRoomId) {
+      handleDragEndRoom();
+      return;
+    }
+
+    const roomsList = [...groupedRooms[propertyName].rooms];
+    const draggedIdx = roomsList.findIndex(r => r.id === draggedRoomId);
+    const targetIdx = roomsList.findIndex(r => r.id === targetRoomId);
+
+    if (draggedIdx === -1 || targetIdx === -1) {
+      handleDragEndRoom();
+      return;
+    }
+
+    // Reorder
+    const [draggedRoom] = roomsList.splice(draggedIdx, 1);
+    roomsList.splice(targetIdx, 0, draggedRoom);
+
+    // Build position map
+    const positions = {};
+    roomsList.forEach((r, idx) => {
+      positions[r.id] = idx;
+    });
+
+    // Optimistically update frontend state
+    setGroupedRooms(prev => ({
+      ...prev,
+      [propertyName]: {
+        ...prev[propertyName],
+        rooms: prev[propertyName].rooms.map(r => ({
+          ...r,
+          position: positions[r.id] !== undefined ? positions[r.id] : r.position
+        })).sort((a, b) => a.position - b.position)
+      }
+    }));
+
+    handleDragEndRoom();
+
+    // Persist to database
+    try {
+      const res = await fetch(`${API_BASE_URL}/rooms.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ positions })
+      });
+      if (!res.ok) throw new Error('Failed to save room order');
+    } catch (err) {
+      console.error('Error saving room order', err);
+      loadRooms();
+    }
+  };
+
   const handleArchiveRoom = async (propertyId, room) => {
     try {
       const { deleteRoom } = await import('../../lib/api');
@@ -418,89 +499,120 @@ export default function RoomList() {
                           </td>
                         </tr>
                       )}
-                      {filteredRooms.map(room => (
-                        <tr key={room.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="p-4">
-                            <div className="flex items-center space-x-3 group">
-                              <div className="p-2 bg-slate-100 text-slate-500 rounded-lg shrink-0">
-                                <BedDouble size={16} />
-                              </div>
-                              <div className="flex flex-col">
-                                <span className="font-semibold text-slate-800">{room.name}</span>
-                                {room.taskSets && room.taskSets.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                    {room.taskSets.map(ts => (
-                                      <span 
-                                        key={ts.id} 
-                                        className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200"
-                                        title={`${ts.taskCount} subtasks${ts.intervalDays > 0 && !ts.is_once && !ts.isOnce ? `, auto interval: every ${ts.intervalDays} days` : ''}`}
-                                      >
-                                        {ts.title} ({ts.taskCount}){ts.intervalDays > 0 && !ts.is_once && !ts.isOnce ? ` • A: ${ts.intervalDays} ${ts.intervalDays === 1 ? 'day' : 'days'}` : ''}
-                                      </span>
-                                    ))}
+                      {filteredRooms.map((room, index) => {
+                        const isDragged = draggedRoomId === room.id;
+                        const isDragOver = dragOverRoomId === room.id;
+
+                        return (
+                          <React.Fragment key={room.id}>
+                            {/* Visual empty placeholder above if dragging up */}
+                            {isDragOver && draggedRoomIndex > index && (
+                              <tr className="bg-slate-100/30 border-2 border-dashed border-slate-200 h-[64px] transition-all">
+                                <td colSpan="3" className="p-4 text-center text-xs text-slate-400 font-medium italic">Move here</td>
+                              </tr>
+                            )}
+
+                            <tr 
+                              draggable={user?.role !== 'cleaner'}
+                              onDragStart={(e) => handleDragStartRoom(e, room.id, propertyName, index)}
+                              onDragOver={(e) => handleDragOverRoom(e, room.id, propertyName)}
+                              onDrop={(e) => handleDropRoom(e, room.id, propertyName)}
+                              onDragEnd={handleDragEndRoom}
+                              className={cn(
+                                "hover:bg-slate-50 transition-colors cursor-grab active:cursor-grabbing",
+                                isDragged ? "opacity-30 bg-slate-50/50" : ""
+                              )}
+                            >
+                              <td className="p-4">
+                                <div className="flex items-center space-x-3 group">
+                                  <div className="p-2 bg-slate-100 text-slate-500 rounded-lg shrink-0">
+                                    <BedDouble size={16} />
                                   </div>
-                                )}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex items-center space-x-3 group">
-                              <span className="text-slate-500 text-sm whitespace-nowrap">{room.lastCleaned}</span>
-                              <div className="flex items-center space-x-2">
-                                <button 
-                                  onClick={() => handleExpressCleaning(room)}
-                                  className="flex items-center space-x-1 text-orange-600 hover:text-orange-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-orange-50 rounded hover:bg-orange-100 transition-colors border border-orange-100"
-                                  title={t('rooms.express_tooltip')}
-                                >
-                                  <Zap size={10} />
-                                  <span>{t('rooms.express')}</span>
-                                </button>
-                                <button 
-                                  onClick={() => handleOpenAssignModal(room)}
-                                  className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 rounded hover:bg-blue-100 transition-colors border border-blue-100"
-                                  title={t('rooms.assign_tooltip')}
-                                >
-                                  <Calendar size={10} />
-                                  <span>{t('rooms.assign')}</span>
-                                </button>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-4 text-right">
-                            <div className="flex items-center justify-end space-x-2">
-                              <button 
-                                onClick={() => handleOpenRoomSlideout(room, 'log')}
-                                className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
-                                title={t('tooltips.cleaning_log')}
-                              >
-                                <History size={12} />
-                                <span className="hidden sm:inline">{t('rooms.tabs.log')}</span>
-                              </button>
-                              <button 
-                                onClick={() => handleOpenRoomSlideout(room, 'settings')}
-                                className="flex items-center space-x-1 text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100 shadow-sm"
-                              >
-                                <Settings size={12} />
-                                <span className="hidden sm:inline">{t('rooms.manage')}</span>
-                              </button>
-                              <button 
-                                onClick={() => handleCloneRoom(group.id, room)}
-                                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                                title={t('rooms.clone_room')}
-                              >
-                                <Copy size={16} />
-                              </button>
-                              <button 
-                                onClick={() => handleArchiveRoom(group.id, room)}
-                                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                title={t('rooms.archive_room')}
-                              >
-                                <Archive size={16} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                                  <div className="flex flex-col">
+                                    <span className="font-semibold text-slate-800">{room.name}</span>
+                                    {room.taskSets && room.taskSets.length > 0 && (
+                                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                        {room.taskSets.map(ts => (
+                                          <span 
+                                            key={ts.id} 
+                                            className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200"
+                                            title={`${ts.taskCount} subtasks${ts.intervalDays > 0 && !ts.is_once && !ts.isOnce ? `, auto interval: every ${ts.intervalDays} days` : ''}`}
+                                          >
+                                            {ts.title} ({ts.taskCount}){ts.intervalDays > 0 && !ts.is_once && !ts.isOnce ? ` • A: ${ts.intervalDays} ${ts.intervalDays === 1 ? 'day' : 'days'}` : ''}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                <div className="flex items-center space-x-3 group">
+                                  <span className="text-slate-500 text-sm whitespace-nowrap">{room.lastCleaned}</span>
+                                  <div className="flex items-center space-x-2">
+                                    <button 
+                                      onClick={() => handleExpressCleaning(room)}
+                                      className="flex items-center space-x-1 text-orange-600 hover:text-orange-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-orange-50 rounded hover:bg-orange-100 transition-colors border border-orange-100"
+                                      title={t('rooms.express_tooltip')}
+                                    >
+                                      <Zap size={10} />
+                                      <span>{t('rooms.express')}</span>
+                                    </button>
+                                    <button 
+                                      onClick={() => handleOpenAssignModal(room)}
+                                      className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-bold text-[9px] uppercase tracking-wider px-1.5 py-0.5 bg-blue-50 rounded hover:bg-blue-100 transition-colors border border-blue-100"
+                                      title={t('rooms.assign_tooltip')}
+                                    >
+                                      <Calendar size={10} />
+                                      <span>{t('rooms.assign')}</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4 text-right">
+                                <div className="flex items-center justify-end space-x-2">
+                                  <button 
+                                    onClick={() => handleOpenRoomSlideout(room, 'log')}
+                                    className="flex items-center space-x-1 text-slate-600 hover:text-slate-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-white rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm"
+                                    title={t('tooltips.cleaning_log')}
+                                  >
+                                    <History size={12} />
+                                    <span className="hidden sm:inline">{t('rooms.tabs.log')}</span>
+                                  </button>
+                                  <button 
+                                    onClick={() => handleOpenRoomSlideout(room, 'settings')}
+                                    className="flex items-center space-x-1 text-primary-600 hover:text-primary-800 font-bold text-[10px] uppercase tracking-wider px-2 py-1 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors border border-primary-100 shadow-sm"
+                                  >
+                                    <Settings size={12} />
+                                    <span className="hidden sm:inline">{t('rooms.manage')}</span>
+                                  </button>
+                                  <button 
+                                    onClick={() => handleCloneRoom(group.id, room)}
+                                    className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                    title={t('rooms.clone_room')}
+                                  >
+                                    <Copy size={16} />
+                                  </button>
+                                  <button 
+                                    onClick={() => handleArchiveRoom(group.id, room)}
+                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    title={t('rooms.archive_room')}
+                                  >
+                                    <Archive size={16} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+
+                            {/* Visual empty placeholder below if dragging down */}
+                            {isDragOver && draggedRoomIndex < index && (
+                              <tr className="bg-slate-100/30 border-2 border-dashed border-slate-200 h-[64px] transition-all">
+                                <td colSpan="3" className="p-4 text-center text-xs text-slate-400 font-medium italic">Move here</td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

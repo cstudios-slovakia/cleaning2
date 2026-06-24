@@ -13,6 +13,10 @@ try { $pdo = Database::getConnection(); } catch (Exception $e) { http_response_c
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
+    try {
+        $pdo->exec("ALTER TABLE rooms ADD COLUMN position INT DEFAULT 0");
+    } catch (Exception $e) {}
+    
     $propertyId = $_GET['property_id'] ?? null;
     $roomId = $_GET['id'] ?? null;
     
@@ -49,7 +53,7 @@ if ($method === 'GET') {
         }
         echo json_encode(['status' => 'success', 'data' => $room]);
     } else {
-        $query = "SELECT * FROM rooms";
+        $query = "SELECT * FROM rooms ORDER BY position ASC, created_at DESC";
         $params = [];
         if ($propertyId) {
             $query .= " WHERE property_id = ?";
@@ -75,6 +79,24 @@ if ($method === 'GET') {
     }
 } elseif ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
+    
+    if (isset($input['positions']) && is_array($input['positions'])) {
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare("UPDATE rooms SET position = ? WHERE id = ?");
+            foreach ($input['positions'] as $rId => $pos) {
+                $stmt->execute([$pos, $rId]);
+            }
+            $pdo->commit();
+            echo json_encode(['status' => 'success']);
+            exit;
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            exit(json_encode(['error' => $e->getMessage()]));
+        }
+    }
+    
     if (!isset($input['id'])) exit(json_encode(['error' => 'ID required']));
 
     $id = $input['id'];
