@@ -215,8 +215,7 @@ body {
 aside,
 header,
 .card,
-.modal-container,
-[role="dialog"] {
+.modal-container {
   background-color: var(--bg-card) !important;
   border-color: var(--border-main) !important;
 }
