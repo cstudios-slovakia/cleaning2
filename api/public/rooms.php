@@ -59,7 +59,7 @@ if ($method === 'GET') {
             $query .= " WHERE property_id = ?";
             $params[] = $propertyId;
         }
-        $query .= " ORDER BY position ASC, created_at DESC";
+        $query .= " ORDER BY position ASC";
         $stmt = $pdo->prepare($query);
         $stmt->execute($params);
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
