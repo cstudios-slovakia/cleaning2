@@ -433,9 +433,9 @@ export default function RoomList() {
                                       <span 
                                         key={ts.id} 
                                         className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200"
-                                        title={`${ts.taskCount} subtasks`}
+                                        title={`${ts.taskCount} subtasks${ts.intervalDays > 0 && !ts.is_once && !ts.isOnce ? `, auto interval: every ${ts.intervalDays} days` : ''}`}
                                       >
-                                        {ts.title} ({ts.taskCount})
+                                        {ts.title} ({ts.taskCount}){ts.intervalDays > 0 && !ts.is_once && !ts.isOnce ? ` • A: ${ts.intervalDays} ${ts.intervalDays === 1 ? 'day' : 'days'}` : ''}
                                       </span>
                                     ))}
                                   </div>

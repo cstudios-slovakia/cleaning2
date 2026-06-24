@@ -60,7 +60,7 @@ if ($method === 'GET') {
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         foreach ($rooms as &$room) {
-            $tsStmt = $pdo->prepare("SELECT id, title, is_quick_clean FROM room_task_sets WHERE room_id = ? ORDER BY position ASC");
+            $tsStmt = $pdo->prepare("SELECT id, title, is_quick_clean, intervalDays, is_once FROM room_task_sets WHERE room_id = ? ORDER BY position ASC");
             $tsStmt->execute([$room['id']]);
             $taskSets = $tsStmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($taskSets as &$ts) {
