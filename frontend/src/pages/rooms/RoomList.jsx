@@ -422,10 +422,25 @@ export default function RoomList() {
                         <tr key={room.id} className="hover:bg-slate-50 transition-colors">
                           <td className="p-4">
                             <div className="flex items-center space-x-3 group">
-                              <div className="p-2 bg-slate-100 text-slate-500 rounded-lg">
+                              <div className="p-2 bg-slate-100 text-slate-500 rounded-lg shrink-0">
                                 <BedDouble size={16} />
                               </div>
-                              <span className="font-medium text-slate-800">{room.name}</span>
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-slate-800">{room.name}</span>
+                                {room.taskSets && room.taskSets.length > 0 && (
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    {room.taskSets.map(ts => (
+                                      <span 
+                                        key={ts.id} 
+                                        className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200"
+                                        title={`${ts.taskCount} subtasks`}
+                                      >
+                                        {ts.title} ({ts.taskCount})
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </td>
                           <td className="p-4">
@@ -565,7 +580,7 @@ export default function RoomList() {
                 >
                   {selectedRoomTaskSets.map(ts => (
                     <option key={ts.id} value={ts.id}>
-                      {ts.title} {ts.isQuickClean ? '(Quick Clean)' : ''}
+                      {ts.title} {ts.isQuickClean ? '(Quick Clean)' : ''} ({ts.tasks?.length || 0} subtasks)
                     </option>
                   ))}
                 </select>

@@ -57,7 +57,19 @@ if ($method === 'GET') {
         }
         $stmt = $pdo->prepare($query);
         $stmt->execute($params);
-        $rooms = $stmt->fetchAll();
+        $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($rooms as &$room) {
+            $tsStmt = $pdo->prepare("SELECT id, title, is_quick_clean FROM room_task_sets WHERE room_id = ? ORDER BY position ASC");
+            $tsStmt->execute([$room['id']]);
+            $taskSets = $tsStmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($taskSets as &$ts) {
+                $tCountStmt = $pdo->prepare("SELECT COUNT(*) FROM room_tasks WHERE room_id = ? AND task_set_id = ?");
+                $tCountStmt->execute([$room['id'], $ts['id']]);
+                $ts['taskCount'] = (int)$tCountStmt->fetchColumn();
+            }
+            $room['taskSets'] = $taskSets;
+        }
         
         echo json_encode(['status' => 'success', 'data' => $rooms]);
     }
