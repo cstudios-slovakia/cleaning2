@@ -46,7 +46,7 @@ export function I18nProvider({ children }) {
 
   const currentLang = userLang || systemLang;
 
-  const t = (key) => {
+  const t = (key, params = {}) => {
     const keys = key.split('.');
     let value = translations[currentLang] || translations['en'];
     for (const k of keys) {
@@ -54,6 +54,11 @@ export function I18nProvider({ children }) {
         return key; // fallback to key
       }
       value = value[k];
+    }
+    if (typeof value === 'string') {
+      Object.keys(params).forEach(pKey => {
+        value = value.replace(new RegExp(`\\{\\{\\s*${pKey}\\s*\\}\\}`, 'g'), params[pKey]);
+      });
     }
     return value;
   };
