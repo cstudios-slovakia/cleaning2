@@ -6,7 +6,7 @@ import { API_BASE_URL } from '../../lib/api';
 
 export default function EmailLogs() {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, currentLang } = useTranslation();
   
   // Outbound Email Logs States
   const [sentEmails, setSentEmails] = useState([]);
