@@ -518,8 +518,9 @@ export default function RoomList() {
                               onDragOver={(e) => handleDragOverRoom(e, room.id, propertyName)}
                               onDrop={(e) => handleDropRoom(e, room.id, propertyName)}
                               onDragEnd={handleDragEndRoom}
+                              onDoubleClick={() => handleOpenRoomSlideout(room, 'settings')}
                               className={cn(
-                                "hover:bg-slate-50 transition-colors cursor-grab active:cursor-grabbing",
+                                "hover:bg-slate-50 transition-colors cursor-grab active:cursor-grabbing select-none",
                                 isDragged ? "opacity-30 bg-slate-50/50" : ""
                               )}
                             >
