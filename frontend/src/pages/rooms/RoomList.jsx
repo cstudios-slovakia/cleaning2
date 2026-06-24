@@ -30,6 +30,7 @@ export default function RoomList() {
   const [selectedRoomTaskSets, setSelectedRoomTaskSets] = useState([]);
   const [selectedTaskSetId, setSelectedTaskSetId] = useState('');
   const [loadingTaskSets, setLoadingTaskSets] = useState(false);
+  const [autoAssigning, setAutoAssigning] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -219,6 +220,30 @@ export default function RoomList() {
     setRoomForSlideout(room);
     setSlideoutTab(tab);
     setIsRoomSlideoutOpen(true);
+  };
+
+  const handleAutoAssign = async (propertyId) => {
+    setAutoAssigning(propertyId);
+    try {
+      const res = await fetch(`${API_BASE_URL}/auto_assign.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ propertyId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSuccessMessage(`Auto-assigned ${data.assignments_created} due cleanings!`);
+        setTimeout(() => setSuccessMessage(''), 3000);
+        loadRooms();
+      } else {
+        throw new Error('Failed to auto-assign');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Failed to auto-assign cleanings.');
+    } finally {
+      setAutoAssigning(null);
+    }
   };
 
   // Drag and Drop for Rooms
@@ -425,6 +450,21 @@ export default function RoomList() {
                       <Building2 size={14} />
                       <span>{t('rooms.manage_property')}</span>
                     </Link>
+                  )}
+                  {user?.role !== 'cleaner' && (
+                    <button 
+                      onClick={() => handleAutoAssign(group.id)}
+                      disabled={autoAssigning === group.id}
+                      className={cn("flex items-center space-x-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border",
+                        parseInt(group.theme.slice(1, 3), 16) * 0.299 + parseInt(group.theme.slice(3, 5), 16) * 0.587 + parseInt(group.theme.slice(5, 7), 16) * 0.114 >= 160 
+                        ? "bg-slate-100 text-slate-900 border-slate-200 hover:bg-slate-200" : "bg-white/10 text-white border-white/20 hover:bg-white/20",
+                        autoAssigning === group.id ? "opacity-50 pointer-events-none" : ""
+                      )}
+                      title="Auto Assign all due/overdue cleanings according to scheduled intervals"
+                    >
+                      <Zap size={14} className={autoAssigning === group.id ? "animate-spin" : ""} />
+                      <span>Auto Assign</span>
+                    </button>
                   )}
                   {user?.role !== 'cleaner' && (
                     <button 
