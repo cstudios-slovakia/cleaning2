@@ -36,6 +36,7 @@ try {
         }
         
         if ($lastCleanedDate) {
+            $lastCleanedDate->setTime(0, 0, 0);
             $lastCleanedDate->modify("+$intervalDays days");
             if ($lastCleanedDate < $today) {
                 $overdueProperties[$ts['property_id']] = true;

@@ -121,12 +121,7 @@ export default function Layout() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-0">
-        {/* Aurora Background Effect */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10 bg-slate-50/50">
-          <div className="absolute -top-[20%] -left-[10%] w-[55%] h-[55%] rounded-full blob-aurora-1 blur-[100px] animate-aurora-1" />
-          <div className="absolute top-[20%] -right-[15%] w-[65%] h-[65%] rounded-full blob-aurora-2 blur-[130px] animate-aurora-2" />
-          <div className="absolute -bottom-[20%] left-[10%] w-[60%] h-[60%] rounded-full blob-aurora-3 blur-[110px] animate-aurora-3" />
-        </div>
+
 
         {/* Header */}
         <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
@@ -173,7 +168,7 @@ export default function Layout() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 relative z-10">
+        <div className="flex-1 overflow-y-auto p-4 pb-24 md:p-8 relative z-10">
           <div className="max-w-7xl mx-auto">
             {showNotificationBanner && !permissionGranted && (
               <div className="mb-6 bg-primary-50 border border-primary-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between shadow-sm animate-fade-in-up">
