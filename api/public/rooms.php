@@ -17,6 +17,12 @@ if ($method === 'GET') {
         $pdo->exec("ALTER TABLE rooms ADD COLUMN position INT DEFAULT 0");
     } catch (Exception $e) {}
     
+    // Auto-expire room occupancy if occupied_until date has arrived (<= today)
+    $todayStr = date('Y-m-d');
+    try {
+        $pdo->exec("UPDATE rooms SET is_occupied = 0, occupied_until = NULL WHERE is_occupied = 1 AND occupied_until IS NOT NULL AND occupied_until != '' AND occupied_until <= '{$todayStr}'");
+    } catch (Exception $e) {}
+
     $propertyId = $_GET['property_id'] ?? null;
     $roomId = $_GET['id'] ?? null;
     
@@ -25,6 +31,9 @@ if ($method === 'GET') {
         $stmt->execute([$roomId]);
         $room = $stmt->fetch();
         if ($room) {
+            $room['is_occupied'] = isset($room['is_occupied']) ? (int)$room['is_occupied'] : 1;
+            $room['occupied_until'] = $room['occupied_until'] ?? null;
+            
             $tsStmt = $pdo->prepare("SELECT * FROM room_task_sets WHERE room_id = ? ORDER BY position ASC");
             $tsStmt->execute([$roomId]);
             $taskSets = $tsStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -65,6 +74,9 @@ if ($method === 'GET') {
         $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         foreach ($rooms as &$room) {
+            $room['is_occupied'] = isset($room['is_occupied']) ? (int)$room['is_occupied'] : 1;
+            $room['occupied_until'] = $room['occupied_until'] ?? null;
+
             $tsStmt = $pdo->prepare("SELECT id, title, is_quick_clean, intervalDays, is_once FROM room_task_sets WHERE room_id = ? ORDER BY position ASC");
             $tsStmt->execute([$room['id']]);
             $taskSets = $tsStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -105,21 +117,25 @@ if ($method === 'GET') {
     $name = $input['name'] ?? 'New Room';
     $intervalDays = $input['intervalDays'] ?? 0;
     $lastCleaned = $input['lastCleaned'] ?? 'Never';
-    $taskSets = $input['taskSets'] ?? [];
+    $is_occupied = isset($input['is_occupied']) ? ($input['is_occupied'] ? 1 : 0) : (isset($input['isOccupied']) ? ($input['isOccupied'] ? 1 : 0) : 1);
+    $occupied_until = array_key_exists('occupied_until', $input) ? $input['occupied_until'] : (array_key_exists('occupiedUntil', $input) ? $input['occupiedUntil'] : null);
+    $taskSets = $input['taskSets'] ?? null;
 
     $pdo->beginTransaction();
     try {
         $stmt = $pdo->prepare("
-            INSERT INTO rooms (id, property_id, name, intervalDays, lastCleaned)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO rooms (id, property_id, name, intervalDays, lastCleaned, is_occupied, occupied_until)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
                 name = VALUES(name),
                 intervalDays = VALUES(intervalDays),
-                lastCleaned = VALUES(lastCleaned)
+                lastCleaned = VALUES(lastCleaned),
+                is_occupied = VALUES(is_occupied),
+                occupied_until = VALUES(occupied_until)
         ");
-        $stmt->execute([$id, $property_id, $name, $intervalDays, $lastCleaned]);
+        $stmt->execute([$id, $property_id, $name, $intervalDays, $lastCleaned, $is_occupied, $occupied_until]);
 
-        if (isset($input['taskSets'])) {
+        if (isset($input['taskSets']) && is_array($taskSets)) {
             $pdo->prepare("DELETE FROM room_task_sets WHERE room_id = ?")->execute([$id]);
             $pdo->prepare("DELETE FROM room_tasks WHERE room_id = ?")->execute([$id]);
             

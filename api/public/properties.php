@@ -23,6 +23,7 @@ if ($method === 'GET') {
     foreach ($properties as &$p) {
         $p['managers'] = $p['managers'] ? json_decode($p['managers'], true) : [];
         $p['cleaners'] = $p['cleaners'] ? json_decode($p['cleaners'], true) : [];
+        $p['service_mode_tasks'] = !empty($p['service_mode_tasks']) ? json_decode($p['service_mode_tasks'], true) : [];
     }
     echo json_encode(['status' => 'success', 'data' => $properties]);
 } elseif ($method === 'POST') {
@@ -37,10 +38,11 @@ if ($method === 'GET') {
     $logo = $input['logo'] ?? null;
     $managers = json_encode($input['managers'] ?? []);
     $cleaners = json_encode($input['cleaners'] ?? []);
+    $service_mode_tasks = json_encode($input['service_mode_tasks'] ?? ($input['serviceModeTasks'] ?? []));
 
     $stmt = $pdo->prepare("
-        INSERT INTO properties (id, name, scheduleTime, theme, coverImage, logo, managers, cleaners)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO properties (id, name, scheduleTime, theme, coverImage, logo, managers, cleaners, service_mode_tasks)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             name = VALUES(name),
             scheduleTime = VALUES(scheduleTime),
@@ -48,9 +50,10 @@ if ($method === 'GET') {
             coverImage = VALUES(coverImage),
             logo = VALUES(logo),
             managers = VALUES(managers),
-            cleaners = VALUES(cleaners)
+            cleaners = VALUES(cleaners),
+            service_mode_tasks = VALUES(service_mode_tasks)
     ");
-    $stmt->execute([$id, $name, $scheduleTime, $theme, $coverImage, $logo, $managers, $cleaners]);
+    $stmt->execute([$id, $name, $scheduleTime, $theme, $coverImage, $logo, $managers, $cleaners, $service_mode_tasks]);
     echo json_encode(['status' => 'success']);
 } elseif ($method === 'DELETE') {
     $id = $_GET['id'] ?? null;

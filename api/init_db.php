@@ -42,6 +42,7 @@ try {
             logo LONGTEXT DEFAULT NULL,
             managers LONGTEXT DEFAULT NULL,
             cleaners LONGTEXT DEFAULT NULL,
+            service_mode_tasks LONGTEXT DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -55,6 +56,8 @@ try {
             name VARCHAR(255) NOT NULL,
             intervalDays INT DEFAULT 0,
             lastCleaned VARCHAR(255) DEFAULT 'Never',
+            is_occupied TINYINT(1) DEFAULT 1,
+            occupied_until VARCHAR(50) DEFAULT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE

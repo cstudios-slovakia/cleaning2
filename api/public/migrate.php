@@ -116,6 +116,14 @@ try {
                     PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
             ]
+        ],
+        8 => [
+            'description' => 'Add room occupancy columns and property service mode tasks column',
+            'queries' => [
+                "ALTER TABLE `rooms` ADD COLUMN IF NOT EXISTS `is_occupied` tinyint(1) DEFAULT 1;",
+                "ALTER TABLE `rooms` ADD COLUMN IF NOT EXISTS `occupied_until` varchar(50) DEFAULT NULL;",
+                "ALTER TABLE `properties` ADD COLUMN IF NOT EXISTS `service_mode_tasks` longtext DEFAULT NULL;"
+            ]
         ]
     ];
 
@@ -123,6 +131,28 @@ try {
     $stmt = $pdo->query("SELECT version FROM migrations");
     $appliedVersions = $stmt->fetchAll(PDO::FETCH_COLUMN);
     $stmt->closeCursor();
+
+    // Helper function for cross-database DDL compatibility
+    $runMigrationQuery = function($pdo, $query) {
+        if (stripos($query, 'ADD COLUMN IF NOT EXISTS') !== false) {
+            if (preg_match('/ALTER\s+TABLE\s+`?(\w+)`?\s+ADD\s+COLUMN\s+IF\s+NOT\s+EXISTS\s+`?(\w+)`?\s+(.+);?$/i', trim($query), $matches)) {
+                $tableName = $matches[1];
+                $colName = $matches[2];
+                $colDef = rtrim($matches[3], ';');
+                
+                $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?");
+                $checkStmt->execute([$tableName, $colName]);
+                $exists = $checkStmt->fetchColumn() > 0;
+                $checkStmt->closeCursor();
+                
+                if (!$exists) {
+                    $pdo->exec("ALTER TABLE `{$tableName}` ADD COLUMN `{$colName}` {$colDef}");
+                }
+                return;
+            }
+        }
+        $pdo->exec($query);
+    };
 
     $appliedCount = 0;
 
@@ -132,7 +162,7 @@ try {
         if (!in_array($version, $appliedVersions)) {
             try {
                 foreach ($migration['queries'] as $query) {
-                    $pdo->exec($query);
+                    $runMigrationQuery($pdo, $query);
                 }
                 
                 $stmt = $pdo->prepare("INSERT INTO migrations (version, description) VALUES (?, ?)");

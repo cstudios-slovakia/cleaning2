@@ -222,6 +222,89 @@ export default function RoomList() {
     setIsRoomSlideoutOpen(true);
   };
 
+  const handleToggleOccupancy = async (room, isOccupied) => {
+    const nextOccupied = isOccupied ? 1 : 0;
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    let nextOccupiedUntil = room.occupied_until || null;
+    if (nextOccupied === 1) {
+      if (nextOccupiedUntil && nextOccupiedUntil <= todayStr) {
+        nextOccupiedUntil = null;
+      }
+    } else {
+      nextOccupiedUntil = null;
+    }
+
+    const updatedRoom = {
+      id: room.id,
+      property_id: room.property_id || room.propertyId,
+      name: room.name,
+      intervalDays: room.intervalDays || 0,
+      lastCleaned: room.lastCleaned || 'Never',
+      is_occupied: nextOccupied,
+      occupied_until: nextOccupiedUntil
+    };
+    setGroupedRooms(prev => {
+      const propertyGroup = prev[room.property];
+      if (!propertyGroup) return prev;
+      return {
+        ...prev,
+        [room.property]: {
+          ...propertyGroup,
+          rooms: propertyGroup.rooms.map(r => r.id === room.id ? { ...r, is_occupied: nextOccupied, occupied_until: nextOccupiedUntil } : r)
+        }
+      };
+    });
+    try {
+      await saveRoom(updatedRoom);
+    } catch (e) {
+      console.error('Failed to update room occupancy', e);
+      loadRooms();
+    }
+  };
+
+  const handleUpdateOccupancyDate = async (room, occupiedUntil) => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    let nextOccupied = Number(room.is_occupied);
+    let nextOccupiedUntil = occupiedUntil || null;
+
+    if (occupiedUntil) {
+      if (occupiedUntil <= todayStr) {
+        nextOccupied = 0;
+        nextOccupiedUntil = null;
+      } else {
+        nextOccupied = 1;
+      }
+    }
+
+    const updatedRoom = {
+      id: room.id,
+      property_id: room.property_id || room.propertyId,
+      name: room.name,
+      intervalDays: room.intervalDays || 0,
+      lastCleaned: room.lastCleaned || 'Never',
+      is_occupied: nextOccupied,
+      occupied_until: nextOccupiedUntil
+    };
+    setGroupedRooms(prev => {
+      const propertyGroup = prev[room.property];
+      if (!propertyGroup) return prev;
+      return {
+        ...prev,
+        [room.property]: {
+          ...propertyGroup,
+          rooms: propertyGroup.rooms.map(r => r.id === room.id ? { ...r, is_occupied: nextOccupied, occupied_until: nextOccupiedUntil } : r)
+        }
+      };
+    });
+    try {
+      await saveRoom(updatedRoom);
+    } catch (e) {
+      console.error('Failed to update room occupied until date', e);
+      loadRooms();
+    }
+  };
+
   const handleAutoAssign = async (propertyId) => {
     setAutoAssigning(propertyId);
     try {
@@ -493,6 +576,7 @@ export default function RoomList() {
                       <tr>
                         <th className="p-4 font-semibold text-slate-600 text-sm">{t('rooms.room_name')}</th>
                         <th className="p-4 font-semibold text-slate-600 text-sm">{t('rooms.last_cleaned')}</th>
+                        <th className="p-4 font-semibold text-slate-600 text-sm">Occupancy / Service</th>
                         <th className="p-4 font-semibold text-slate-600 text-sm text-right">{t('rooms.action')}</th>
                       </tr>
                     </thead>
@@ -519,6 +603,7 @@ export default function RoomList() {
                             </div>
                           </td>
                           <td className="p-4 text-slate-400 text-xs italic font-medium uppercase tracking-wider">{t('rooms.new_room')}</td>
+                          <td className="p-4"></td>
                           <td className="p-4 text-right">
                             <div className="flex items-center justify-end space-x-2">
                               <button 
@@ -548,7 +633,7 @@ export default function RoomList() {
                             {/* Visual empty placeholder above if dragging up */}
                             {isDragOver && draggedRoomIndex > index && (
                               <tr className="bg-slate-100/30 border-2 border-dashed border-slate-200 h-[64px] transition-all">
-                                <td colSpan="3" className="p-4 text-center text-xs text-slate-400 font-medium italic">Move here</td>
+                                <td colSpan="4" className="p-4 text-center text-xs text-slate-400 font-medium italic">Move here</td>
                               </tr>
                             )}
 
@@ -608,6 +693,67 @@ export default function RoomList() {
                                       <span>{t('rooms.assign')}</span>
                                     </button>
                                   </div>
+                                </div>
+                              </td>
+                              <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center space-x-3" onClick={(e) => e.stopPropagation()}>
+                                  {/* Lightswitch Toggle Switch */}
+                                  <label 
+                                    className="relative inline-flex items-center cursor-pointer select-none"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <input 
+                                      type="checkbox" 
+                                      checked={Number(room.is_occupied) === 1}
+                                      onChange={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleOccupancy(room, e.target.checked);
+                                      }}
+                                      className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-amber-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
+                                  </label>
+
+                                  {/* Date Input right from lightswitch */}
+                                  <div className="flex items-center space-x-1.5" onClick={(e) => e.stopPropagation()}>
+                                    <input 
+                                      type="date"
+                                      value={room.occupied_until || ''}
+                                      disabled={Number(room.is_occupied) === 0}
+                                      onChange={(e) => {
+                                        e.stopPropagation();
+                                        handleUpdateOccupancyDate(room, e.target.value);
+                                      }}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className={cn(
+                                        "text-xs font-medium px-2.5 py-1 rounded-lg border transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500",
+                                        Number(room.is_occupied) === 1 
+                                          ? "bg-white border-slate-200 text-slate-700" 
+                                          : "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-60"
+                                      )}
+                                      title="Occupied Until Date (automatically turns off occupancy when date arrives)"
+                                    />
+                                  </div>
+
+                                  {/* Status Badge */}
+                                  <span className={cn(
+                                    "inline-flex items-center space-x-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs whitespace-nowrap",
+                                    Number(room.is_occupied) === 1 
+                                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200" 
+                                      : "bg-amber-50 text-amber-800 border border-amber-300"
+                                  )}>
+                                    {Number(room.is_occupied) === 1 ? (
+                                      <>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <span>Occupied</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        <span>Service Mode</span>
+                                      </>
+                                    )}
+                                  </span>
                                 </div>
                               </td>
                               <td className="p-4 text-right">

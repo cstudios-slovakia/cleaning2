@@ -56,12 +56,14 @@ export default function PropertyDetail() {
   const [rooms, setRooms] = useState([]);
   const [managers, setManagers] = useState([]);
   const [cleaners, setCleaners] = useState([]);
+  const [serviceModeTasks, setServiceModeTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [editForm, setEditForm] = useState(null);
   const [editRooms, setEditRooms] = useState([]);
   const [editManagers, setEditManagers] = useState([]);
   const [editCleaners, setEditCleaners] = useState([]);
+  const [editServiceModeTasks, setEditServiceModeTasks] = useState([]);
   
   const [availableUsers, setAvailableUsers] = useState([]);
 
@@ -86,6 +88,7 @@ export default function PropertyDetail() {
             theme: '#0ea5e9',
             coverImage: null,
             logo: null,
+            service_mode_tasks: [],
             ...p
           };
           setPropertyData(completePropertyData);
@@ -94,8 +97,10 @@ export default function PropertyDetail() {
           setEditManagers(p.managers || []);
           setCleaners(p.cleaners || []);
           setEditCleaners(p.cleaners || []);
+          setServiceModeTasks(p.service_mode_tasks || []);
+          setEditServiceModeTasks(p.service_mode_tasks || []);
         } else {
-          const defaultData = { name: 'Unknown Property', scheduleTime: '10:00 AM', theme: '#0ea5e9', coverImage: null, logo: null };
+          const defaultData = { name: 'Unknown Property', scheduleTime: '10:00 AM', theme: '#0ea5e9', coverImage: null, logo: null, service_mode_tasks: [] };
           setPropertyData(defaultData);
           setEditForm(defaultData);
         }
@@ -113,11 +118,16 @@ export default function PropertyDetail() {
   }, [id]);
 
   const handleUpdateProperty = async () => {
+    const cleanedServiceTasks = editServiceModeTasks
+      .map(t => typeof t === 'object' ? (t.title || t.text || '') : t)
+      .filter(t => (t || '').trim() !== '');
+
     const updatedData = { 
       ...editForm,
       id,
       managers: editManagers.filter(m => (m.name || '').trim() !== ''),
-      cleaners: editCleaners.filter(c => (c.name || '').trim() !== '')
+      cleaners: editCleaners.filter(c => (c.name || '').trim() !== ''),
+      service_mode_tasks: cleanedServiceTasks
     };
     
     try {
@@ -127,6 +137,7 @@ export default function PropertyDetail() {
       setPropertyData(updatedData);
       setManagers(updatedData.managers);
       setCleaners(updatedData.cleaners);
+      setServiceModeTasks(cleanedServiceTasks);
 
       // Handle rooms
       const validRooms = editRooms.filter(r => r.name.trim() !== '');
@@ -156,12 +167,12 @@ export default function PropertyDetail() {
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading property details...</div>;
 
-
   const handleCancelEdit = () => {
     setEditForm({ ...propertyData });
     setEditRooms([...rooms]);
     setEditManagers([...managers]);
     setEditCleaners([...cleaners]);
+    setEditServiceModeTasks([...serviceModeTasks]);
     setIsEditing(false);
   };
 
@@ -204,6 +215,21 @@ export default function PropertyDetail() {
 
   const handleCleanerDelete = (id) => {
     setEditCleaners(editCleaners.filter(c => c.id !== id));
+  };
+
+  const handleAddServiceTaskInline = () => {
+    setEditServiceModeTasks([...editServiceModeTasks, '']);
+  };
+
+  const handleServiceTaskChange = (index, newTitle) => {
+    const updated = [...editServiceModeTasks];
+    updated[index] = newTitle;
+    setEditServiceModeTasks(updated);
+  };
+
+  const handleServiceTaskDelete = (index) => {
+    const updated = editServiceModeTasks.filter((_, i) => i !== index);
+    setEditServiceModeTasks(updated);
   };
 
   const handleCloneRoom = async (room) => {
@@ -552,6 +578,75 @@ export default function PropertyDetail() {
                 </>
               )}
             </div>
+          </div>
+
+          <div className="card p-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div>
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Central Service Mode Task List</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Tasks generated automatically each day when any room in this property enters Service Mode (Unoccupied).</p>
+              </div>
+              {isEditing && (
+                <button 
+                  type="button"
+                  onClick={handleAddServiceTaskInline}
+                  className="flex items-center space-x-1 text-xs font-bold text-primary-600 bg-primary-50 px-2.5 py-1.5 rounded-lg hover:bg-primary-100 transition-colors"
+                >
+                  <Plus size={14} />
+                  <span>Add Task</span>
+                </button>
+              )}
+            </div>
+
+            {isEditing ? (
+              <div className="space-y-2">
+                {editServiceModeTasks.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic">No custom service tasks defined. Using default system tasks ("Service Mode Inspection", "Routine Room Maintenance").</p>
+                ) : (
+                  editServiceModeTasks.map((task, idx) => {
+                    const title = typeof task === 'object' ? (task.title || task.text || '') : task;
+                    return (
+                      <div key={idx} className="flex items-center space-x-2">
+                        <span className="text-xs text-slate-400 font-mono w-5">{idx + 1}.</span>
+                        <input 
+                          type="text" 
+                          value={title}
+                          onChange={(e) => handleServiceTaskChange(idx, e.target.value)}
+                          placeholder="Task title (e.g., Check linen & towels)"
+                          className="flex-1 font-medium text-xs text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => handleServiceTaskDelete(idx)}
+                          className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Remove Task"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            ) : (
+              <div>
+                {serviceModeTasks.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic">Default Service Mode tasks active ("Service Mode Inspection", "Routine Room Maintenance"). Edit property to customize.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {serviceModeTasks.map((t, idx) => {
+                      const title = typeof t === 'object' ? (t.title || t.text || '') : t;
+                      return (
+                        <li key={idx} className="flex items-center space-x-2 text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-100 px-3 py-2 rounded-lg">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                          <span>{title}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
           
           {!isEditing && (
